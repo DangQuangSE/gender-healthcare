@@ -16,6 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/services")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.catalog.api.ServiceCatalogController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class ServiceAPI {
     @Autowired
     ServiceManagementService serviceManagementService;

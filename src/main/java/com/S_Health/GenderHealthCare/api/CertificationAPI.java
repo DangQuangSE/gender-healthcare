@@ -14,6 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/certifications")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.user.api.CertificationController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class CertificationAPI {
 
     @Autowired

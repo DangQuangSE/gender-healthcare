@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/schedules")
 @SecurityRequirement(name = "api")
+@Deprecated(since = "1.0", forRemoval = false)
 public class ScheduleAPI {
     @Autowired
     ScheduleService scheduleService;

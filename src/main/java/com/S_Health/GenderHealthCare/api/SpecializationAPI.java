@@ -16,6 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/specializations")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.catalog.api.SpecializationController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class SpecializationAPI {
 
     @Autowired

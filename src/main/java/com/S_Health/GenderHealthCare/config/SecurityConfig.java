@@ -71,6 +71,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/config/**").permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/api/v1/services/**",
+                                "/api/v1/specializations/**",
+                                "/api/v1/rooms/**",
+                                "/api/v1/tags/**",
+                                "/api/v1/consultants/**",
                                 "/api/services/**",
                                 "/api/specializations/**",
                                 "/api/rooms/**",
@@ -79,10 +84,17 @@ public class SecurityConfig {
                                 "/api/comment/blog/**",
                                 "/api/feedback/**",
                                 "/api/schedules/**",
+                                "/api/v1/schedules/**",
+                                "/api/v1/treatment-protocols/**",
                                 "/api/treatment/**")
                         .permitAll()
                         .requestMatchers(
                                 "/api/config/**",
+                                "/api/v1/config/**",
+                                "/api/v1/services/**",
+                                "/api/v1/specializations/**",
+                                "/api/v1/rooms/**",
+                                "/api/v1/tags/**",
                                 "/api/booking-reports/**",
                                 "/api/financial-reports/**")
                         .hasAnyRole("ADMIN", "SUPER_ADMIN", "STAFF")

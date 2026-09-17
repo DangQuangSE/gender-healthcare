@@ -1,0 +1,31 @@
+package com.S_Health.GenderHealthCare.modules.user.dto.response;
+
+import com.S_Health.GenderHealthCare.enums.Gender;
+import com.S_Health.GenderHealthCare.enums.UserRole;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserAccountResponse {
+    private Long id;
+    private String fullname;
+    private String email;
+    private String phone;
+    private LocalDate dateOfBirth;
+    private String address;
+    private Gender gender;
+    private UserRole role;
+    private String imageUrl;
+    private boolean isActive;
+    private boolean isVerified;
+    private LocalDate createdAt;
+    private List<UserSpecializationResponse> specializations;
+}

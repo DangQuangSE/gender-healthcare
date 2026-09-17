@@ -1,16 +1,18 @@
 package com.S_Health.GenderHealthCare.modules.user.application;
 
-import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.request.authentication.CreateUserRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.UpdateConsultantSpecializationRequest;
-import com.S_Health.GenderHealthCare.dto.response.CreateUserResponse;
-import com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.common.validation.ImageUploadValidator;
 import com.S_Health.GenderHealthCare.service.UserService;
 import com.S_Health.GenderHealthCare.service.authentication.ManageUserService;
 import com.S_Health.GenderHealthCare.service.certification.CertificationService;
-import org.modelmapper.ModelMapper;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserAccountResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserSpecializationResponse;
+import com.S_Health.GenderHealthCare.modules.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,49 +26,55 @@ public class UserFacade {
     private final UserService userService;
     private final CertificationService certificationService;
     private final ManageUserService manageUserService;
-    private final ModelMapper modelMapper;
+    private final UserMapper userMapper;
+    private final ImageUploadValidator imageUploadValidator;
 
     public UserFacade(
             UserService userService,
             CertificationService certificationService,
             ManageUserService manageUserService,
-            ModelMapper modelMapper) {
+            UserMapper userMapper,
+            ImageUploadValidator imageUploadValidator) {
         this.userService = userService;
         this.certificationService = certificationService;
         this.manageUserService = manageUserService;
-        this.modelMapper = modelMapper;
+        this.userMapper = userMapper;
+        this.imageUploadValidator = imageUploadValidator;
     }
 
-    public UserDTO getProfile() {
-        return userService.getUserProfile();
+    public UserResponse getProfile() {
+        return userMapper.toResponse(userService.getUserProfile());
     }
 
-    public UserDTO updateProfile(UserDTO request) {
-        return userService.updateUserProfile(request);
+    public UserResponse updateProfile(UserDTO request) {
+        return userMapper.toResponse(userService.updateUserProfile(request));
     }
 
-    public UserDTO updateAvatar(MultipartFile file) {
-        return userService.updateAvatar(file);
+    public UserResponse updateAvatar(MultipartFile file) {
+        imageUploadValidator.validateRequired(file);
+        return userMapper.toResponse(userService.updateAvatar(file));
     }
 
     public CertificationResponse createCertification(String name, MultipartFile image) {
-        return certificationService.createCertification(name, image);
+        imageUploadValidator.validateRequired(image);
+        return userMapper.toCertificationResponse(certificationService.createCertification(name, image));
     }
 
     public CertificationResponse updateCertification(Long id, String name, MultipartFile image) {
-        return certificationService.updateCertification(id, name, image);
+        imageUploadValidator.validateOptional(image);
+        return userMapper.toCertificationResponse(certificationService.updateCertification(id, name, image));
     }
 
     public List<CertificationResponse> getMyCertifications() {
-        return certificationService.getMyCertifications();
+        return userMapper.toCertificationResponses(certificationService.getMyCertifications());
     }
 
     public void deleteCertification(Long id) {
         certificationService.deleteCertification(id);
     }
 
-    public CreateUserResponse createUser(CreateUserRequest request) {
-        return manageUserService.createStaffAccount(request);
+    public UserAccountResponse createUser(CreateUserRequest request) {
+        return userMapper.toAccountResponse(manageUserService.createStaffAccount(request));
     }
 
     public void addSpecializations(Long userId, UpdateConsultantSpecializationRequest request) {
@@ -77,14 +85,18 @@ public class UserFacade {
         manageUserService.removeSpecializationFromConsultant(userId, specializationId);
     }
 
-    public List<SpecializationDTO> getConsultantSpecializations(Long userId) {
+    public List<UserSpecializationResponse> getConsultantSpecializations(Long userId) {
         return manageUserService.getConsultantSpecializations(userId).stream()
-                .map(specialization -> modelMapper.map(specialization, SpecializationDTO.class))
+                .map(userMapper::toSpecializationResponse)
                 .toList();
     }
 
-    public List<ConsultantDTO> getUsersByRole(String role) {
-        return manageUserService.getUsersByRole(role);
+    public List<ConsultantResponse> getUsersByRole(String role) {
+        return userMapper.toConsultantResponses(manageUserService.getUsersByRole(role));
+    }
+
+    public List<ConsultantResponse> getConsultantsByService(Long serviceId) {
+        return userMapper.toConsultantResponses(manageUserService.getConsultantsByService(serviceId));
     }
 
     public void softDeleteUser(Long userId) {

@@ -1,15 +1,13 @@
 package com.S_Health.GenderHealthCare.modules.identity.api;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
-import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.request.authentication.EmailRegisterRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.LoginEmailRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.OAuthLoginRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.PasswordRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.VerifyOTPRequest;
-import com.S_Health.GenderHealthCare.dto.response.JwtResponse;
-import com.S_Health.GenderHealthCare.modules.identity.application.IdentityFacade;
+import com.S_Health.GenderHealthCare.modules.identity.service.IdentityService;
+import com.S_Health.GenderHealthCare.modules.identity.dto.response.LoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,32 +15,26 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-public class IdentityAPI {
-    private final IdentityFacade identityFacade;
+public class IdentityController {
+    private final IdentityService identityService;
 
-    public IdentityAPI(IdentityFacade identityFacade) {
-        this.identityFacade = identityFacade;
+    public IdentityController(IdentityService identityService) {
+        this.identityService = identityService;
     }
 
     @PostMapping("/registration/otp")
     @Operation(summary = "Request registration OTP")
     public ResponseEntity<ApiResponse<String>> requestRegistrationOtp(
             @Valid @RequestBody EmailRegisterRequest request) {
-        if (identityFacade.emailExists(request.getEmail())) {
-            throw new ApiException(ErrorCode.CONFLICT, "Email already exists");
-        }
-
-        identityFacade.sendRegistrationOtp(request.getEmail());
+        identityService.requestRegistrationOtp(request.getEmail());
         return success("Registration OTP sent");
     }
 
     @PostMapping("/registration/verify-otp")
     @Operation(summary = "Verify registration OTP")
     public ResponseEntity<ApiResponse<String>> verifyRegistrationOtp(
-            @RequestBody VerifyOTPRequest request) {
-        if (!identityFacade.verifyOtp(request.getEmail(), request.getOtp())) {
-            throw new ApiException(ErrorCode.VALIDATION_ERROR, "OTP is invalid or expired");
-        }
+            @Valid @RequestBody VerifyOTPRequest request) {
+        identityService.verifyOtpOrThrow(request.getEmail(), request.getOtp());
         return success("OTP is valid");
     }
 
@@ -50,29 +42,23 @@ public class IdentityAPI {
     @Operation(summary = "Set registration password")
     public ResponseEntity<ApiResponse<String>> setRegistrationPassword(
             @Valid @RequestBody PasswordRequest request) {
-        identityFacade.setPassword(request);
+        identityService.setPassword(request);
         return success("Password configured successfully");
     }
 
     @PostMapping("/forgot-password/otp")
     @Operation(summary = "Request forgot-password OTP")
     public ResponseEntity<ApiResponse<String>> requestForgotPasswordOtp(
-            @RequestBody EmailRegisterRequest request) {
-        if (!identityFacade.emailExists(request.getEmail())) {
-            throw new ApiException(ErrorCode.NOT_FOUND, "Email is not registered");
-        }
-
-        identityFacade.sendForgotPasswordOtp(request.getEmail());
+            @Valid @RequestBody EmailRegisterRequest request) {
+        identityService.requestForgotPasswordOtp(request.getEmail());
         return success("Password reset OTP sent");
     }
 
     @PostMapping("/forgot-password/verify-otp")
     @Operation(summary = "Verify forgot-password OTP")
     public ResponseEntity<ApiResponse<String>> verifyForgotPasswordOtp(
-            @RequestBody VerifyOTPRequest request) {
-        if (!identityFacade.verifyOtp(request.getEmail(), request.getOtp())) {
-            throw new ApiException(ErrorCode.VALIDATION_ERROR, "OTP is invalid or expired");
-        }
+            @Valid @RequestBody VerifyOTPRequest request) {
+        identityService.verifyOtpOrThrow(request.getEmail(), request.getOtp());
         return success("OTP is valid");
     }
 
@@ -80,29 +66,29 @@ public class IdentityAPI {
     @Operation(summary = "Reset password")
     public ResponseEntity<ApiResponse<String>> resetPassword(
             @Valid @RequestBody PasswordRequest request) {
-        identityFacade.resetPassword(request);
+        identityService.resetPassword(request);
         return success("Password reset successfully");
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login with email and password")
-    public ResponseEntity<ApiResponse<JwtResponse>> login(
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody LoginEmailRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(identityFacade.login(request), null));
+        return ResponseEntity.ok(ApiResponse.success(identityService.login(request), null));
     }
 
     @PostMapping("/oauth/google")
     @Operation(summary = "Login with Google")
-    public ResponseEntity<ApiResponse<JwtResponse>> loginWithGoogle(
-            @RequestBody OAuthLoginRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(identityFacade.loginWithGoogle(request), null));
+    public ResponseEntity<ApiResponse<LoginResponse>> loginWithGoogle(
+            @Valid @RequestBody OAuthLoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(identityService.loginWithGoogle(request), null));
     }
 
     @PostMapping("/oauth/facebook")
     @Operation(summary = "Login with Facebook")
-    public ResponseEntity<ApiResponse<JwtResponse>> loginWithFacebook(
-            @RequestBody OAuthLoginRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(identityFacade.loginWithFacebook(request), null));
+    public ResponseEntity<ApiResponse<LoginResponse>> loginWithFacebook(
+            @Valid @RequestBody OAuthLoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(identityService.loginWithFacebook(request), null));
     }
 
     private ResponseEntity<ApiResponse<String>> success(String message) {

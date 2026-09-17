@@ -1,9 +1,10 @@
 package com.S_Health.GenderHealthCare.modules.user.api;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.application.UserFacade;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,17 +13,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/certifications")
-public class CertificationAPI {
+public class CertificationController {
     private final UserFacade userFacade;
 
-    public CertificationAPI(UserFacade userFacade) {
+    public CertificationController(UserFacade userFacade) {
         this.userFacade = userFacade;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Create consultant certification")
     public ApiResponse<CertificationResponse> createCertification(
-            @RequestParam("name") String name,
+            @NotBlank @RequestParam("name") String name,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam("image") MultipartFile image) {
         return ApiResponse.success(userFacade.createCertification(name, image), null);
@@ -32,7 +33,7 @@ public class CertificationAPI {
     @Operation(summary = "Update consultant certification")
     public ApiResponse<CertificationResponse> updateCertification(
             @PathVariable Long id,
-            @RequestParam("name") String name,
+            @NotBlank @RequestParam("name") String name,
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         return ApiResponse.success(userFacade.updateCertification(id, name, image), null);

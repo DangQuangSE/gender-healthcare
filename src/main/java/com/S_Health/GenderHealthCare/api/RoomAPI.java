@@ -17,6 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rooms")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.catalog.api.RoomController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class RoomAPI {
     @Autowired
      RoomService roomService;

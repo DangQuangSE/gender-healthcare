@@ -13,6 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/me")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.user.api.UserProfileController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class ProfileAPI {
 
     @Autowired

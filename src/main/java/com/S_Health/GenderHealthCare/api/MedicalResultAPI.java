@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/result")
 @SecurityRequirement(name = "api")
+@Deprecated(since = "1.0", forRemoval = false)
 @Tag(name = "Medical Result API", description = "API quản lý kết quả khám bệnh và xét nghiệm")
 public class MedicalResultAPI {
     @Autowired

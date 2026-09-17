@@ -15,6 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tags")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.catalog.api.TagController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class TagAPI {
     @Autowired
     private TagService tagService;

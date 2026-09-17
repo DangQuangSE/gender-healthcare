@@ -1,12 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.user.api;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
 import com.S_Health.GenderHealthCare.dto.request.authentication.CreateUserRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.UpdateConsultantSpecializationRequest;
-import com.S_Health.GenderHealthCare.dto.response.CreateUserResponse;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
 import com.S_Health.GenderHealthCare.modules.user.application.UserFacade;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserAccountResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserSpecializationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +15,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin/users")
-public class UserManagementAPI {
+public class UserManagementController {
     private final UserFacade userFacade;
 
-    public UserManagementAPI(UserFacade userFacade) {
+    public UserManagementController(UserFacade userFacade) {
         this.userFacade = userFacade;
     }
 
     @PostMapping
     @Operation(summary = "Create staff or consultant account")
-    public ApiResponse<CreateUserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
+    public ApiResponse<UserAccountResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         return ApiResponse.success(userFacade.createUser(request), null);
     }
 
@@ -48,13 +48,13 @@ public class UserManagementAPI {
 
     @GetMapping("/{userId}/specializations")
     @Operation(summary = "Get consultant specializations")
-    public ApiResponse<List<SpecializationDTO>> getSpecializations(@PathVariable Long userId) {
+    public ApiResponse<List<UserSpecializationResponse>> getSpecializations(@PathVariable Long userId) {
         return ApiResponse.success(userFacade.getConsultantSpecializations(userId), null);
     }
 
     @GetMapping
     @Operation(summary = "Get users by role")
-    public ApiResponse<List<ConsultantDTO>> getUsersByRole(@RequestParam String role) {
+    public ApiResponse<List<ConsultantResponse>> getUsersByRole(@RequestParam String role) {
         return ApiResponse.success(userFacade.getUsersByRole(role), null);
     }
 

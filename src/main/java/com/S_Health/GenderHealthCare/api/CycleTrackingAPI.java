@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cycle-track")
 @SecurityRequirement(name = "api")
+@Deprecated(since = "1.0", forRemoval = false)
 public class CycleTrackingAPI {
     @Autowired
     private CycleTrackingService cycleTrackingService;

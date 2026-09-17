@@ -13,6 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/config")
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.catalog.api.ConfigController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class ConfigAPI {
 
     @Autowired

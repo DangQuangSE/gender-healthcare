@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/medical-profile")
 @SecurityRequirement(name = "api")
+@Deprecated(since = "1.0", forRemoval = false)
 public class MedicalProfileAPI {
     @Autowired
     MedicalProfileService medicalProfileService;

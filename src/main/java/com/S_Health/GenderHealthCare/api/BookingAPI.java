@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/booking")
 @SecurityRequirement(name = "api")
+@Deprecated(since = "1.0", forRemoval = false)
 public class BookingAPI {
     @Autowired
     BookingService bookingService;

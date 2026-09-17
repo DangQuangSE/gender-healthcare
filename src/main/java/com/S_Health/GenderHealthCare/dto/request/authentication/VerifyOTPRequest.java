@@ -1,5 +1,7 @@
 package com.S_Health.GenderHealthCare.dto.request.authentication;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +10,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class VerifyOTPRequest {
+     @Email(message = "Email khong hop le")
+     @NotBlank(message = "Email khong duoc de trong")
      String email;
+     @NotBlank(message = "OTP is required")
      String otp;
 }

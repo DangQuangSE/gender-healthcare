@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RestController
 @SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.identity.api.IdentityController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class AuthenticationAPI {
     @Autowired
     private AuthenticationService authenticationService;

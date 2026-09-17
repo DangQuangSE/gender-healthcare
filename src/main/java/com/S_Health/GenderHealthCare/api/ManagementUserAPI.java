@@ -16,6 +16,10 @@ import java.util.Map;
 @RequestMapping("/api/admin/")
 @SecurityRequirement(name = "api")
 
+/**
+ * Legacy compatibility controller. Use modules.user.api.UserManagementController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
 public class ManagementUserAPI {
     @Autowired
     ManageUserService manageUserService;
