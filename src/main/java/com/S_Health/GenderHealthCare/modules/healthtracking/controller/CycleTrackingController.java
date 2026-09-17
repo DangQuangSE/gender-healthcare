@@ -4,9 +4,10 @@ import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.common.security.CurrentUserProvider;
 import com.S_Health.GenderHealthCare.dto.request.service.CycleTrackingRequest;
 import com.S_Health.GenderHealthCare.dto.response.CycleTrackingResponse;
+import com.S_Health.GenderHealthCare.modules.healthtracking.HealthTrackingMessages;
 import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleLogResponse;
 import com.S_Health.GenderHealthCare.modules.healthtracking.mapper.CycleTrackingMapper;
-import com.S_Health.GenderHealthCare.service.CycleTrackingService;
+import com.S_Health.GenderHealthCare.modules.healthtracking.service.CycleTrackingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,14 +35,14 @@ public class CycleTrackingController {
     }
 
     @PostMapping("/logs")
-    @Operation(summary = "Save a daily cycle log")
+    @Operation(summary = HealthTrackingMessages.SAVE_CYCLE_LOG)
     public ApiResponse<CycleTrackingResponse> saveDailyLog(
             @Valid @RequestBody CycleTrackingRequest request) {
         return ApiResponse.success(cycleTrackingService.saveDailyLog(request), null);
     }
 
     @GetMapping("/logs")
-    @Operation(summary = "Get my cycle logs")
+    @Operation(summary = HealthTrackingMessages.GET_CYCLE_LOGS)
     public ApiResponse<List<CycleLogResponse>> getLogs() {
         return ApiResponse.success(
                 cycleTrackingService.getLogsByUser(currentUserProvider.requireUserId()).stream()

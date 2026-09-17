@@ -3,7 +3,8 @@ package com.S_Health.GenderHealthCare.modules.medical.controller;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.request.TreatmentProtocolRequest;
 import com.S_Health.GenderHealthCare.dto.response.TreatmentProtocolResponse;
-import com.S_Health.GenderHealthCare.service.MedicalService.TreatmentProtocolService;
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
+import com.S_Health.GenderHealthCare.modules.medical.service.TreatmentProtocolService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ public class TreatmentProtocolController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a treatment protocol")
+    @Operation(summary = MedicalMessages.CREATE_PROTOCOL)
     public ApiResponse<TreatmentProtocolResponse> create(
             @Valid @RequestBody TreatmentProtocolRequest request) {
         return ApiResponse.success(treatmentProtocolService.create(request), null);

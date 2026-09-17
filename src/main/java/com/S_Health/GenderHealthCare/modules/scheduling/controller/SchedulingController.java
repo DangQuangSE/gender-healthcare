@@ -8,6 +8,7 @@ import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
 import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.SchedulingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class SchedulingController {
     }
 
     @GetMapping("/consultants/{consultantId}")
-    @Operation(summary = "Get a consultant schedule")
+    @Operation(summary = SchedulingMessages.GET_CONSULTANT_SCHEDULE)
     public ApiResponse<List<WorkDateSlotResponse>> getConsultantSchedule(
             @PathVariable long consultantId,
             @RequestParam(required = false)
@@ -46,7 +47,7 @@ public class SchedulingController {
     }
 
     @GetMapping("/services/{serviceId}/slots")
-    @Operation(summary = "Get available slots for a service")
+    @Operation(summary = SchedulingMessages.GET_AVAILABLE_SLOTS)
     public ApiResponse<ScheduleServiceResponse> getAvailableServiceSlots(
             @PathVariable long serviceId,
             @RequestParam(required = false)
@@ -59,21 +60,21 @@ public class SchedulingController {
     }
 
     @PostMapping
-    @Operation(summary = "Register a consultant schedule")
+    @Operation(summary = SchedulingMessages.REGISTER_SCHEDULE)
     public ApiResponse<ScheduleRegisterResponse> registerSchedule(
             @Valid @RequestBody ScheduleRegisterRequest request) {
         return ApiResponse.success(schedulingService.registerSchedule(request), null);
     }
 
     @PostMapping("/cancellations")
-    @Operation(summary = "Cancel a consultant schedule")
+    @Operation(summary = SchedulingMessages.CANCEL_SCHEDULE)
     public ApiResponse<ScheduleCancelResponse> cancelSchedule(
             @Valid @RequestBody ScheduleCancelRequest request) {
         return ApiResponse.success(schedulingService.cancelSchedule(request), null);
     }
 
     @GetMapping("/doctors")
-    @Operation(summary = "Get doctors working on a date")
+    @Operation(summary = SchedulingMessages.GET_WORKING_DOCTORS)
     public ApiResponse<List<DoctorWorkingScheduleDTO>> getDoctorsWorkingOnDate(
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {

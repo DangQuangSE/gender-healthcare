@@ -5,7 +5,8 @@ import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
 import com.S_Health.GenderHealthCare.dto.PatientHistoryDTO;
 import com.S_Health.GenderHealthCare.dto.request.appointment.UpdateAppointmentRequest;
 import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.service.appointment.AppointmentService;
+import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
+import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -34,13 +35,13 @@ public class AppointmentController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get appointment by ID")
+    @Operation(summary = AppointmentMessages.GET_APPOINTMENT)
     public ApiResponse<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
         return ApiResponse.success(appointmentService.getAppointmentById(id), null);
     }
 
     @GetMapping("/consultant-schedule")
-    @Operation(summary = "Get the current consultant schedule")
+    @Operation(summary = AppointmentMessages.GET_CONSULTANT_SCHEDULE)
     public ApiResponse<List<AppointmentDTO>> getMySchedule(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false)
@@ -51,14 +52,14 @@ public class AppointmentController {
     }
 
     @GetMapping
-    @Operation(summary = "Get appointments by status")
+    @Operation(summary = AppointmentMessages.GET_BY_STATUS)
     public ApiResponse<List<AppointmentDTO>> getAppointmentsByStatus(
             @RequestParam AppointmentStatus status) {
         return ApiResponse.success(appointmentService.getAppointmentsByStatus(status), null);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an appointment")
+    @Operation(summary = AppointmentMessages.UPDATE_APPOINTMENT)
     public ApiResponse<AppointmentDTO> updateAppointment(
             @PathVariable Long id,
             @Valid @RequestBody UpdateAppointmentRequest request) {
@@ -66,25 +67,25 @@ public class AppointmentController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an appointment")
+    @Operation(summary = AppointmentMessages.DELETE_APPOINTMENT)
     public void deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);
     }
 
     @PostMapping("/{id}/cancel")
-    @Operation(summary = "Cancel an appointment")
+    @Operation(summary = AppointmentMessages.CANCEL_APPOINTMENT)
     public void cancelAppointment(@PathVariable Long id) {
         appointmentService.cancelAppointment(id);
     }
 
     @PostMapping("/{id}/check-in")
-    @Operation(summary = "Check in an appointment")
+    @Operation(summary = AppointmentMessages.CHECK_IN_APPOINTMENT)
     public void checkInAppointment(@PathVariable Long id) {
         appointmentService.checkInAppointment(id);
     }
 
     @GetMapping("/{appointmentId}/history")
-    @Operation(summary = "Get patient history from an appointment")
+    @Operation(summary = AppointmentMessages.GET_PATIENT_HISTORY)
     public ApiResponse<PatientHistoryDTO> getPatientHistory(@PathVariable Long appointmentId) {
         return ApiResponse.success(
                 appointmentService.getPatientHistoryFromAppointment(appointmentId),
@@ -92,16 +93,16 @@ public class AppointmentController {
     }
 
     @PatchMapping("/details/{detailId}/status")
-    @Operation(summary = "Update an appointment detail status")
+    @Operation(summary = AppointmentMessages.UPDATE_DETAIL_STATUS)
     public ApiResponse<String> updateAppointmentDetailStatus(
             @PathVariable Long detailId,
             @RequestParam AppointmentStatus status) {
         appointmentService.updateAppointmentDetailStatus(detailId, status);
-        return ApiResponse.success("Appointment detail status updated", null);
+        return ApiResponse.success(AppointmentMessages.DETAIL_STATUS_UPDATED, null);
     }
 
     @PostMapping("/{id}/rating")
-    @Operation(summary = "Mark an appointment as rated")
+    @Operation(summary = AppointmentMessages.RATE_APPOINTMENT)
     public void rateAppointment(@PathVariable Long id) {
         appointmentService.updateIsRated(id);
     }

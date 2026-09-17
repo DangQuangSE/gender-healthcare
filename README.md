@@ -1,4 +1,3 @@
-@ -0,0 +1,291 @@
 # Gender Health Care Platform
 
 🌐 **Live Demo**: [http://14.225.192.15/](http://14.225.192.15/)
@@ -13,7 +12,7 @@
 - **Hồ sơ y tế điện tử**: Lưu trữ và quản lý thông tin sức khỏe bệnh nhân
 - **Tư vấn trực tuyến**: Hệ thống chat và video call với bác sĩ
 - **Theo dõi chu kỳ**: Ứng dụng theo dõi chu kỳ kinh nguyệt và sức khỏe sinh sản
-- **Quản lý thanh toán**: Tích hợp thanh toán MoMo và VNPay
+- **Quản lý thanh toán**: Tích hợp thanh toán VNPay và tiền mặt
 - **Blog y tế**: Chia sẻ kiến thức và thông tin sức khỏe
 
 ## 🏗️ Kiến trúc hệ thống
@@ -24,7 +23,7 @@
 - **Security**: Spring Security + JWT
 - **Documentation**: Swagger/OpenAPI 3
 - **Real-time**: WebSocket (STOMP)
-- **Payment**: MoMo, VNPay
+- **Payment**: VNPay, tiền mặt
 - **Cloud Storage**: Cloudinary
 - **Video Call**: Zoom API
 - **Email**: Spring Mail + Thymeleaf
@@ -83,7 +82,7 @@ src/main/java/com/S_Health/GenderHealthCare/
 #### 7. Payment System
 - **Payment**: Thanh toán
 - **Transaction**: Giao dịch
-- **PaymentMethod**: MOMO, VNPAY, CASH
+- **PaymentMethod**: VNPAY, CASH
 
 ## 🔧 Chức năng chính
 
@@ -113,7 +112,6 @@ src/main/java/com/S_Health/GenderHealthCare/
 - Thông báo nhắc nhở
 
 ### 5. Hệ thống thanh toán
-- Thanh toán MoMo
 - Thanh toán VNPay
 - Thanh toán tiền mặt
 - Quản lý giao dịch
@@ -150,7 +148,6 @@ src/main/java/com/S_Health/GenderHealthCare/
 - `GET /api/cycle-track/logs` - Lịch sử theo dõi
 
 ### Payment
-- `POST /api/payment/momo/create` - Tạo thanh toán MoMo
 - `POST /api/payment/vnpay/create` - Tạo thanh toán VNPay
 
 ## 🔐 Bảo mật
@@ -170,7 +167,6 @@ src/main/java/com/S_Health/GenderHealthCare/
 ## 📱 Tích hợp bên ngoài
 
 ### Payment Gateways
-- **MoMo**: Ví điện tử
 - **VNPay**: Cổng thanh toán
 
 ### Communication

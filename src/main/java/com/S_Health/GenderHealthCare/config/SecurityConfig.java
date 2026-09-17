@@ -111,7 +111,6 @@ public class SecurityConfig {
                                 "/api/chat/sessions/*/verify",
                                 "/api/chat/sessions/*/mark-read",
                                 "/api/payment/vnpay/**",
-                                "/api/payment/momo/return",
                                 "/api/blog/*/like")
                         .permitAll()
                         .requestMatchers(

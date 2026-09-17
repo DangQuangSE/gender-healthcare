@@ -1,0 +1,264 @@
+package com.S_Health.GenderHealthCare.modules.scheduling.service;
+
+import com.S_Health.GenderHealthCare.dto.SlotDTO;
+import com.S_Health.GenderHealthCare.dto.UserDTO;
+import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleCancelRequest;
+import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleConsultantRequest;
+import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleRegisterRequest;
+import com.S_Health.GenderHealthCare.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
+import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
+import com.S_Health.GenderHealthCare.entity.AppointmentDetail;
+import com.S_Health.GenderHealthCare.entity.ConsultantSlot;
+import com.S_Health.GenderHealthCare.entity.Schedule;
+import com.S_Health.GenderHealthCare.entity.User;
+import com.S_Health.GenderHealthCare.enums.ScheduleStatus;
+import com.S_Health.GenderHealthCare.enums.SlotStatus;
+import com.S_Health.GenderHealthCare.enums.UserRole;
+import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
+import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.repository.ConsultantSlotRepository;
+import com.S_Health.GenderHealthCare.repository.ScheduleRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.service.ConfigValueService;
+import com.S_Health.GenderHealthCare.utils.AuthUtil;
+import com.S_Health.GenderHealthCare.utils.TimeSlotUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class ScheduleService {
+    private final ScheduleRepository scheduleRepository;
+    private final AuthenticationRepository authenticationRepository;
+    private final AppointmentDetailRepository appointmentDetailRepository;
+    private final ConsultantSlotRepository consultantSlotRepository;
+    private final ConfigValueService configValueService;
+    private final ModelMapper modelMapper;
+    private final AuthUtil authUtil;
+
+    public ScheduleService(
+            ScheduleRepository scheduleRepository,
+            AuthenticationRepository authenticationRepository,
+            AppointmentDetailRepository appointmentDetailRepository,
+            ConsultantSlotRepository consultantSlotRepository,
+            ConfigValueService configValueService,
+            ModelMapper modelMapper,
+            AuthUtil authUtil) {
+        this.scheduleRepository = scheduleRepository;
+        this.authenticationRepository = authenticationRepository;
+        this.appointmentDetailRepository = appointmentDetailRepository;
+        this.consultantSlotRepository = consultantSlotRepository;
+        this.configValueService = configValueService;
+        this.modelMapper = modelMapper;
+        this.authUtil = authUtil;
+    }
+
+    private Integer getMaxBooking() {
+        return configValueService.getConfigValue(
+                SchedulingMessages.MAX_BOOKING_CONFIG_KEY,
+                SchedulingMessages.DEFAULT_MAX_BOOKING);
+    }
+
+    public List<WorkDateSlotResponse> getScheduleOfConsultant(ScheduleConsultantRequest request) {
+        List<ConsultantSlot> slots = consultantSlotRepository.findByConsultantIdAndDateBetweenAndStatus(request.getConsultant_id(),
+                request.getRangeDate().getFrom(),
+                request.getRangeDate().getTo(), SlotStatus.ACTIVE);
+        Map<LocalDate, List<SlotDTO>> slotMap = new HashMap<>();
+        for (ConsultantSlot slot : slots) {
+            SlotDTO slotDTO = new SlotDTO(
+                    slot.getId(),
+                    slot.getDate(),
+                    slot.getStartTime(),
+                    slot.getEndTime(),
+                    slot.getMaxBooking(),
+                    slot.getCurrentBooking(),
+                    slot.getAvailableBooking()
+            );
+            slotMap.computeIfAbsent(slot.getDate(), day -> new ArrayList<>()).add(slotDTO);
+        }
+        return slotMap.entrySet().stream()
+                .map(entry -> new WorkDateSlotResponse(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparing(WorkDateSlotResponse::getWorkDate))
+                .toList();
+    }
+
+    public ScheduleRegisterResponse registerSchedule(ScheduleRegisterRequest request) {
+        User consultant = authenticationRepository.findById(authUtil.getCurrentUserId())
+                .orElseThrow(() -> new AppException(SchedulingMessages.CONSULTANT_NOT_FOUND));
+        List<ScheduleRegisterRequest.ScheduleItem> scheduleItems = request.getScheduleItems();
+        for (ScheduleRegisterRequest.ScheduleItem item : scheduleItems) {
+            if (!item.getWorkDate().isAfter(LocalDate.now())) {
+                throw new IllegalArgumentException(
+                        SchedulingMessages.WORK_DATE_MUST_BE_FUTURE.formatted(item.getWorkDate()));
+            }
+        }
+        Set<LocalDate> uniqueWorkDate = new HashSet<>();
+        for (ScheduleRegisterRequest.ScheduleItem item : scheduleItems) {
+            if (!uniqueWorkDate.add(item.getWorkDate())) {
+                throw new IllegalArgumentException(
+                        SchedulingMessages.DUPLICATE_WORK_DATE.formatted(item.getWorkDate()));
+            }
+        }
+        List<Schedule> schedules = new ArrayList<>();
+        List<ConsultantSlot> consultantSlots = new ArrayList<>();
+        List<ScheduleRegisterResponse.WorkDate> workDates = new ArrayList<>();
+        for (ScheduleRegisterRequest.ScheduleItem item : scheduleItems) {
+            Schedule schedule = new Schedule();
+            schedule.setConsultant(consultant);
+            schedule.setAvailable(true);
+            schedule.setWorkDate(item.getWorkDate());
+            schedule.setStartTime(item.getTimeSlotDTO().getStartTime());
+            schedule.setEndTime(item.getTimeSlotDTO().getEndTime());
+            schedule.setStatus(ScheduleStatus.ACTIVE);
+            schedules.add(schedule);
+            List<LocalTime> slots = TimeSlotUtils.generateSlots(
+                    item.getTimeSlotDTO().getStartTime(),
+                    item.getTimeSlotDTO().getEndTime(),
+                    Duration.ofMinutes(SchedulingMessages.SLOT_DURATION_MINUTES));
+            for (LocalTime start : slots) {
+                LocalTime end = start.plusMinutes(SchedulingMessages.SLOT_DURATION_MINUTES);
+                Integer maxBooking = getMaxBooking();
+                ConsultantSlot consultantSlot = ConsultantSlot.builder()
+                        .consultant(consultant)
+                        .date(item.getWorkDate())
+                        .startTime(start)
+                        .endTime(end)
+                        .availableBooking(maxBooking)
+                        .maxBooking(maxBooking)
+                        .currentBooking(0)
+                        .status(SlotStatus.ACTIVE)
+                        .isActive(true)
+                        .build();
+                consultantSlots.add(consultantSlot);
+            }
+            ScheduleRegisterResponse.WorkDate workDate = new ScheduleRegisterResponse.WorkDate();
+            workDate.setDate(item.getWorkDate());
+            workDate.setStart(item.getTimeSlotDTO().getStartTime());
+            workDate.setEnd(item.getTimeSlotDTO().getEndTime());
+            workDates.add(workDate);
+        }
+        scheduleRepository.saveAll(schedules);
+        consultantSlotRepository.saveAll(consultantSlots);
+
+
+        ScheduleRegisterResponse response = new ScheduleRegisterResponse();
+        response.setConsultant_id(consultant.getId());
+        response.setSchedules(workDates);
+        return response;
+    }
+
+    //bác sĩ hủy lịch làm
+    public ScheduleCancelResponse cancelSchedule(ScheduleCancelRequest request) {
+        if (request.isCancelWholeDay() && request.getSlot() != null) {
+            throw new IllegalArgumentException(SchedulingMessages.FULL_DAY_CANCEL_CANNOT_HAVE_SLOT);
+        }
+        if (!request.isCancelWholeDay() && request.getSlot() == null) {
+            throw new IllegalArgumentException(SchedulingMessages.PARTIAL_DAY_CANCEL_REQUIRES_SLOT);
+        }
+
+        Long consultantId = authUtil.getCurrentUserId();
+        LocalDate date = request.getDate();
+        List<AppointmentDetail> affectedAppointments;
+
+        if (request.isCancelWholeDay()) {
+            affectedAppointments = appointmentDetailRepository
+                    .findByConsultant_idAndSlotDate(consultantId, date);
+            List<ConsultantSlot> slots = consultantSlotRepository.findByConsultantIdAndDate(consultantId, date);
+            if (slots.isEmpty()) {
+                throw new AppException(SchedulingMessages.SLOTS_NOT_FOUND);
+            }
+            for (ConsultantSlot slot : slots) {
+                slot.setIsActive(false);
+                slot.setStatus(SlotStatus.DEACTIVE);
+            }
+            consultantSlotRepository.saveAll(slots);
+        } else {
+            LocalDateTime slotTime = LocalDateTime.of(date, request.getSlot());
+            affectedAppointments = appointmentDetailRepository
+                    .findByConsultant_idAndSlotTime(consultantId, slotTime);
+            Optional<ConsultantSlot> slotOpt = consultantSlotRepository
+                    .findByConsultantIdAndDateAndStartTime(consultantId, date, request.getSlot());
+            if (slotOpt.isPresent()) {
+                ConsultantSlot slot = slotOpt.get();
+                slot.setIsActive(false);
+                slot.setStatus(SlotStatus.DEACTIVE);
+                consultantSlotRepository.save(slot);
+            } else {
+                throw new AppException(SchedulingMessages.SLOT_NOT_FOUND);
+            }
+        }
+
+        return new ScheduleCancelResponse(
+                SchedulingMessages.SCHEDULE_CANCELLED,
+                affectedAppointments.stream().map(a -> new ScheduleCancelResponse.AffectedAppointment(
+                        a.getAppointment().getCustomer(),
+                        a.getSlotTime().toLocalDate(),
+                        SchedulingMessages.APPOINTMENT_CANCELLED
+                )).toList()
+        );
+    }
+
+    /**
+     * Lấy danh sách bác sĩ làm việc theo ngày
+     */
+    public List<DoctorWorkingScheduleDTO> getDoctorsWorkingOnDate(LocalDate date) {
+        // Lấy tất cả bác sĩ có role CONSULTANT và đang active
+        List<User> doctors = authenticationRepository.findByRole(UserRole.CONSULTANT)
+                .stream()
+                .filter(User::isActive)
+                .collect(Collectors.toList());
+
+        List<DoctorWorkingScheduleDTO> result = new ArrayList<>();
+
+        for (User doctor : doctors) {
+            // Lấy các slot làm việc của bác sĩ trong ngày
+            List<ConsultantSlot> slots = consultantSlotRepository.findByConsultantIdAndDate(doctor.getId(), date)
+                    .stream()
+                    .filter(slot -> slot.getStatus() == SlotStatus.ACTIVE && slot.getIsActive())
+                    .collect(Collectors.toList());
+
+            if (!slots.isEmpty()) {
+                // Chuyển đổi slots thành SlotDTO
+                List<SlotDTO> slotDTOs = slots.stream()
+                        .map(slot -> new SlotDTO(
+                                slot.getId(),
+                                slot.getDate(),
+                                slot.getStartTime(),
+                                slot.getEndTime(),
+                                slot.getMaxBooking(),
+                                slot.getCurrentBooking(),
+                                slot.getAvailableBooking()
+                        ))
+                        .sorted(Comparator.comparing(SlotDTO::getStartTime))
+                        .collect(Collectors.toList());
+
+                // Tạo DTO cho bác sĩ
+                UserDTO doctorDTO = modelMapper.map(doctor, UserDTO.class);
+
+                DoctorWorkingScheduleDTO doctorSchedule = new DoctorWorkingScheduleDTO();
+                doctorSchedule.setDoctor(doctorDTO);
+                doctorSchedule.setWorkDate(date);
+                doctorSchedule.setSlots(slotDTOs);
+
+                result.add(doctorSchedule);
+            }
+        }
+
+        // Sắp xếp theo tên bác sĩ
+        return result.stream()
+                .sorted(Comparator.comparing(dto -> dto.getDoctor().getFullname()))
+                .collect(Collectors.toList());
+    }
+
+
+}
+

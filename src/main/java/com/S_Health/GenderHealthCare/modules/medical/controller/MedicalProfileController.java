@@ -6,7 +6,8 @@ import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalInfoResponse;
 import com.S_Health.GenderHealthCare.modules.medical.mapper.MedicalMapper;
 import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
-import com.S_Health.GenderHealthCare.service.medicalProfile.MedicalProfileService;
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
+import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,13 +32,13 @@ public class MedicalProfileController {
     }
 
     @GetMapping("/me")
-    @Operation(summary = "Get my medical profile")
+    @Operation(summary = MedicalMessages.GET_MY_PROFILE)
     public ApiResponse<MedicalProfileDTO> getMyProfile(@RequestParam Long serviceId) {
         return ApiResponse.success(medicalProfileService.getMyProfile(serviceId), null);
     }
 
     @GetMapping("/patients/{patientId}/history")
-    @Operation(summary = "Get a patient's medical history")
+    @Operation(summary = MedicalMessages.GET_PATIENT_HISTORY)
     public ApiResponse<PatientMedicalHistoryDTO> getPatientHistory(
             @PathVariable Long patientId,
             @RequestParam(defaultValue = "0") int page,
@@ -48,15 +49,15 @@ public class MedicalProfileController {
     }
 
     @PutMapping("/medical-info")
-    @Operation(summary = "Update basic medical information")
+    @Operation(summary = MedicalMessages.UPDATE_MEDICAL_INFO)
     public ApiResponse<String> updateMedicalInfo(
             @Valid @RequestBody MedicalInfoUpdateRequest request) {
         medicalProfileService.updateMedicalInfo(request);
-        return ApiResponse.success("Medical information updated", null);
+        return ApiResponse.success(MedicalMessages.MEDICAL_INFO_UPDATED, null);
     }
 
     @GetMapping("/medical-info")
-    @Operation(summary = "Get detailed medical information")
+    @Operation(summary = MedicalMessages.GET_MEDICAL_INFO)
     public ApiResponse<MedicalInfoResponse> getMedicalInfo(
             @RequestParam Long customerId,
             @RequestParam Long serviceId) {

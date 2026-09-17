@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.service.authentication;
 
+import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.request.authentication.CreateUserRequest;
 import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantCertification;

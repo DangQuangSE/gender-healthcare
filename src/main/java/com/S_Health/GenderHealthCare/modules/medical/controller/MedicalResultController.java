@@ -5,7 +5,8 @@ import com.S_Health.GenderHealthCare.dto.ResultDTO;
 import com.S_Health.GenderHealthCare.dto.request.service.ConsultationResultRequest;
 import com.S_Health.GenderHealthCare.dto.request.service.LabTestResultRequest;
 import com.S_Health.GenderHealthCare.dto.request.service.ResultRequest;
-import com.S_Health.GenderHealthCare.service.MedicalService.MedicalResultService;
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
+import com.S_Health.GenderHealthCare.modules.medical.service.MedicalResultService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,14 +30,14 @@ public class MedicalResultController {
     }
 
     @PostMapping("/consultations")
-    @Operation(summary = "Create a consultation result")
+    @Operation(summary = MedicalMessages.CREATE_CONSULTATION_RESULT)
     public ApiResponse<ResultDTO> createConsultationResult(
             @Valid @RequestBody ConsultationResultRequest request) {
         return ApiResponse.success(medicalResultService.saveConsultationResult(request), null);
     }
 
     @PostMapping("/lab-tests")
-    @Operation(summary = "Create a lab test result")
+    @Operation(summary = MedicalMessages.CREATE_LAB_RESULT)
     public ApiResponse<ResultDTO> createLabTestResult(
             @Valid @RequestBody LabTestResultRequest request) {
         return ApiResponse.success(medicalResultService.saveLabTestResult(request), null);

@@ -3,7 +3,8 @@ package com.S_Health.GenderHealthCare.modules.appointment.controller;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
 import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
-import com.S_Health.GenderHealthCare.service.MedicalService.BookingService;
+import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
+import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ public class BookingController {
     }
 
     @PostMapping
-    @Operation(summary = "Create an appointment booking")
+    @Operation(summary = AppointmentMessages.CREATE_BOOKING)
     public ApiResponse<BookingResponse> createBooking(
             @Valid @RequestBody BookingRequest request) {
         return ApiResponse.success(bookingService.bookingService(request), null);

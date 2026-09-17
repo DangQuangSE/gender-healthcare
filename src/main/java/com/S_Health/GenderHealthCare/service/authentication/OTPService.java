@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.service.authentication;
 
+import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;

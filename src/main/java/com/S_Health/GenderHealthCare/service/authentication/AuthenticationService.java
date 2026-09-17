@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.service.authentication;
 
+import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
 import com.S_Health.GenderHealthCare.dto.request.authentication.LoginEmailRequest;
 import com.S_Health.GenderHealthCare.dto.request.authentication.PasswordRequest;
 import com.S_Health.GenderHealthCare.dto.response.JwtResponse;
@@ -169,8 +170,6 @@ public class AuthenticationService implements UserDetailsService {
                     entity,
                     String.class
             );
-            //log xem lỗi
-            System.out.println("Access token from frontend: " + accessToken);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Token Facebook không hợp lệ");
             }
@@ -182,8 +181,6 @@ public class AuthenticationService implements UserDetailsService {
             String imageUrl = fbUser.getJSONObject("picture")
                     .getJSONObject("data")
                     .getString("url");
-
-            System.out.println("Facebook user: " + name + " - " + email + " - " + fbId );
 
             // Kiểm tra hoặc tạo user trong DB
             User user = authenticationRepository.findByEmail(email).orElseGet(() -> {

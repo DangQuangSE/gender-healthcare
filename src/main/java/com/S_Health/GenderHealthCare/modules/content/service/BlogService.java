@@ -1,0 +1,388 @@
+package com.S_Health.GenderHealthCare.modules.content.service;
+
+import com.S_Health.GenderHealthCare.dto.UserDTO;
+import com.S_Health.GenderHealthCare.dto.request.blog.BlogRequest;
+import com.S_Health.GenderHealthCare.dto.response.BlogResponse;
+import com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO;
+import com.S_Health.GenderHealthCare.entity.Blog;
+import com.S_Health.GenderHealthCare.entity.Tag;
+import com.S_Health.GenderHealthCare.entity.User;
+import com.S_Health.GenderHealthCare.enums.BlogStatus;
+import com.S_Health.GenderHealthCare.enums.UserRole;
+import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
+import com.S_Health.GenderHealthCare.repository.BlogRepository;
+import com.S_Health.GenderHealthCare.integrations.storage.CloudinaryService;
+import com.S_Health.GenderHealthCare.modules.catalog.service.TagService;
+import com.S_Health.GenderHealthCare.utils.AuthUtil;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.List;
+
+@Service
+@Slf4j
+public class BlogService {
+    private final BlogRepository blogRepository;
+    private final ModelMapper modelMapper;
+    private final CloudinaryService cloudinaryService;
+    private final AuthUtil authUtil;
+    private final TagService tagService;
+
+    public BlogService(
+            BlogRepository blogRepository,
+            ModelMapper modelMapper,
+            CloudinaryService cloudinaryService,
+            AuthUtil authUtil,
+            TagService tagService) {
+        this.blogRepository = blogRepository;
+        this.modelMapper = modelMapper;
+        this.cloudinaryService = cloudinaryService;
+        this.authUtil = authUtil;
+        this.tagService = tagService;
+    }
+
+    @Transactional
+    public BlogResponse viewBlog(long blogId) {
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+        blog.setViewCount(blog.getViewCount() + 1);
+        BlogResponse blogRp = modelMapper.map(blog, BlogResponse.class);
+        return blogRp;
+    }
+
+    @Transactional
+    public void likeBlog(long blogId) {
+        Blog blog = blogRepository.findById(blogId).orElseThrow();
+        blog.setLikeCount(blog.getLikeCount() + 1);
+        blogRepository.save(blog);
+    }
+
+    public List<BlogSummaryDTO> getAllBlogSummaries() {
+        return blogRepository.findAllBlogSummaries();
+    }
+
+    @Transactional
+    public BlogResponse createBlog(BlogRequest request) {
+        request.validate();
+        // Lấy user từ JWT
+        User author = authUtil.getCurrentUser();
+
+        // Tự động set status dựa trên role của user
+        BlogStatus blogStatus;
+        if (author.getRole() == UserRole.ADMIN) {
+            blogStatus = BlogStatus.PUBLISHED; // Admin tạo blog sẽ được publish luôn
+        } else {
+            blogStatus = BlogStatus.PENDING; // User thường tạo blog sẽ ở trạng thái pending
+        }
+
+        // Upload image to Cloudinary if provided
+        if (request.getImg() != null && !request.getImg().isEmpty()) {
+            try {
+                String imageUrl = cloudinaryService.uploadImage(request.getImg());
+                request.setImgUrl(imageUrl);
+            } catch (IOException e) {
+                throw new AppException(ContentMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
+            }
+        }
+
+        // 3. Tạo blog
+        Blog blog = new Blog();
+        blog.setTitle(request.getTitle().trim());
+        blog.setContent(request.getContent().trim());
+        blog.setImgUrl(request.getImgUrl());
+
+        // Sử dụng status đã được tính toán tự động dựa trên role
+        blog.setStatus(blogStatus);
+        blog.setAuthor(author);
+
+        // Process tags if provided - SỬ DỤNG METHOD MỚI
+        if (request.getTagNames() != null && !request.getTagNames().isEmpty()) {
+            // Kiểm tra tag không hợp lệ
+            List<String> invalidTags = tagService.validateTagNames(request.getTagNames());
+            if (!invalidTags.isEmpty()) {
+                throw new AppException(ContentMessages.INVALID_TAGS.formatted(String.join(", ", invalidTags)));
+            }
+
+            // Lấy các tag đã tồn tại
+            List<Tag> tags = tagService.getExistingTags(request.getTagNames());
+            blog.setTags(tags);
+        }
+
+        blogRepository.save(blog);
+        // 4. Lưu vào DB
+        BlogResponse blogResponse = modelMapper.map(blog, BlogResponse.class);
+        blogResponse.setAuthor(modelMapper.map(author, UserDTO.class));
+        return blogResponse;
+    }
+
+    public Page<BlogResponse> getAllBlogs(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Blog> blogs = blogRepository.findAllPublishedBlogs(pageable);
+        return blogs.map(blog -> {
+            BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+            if (blog.getAuthor() != null) {
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            }
+            return response;
+        });
+    }
+
+    public Page<BlogResponse> getAllBlogsForManagement(int page, int size) {
+        User currentUser = authUtil.getCurrentUser();
+
+        // Chỉ admin hoặc staff mới có thể xem tất cả blog
+        if (currentUser.getRole() != UserRole.ADMIN) {
+            throw new AppException(ContentMessages.VIEW_ALL_BLOGS_FORBIDDEN);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Blog> blogs = blogRepository.findAll(pageable);
+
+        return blogs.map(blog -> {
+            BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+            if (blog.getAuthor() != null) {
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            }
+            return response;
+        });
+    }
+
+    public Page<BlogResponse> getBlogsByTag(Long tagId, int page, int size) {
+
+        tagService.getTagById(tagId);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Blog> blogs = blogRepository.findByTagId(tagId, pageable);
+
+        return blogs.map(blog -> {
+            BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+            if (blog.getAuthor() != null) {
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            }
+            return response;
+        });
+    }
+
+    @Transactional
+    public BlogResponse updateBlog(Long blogId, BlogRequest request) {
+        request.validate();
+
+        // Tìm blog
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+        // Kiểm tra quyền sở hữu (admin có thể chỉnh sửa bất kỳ blog nào)
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.ADMIN &&
+                !(blog.getAuthor().getId() == (currentUser.getId()))) {
+            throw new AppException(ContentMessages.UPDATE_BLOG_FORBIDDEN);
+        }
+
+        // Upload hình ảnh mới nếu có
+        if (request.getImg() != null && !request.getImg().isEmpty()) {
+            try {
+                String imageUrl = cloudinaryService.uploadImage(request.getImg());
+                blog.setImgUrl(imageUrl);
+            } catch (IOException e) {
+                throw new AppException(ContentMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
+            }
+        } else if (request.getImgUrl() != null) {
+            blog.setImgUrl(request.getImgUrl());
+        }
+
+        // Cập nhật thông tin blog (không cho phép cập nhật status)
+        blog.setTitle(request.getTitle().trim());
+        blog.setContent(request.getContent().trim());
+
+        // Cập nhật tags nếu có - SỬ DỤNG METHOD MỚI
+        if (request.getTagNames() != null) {
+            // Kiểm tra tag không hợp lệ
+            List<String> invalidTags = tagService.validateTagNames(request.getTagNames());
+            if (!invalidTags.isEmpty()) {
+                throw new AppException(ContentMessages.INVALID_TAGS.formatted(String.join(", ", invalidTags)));
+            }
+            // Lấy các tag đã tồn tại
+            List<Tag> tags = tagService.getExistingTags(request.getTagNames());
+            blog.setTags(tags);
+        }
+
+        blogRepository.save(blog);
+
+        BlogResponse blogResponse = modelMapper.map(blog, BlogResponse.class);
+        blogResponse.setAuthor(modelMapper.map(currentUser, UserDTO.class));
+        return blogResponse;
+    }
+
+    @Transactional
+    public void deleteBlog(Long blogId) {
+        // Tìm blog
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+        // Kiểm tra quyền sở hữu
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.ADMIN) {
+            if (!(blog.getAuthor().getId() == (currentUser.getId()))) {
+                throw new AppException(ContentMessages.DELETE_BLOG_FORBIDDEN);
+            }
+        }
+
+        // Xóa blog
+        blogRepository.delete(blog);
+    }
+
+    public Page<BlogResponse> getMyBlogs(int page, int size) {
+        User currentUser = authUtil.getCurrentUser();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        // Thêm method mới vào BlogRepository
+        Page<Blog> blogs = blogRepository.findByAuthorOrderByCreatedAtDesc(currentUser, pageable);
+
+        return blogs.map(blog -> {
+            BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            return response;
+        });
+    }
+
+    public BlogResponse getBlogById(Long blogId) {
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+        BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+        if (blog.getAuthor() != null) {
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+        }
+        return response;
+    }
+
+    public Page<BlogResponse> getMyBlogsByStatus(BlogStatus status, int page, int size) {
+        User currentUser = authUtil.getCurrentUser();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        // Thêm method mới vào BlogRepository
+        Page<Blog> blogs = blogRepository.findByAuthorAndStatusOrderByCreatedAtDesc(currentUser, status, pageable);
+
+        return blogs.map(blog -> {
+            BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            return response;
+        });
+    }
+
+    public Page<BlogResponse> getBlogsByStatus(BlogStatus status, int page, int size) {
+        // Chỉ admin/staff mới có thể xem blog theo status
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.ADMIN) {
+            throw new AppException(ContentMessages.VIEW_STATUS_BLOGS_FORBIDDEN);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Blog> blogs = blogRepository.findByStatusOrderByCreatedAtDesc(status, pageable);
+
+        return blogs.map(blog -> {
+            BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+            if (blog.getAuthor() != null) {
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            }
+            return response;
+        });
+    }
+
+    @Transactional
+    public BlogResponse approveBlog(Long blogId) {
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.ADMIN && currentUser.getRole() != UserRole.STAFF) {
+            throw new AppException(ContentMessages.APPROVE_BLOG_FORBIDDEN);
+        }
+
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+        if (blog.getStatus() != BlogStatus.PENDING) {
+            throw new AppException(ContentMessages.APPROVE_PENDING_ONLY);
+        }
+
+        blog.setStatus(BlogStatus.PUBLISHED);
+        blogRepository.save(blog);
+        BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+        if (blog.getAuthor() != null) {
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+        }
+        return response;
+    }
+
+    @Transactional
+    public BlogResponse rejectBlog(Long blogId) {
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.ADMIN && currentUser.getRole() != UserRole.STAFF) {
+            throw new AppException(ContentMessages.REJECT_BLOG_FORBIDDEN);
+        }
+
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+        if (blog.getStatus() != BlogStatus.PENDING) {
+            throw new AppException(ContentMessages.REJECT_PENDING_ONLY);
+        }
+
+        blog.setStatus(BlogStatus.REJECTED);
+        blogRepository.save(blog);
+        BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+        if (blog.getAuthor() != null) {
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+        }
+        return response;
+    }
+
+    @Transactional
+    public BlogResponse publishBlog(Long blogId) {
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.ADMIN && currentUser.getRole() != UserRole.STAFF) {
+            throw new AppException(ContentMessages.PUBLISH_BLOG_FORBIDDEN);
+        }
+
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+
+        blog.setStatus(BlogStatus.PUBLISHED);
+        blogRepository.save(blog);
+
+        log.info("Blog {} đã được đăng bởi admin {}", blogId, currentUser.getId());
+
+        BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+        if (blog.getAuthor() != null) {
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+        }
+        return response;
+    }
+
+    // Thêm method submit blog cho author
+    @Transactional
+    public BlogResponse submitBlogForReview(Long blogId) {
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+
+        User currentUser = authUtil.getCurrentUser();
+        if (!(blog.getAuthor().getId() == (currentUser.getId()))) {
+            throw new AppException(ContentMessages.SUBMIT_BLOG_FORBIDDEN);
+        }
+        blog.setStatus(BlogStatus.PENDING);
+        blogRepository.save(blog);
+
+        log.info("Blog {} đã được gửi để duyệt bởi author {}", blogId, currentUser.getId());
+
+        BlogResponse response = modelMapper.map(blog, BlogResponse.class);
+        response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+        return response;
+    }
+}

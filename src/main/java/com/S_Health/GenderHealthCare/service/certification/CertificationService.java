@@ -7,7 +7,7 @@ import com.S_Health.GenderHealthCare.enums.UserRole;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.repository.CertificationRepository;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
-import com.S_Health.GenderHealthCare.service.cloudinary.CloudinaryService;
+import com.S_Health.GenderHealthCare.integrations.storage.CloudinaryService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -16,13 +16,8 @@ import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceRespons
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.mapper.CatalogMapper;
-import com.S_Health.GenderHealthCare.modules.user.application.UserFacade;
+import com.S_Health.GenderHealthCare.modules.user.service.UserService;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
-import com.S_Health.GenderHealthCare.service.MedicalService.ServiceManagementService;
-import com.S_Health.GenderHealthCare.service.SpecializationService;
-import com.S_Health.GenderHealthCare.service.configValue.ConfigValueService;
-import com.S_Health.GenderHealthCare.service.room.RoomService;
-import com.S_Health.GenderHealthCare.service.tag.TagService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +34,7 @@ public class CatalogService {
     private final RoomService roomService;
     private final TagService tagService;
     private final ConfigValueService configValueService;
-    private final UserFacade userFacade;
+    private final UserService userService;
     private final CatalogMapper catalogMapper;
 
     public CatalogService(
@@ -48,14 +43,14 @@ public class CatalogService {
             RoomService roomService,
             TagService tagService,
             ConfigValueService configValueService,
-            UserFacade userFacade,
+            UserService userService,
             CatalogMapper catalogMapper) {
         this.serviceManagementService = serviceManagementService;
         this.specializationService = specializationService;
         this.roomService = roomService;
         this.tagService = tagService;
         this.configValueService = configValueService;
-        this.userFacade = userFacade;
+        this.userService = userService;
         this.catalogMapper = catalogMapper;
     }
 
@@ -253,7 +248,7 @@ public class CatalogService {
     }
 
     public List<ConsultantResponse> getConsultants() {
-        return userFacade.getUsersByRole(CatalogConstants.CONSULTANT_ROLE);
+        return userService.getUsersByRole(CatalogConstants.CONSULTANT_ROLE);
     }
 
     public List<ConsultantResponse> getConsultants(Long serviceId) {
@@ -264,7 +259,7 @@ public class CatalogService {
     }
 
     public List<ConsultantResponse> getConsultantsByService(Long serviceId) {
-        return userFacade.getConsultantsByService(serviceId);
+        return userService.getConsultantsByService(serviceId);
     }
 
     private ConfigValueResponse toConfigValueResponse(ConfigValue configValue) {

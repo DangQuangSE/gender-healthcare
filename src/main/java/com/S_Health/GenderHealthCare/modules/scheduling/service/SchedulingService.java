@@ -10,8 +10,6 @@ import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
 import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
-import com.S_Health.GenderHealthCare.service.schedule.ScheduleService;
-import com.S_Health.GenderHealthCare.service.schedule.ServiceSlotPoolService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
