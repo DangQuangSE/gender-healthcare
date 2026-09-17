@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.common.exception;
 
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -59,7 +60,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleBadRequest(
             Exception exception,
             HttpServletRequest request) {
-        log.debug("Bad request at {}: {}", request.getRequestURI(), exception.getMessage());
+        log.debug(CommonMessages.LOG_BAD_REQUEST, request.getRequestURI(), exception.getMessage());
         return errorResponse(ErrorCode.BAD_REQUEST, Map.of(), request);
     }
 
@@ -74,7 +75,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleDataConflict(
             DataIntegrityViolationException exception,
             HttpServletRequest request) {
-        log.warn("Data conflict at {}", request.getRequestURI());
+        log.warn(CommonMessages.LOG_DATA_CONFLICT, request.getRequestURI());
         return errorResponse(ErrorCode.CONFLICT, Map.of(), request);
     }
 
@@ -103,7 +104,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUnexpected(
             Exception exception,
             HttpServletRequest request) {
-        log.error("Unexpected error at {}", request.getRequestURI(), exception);
+        log.error(CommonMessages.LOG_UNEXPECTED_ERROR, request.getRequestURI(), exception);
         return errorResponse(ErrorCode.INTERNAL_ERROR, Map.of(), request);
     }
 

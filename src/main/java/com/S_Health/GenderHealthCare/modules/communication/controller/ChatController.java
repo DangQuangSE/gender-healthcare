@@ -5,6 +5,7 @@ import com.S_Health.GenderHealthCare.dto.ChatSessionDTO;
 import com.S_Health.GenderHealthCare.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
 import com.S_Health.GenderHealthCare.modules.communication.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,7 +54,7 @@ public class ChatController {
     @GetMapping("/sessions")
     @Operation(summary = CommunicationMessages.GET_CHAT_SESSIONS)
     public List<ChatSessionDTO> getSessions(
-            @Parameter(description = "WAITING, ACTIVE, or ENDED")
+            @Parameter(description = CommunicationMessages.CHAT_STATUS_FILTER_DESCRIPTION)
             @RequestParam(required = false) String status) {
         return chatService.getChatSessionsForStaff(status);
     }
@@ -73,15 +75,15 @@ public class ChatController {
     @Operation(summary = CommunicationMessages.MARK_CHAT_READ)
     public void markRead(
             @PathVariable String sessionId,
-            @RequestParam String readerName) {
-        chatService.markMessagesAsRead(sessionId, readerName);
+            @Valid @ModelAttribute ChatReaderRequest request) {
+        chatService.markMessagesAsRead(sessionId, request);
     }
 
     @GetMapping("/sessions/{sessionId}/unread-count")
     @Operation(summary = CommunicationMessages.GET_UNREAD_CHAT_COUNT)
     public Integer unreadCount(
             @PathVariable String sessionId,
-            @RequestParam String readerName) {
-        return chatService.getUnreadCount(sessionId, readerName);
+            @Valid @ModelAttribute ChatReaderRequest request) {
+        return chatService.getUnreadCount(sessionId, request);
     }
 }

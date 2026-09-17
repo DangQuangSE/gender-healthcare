@@ -2,12 +2,13 @@ package com.S_Health.GenderHealthCare.modules.user.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.user.service.UserService;
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CertificationRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,34 +22,30 @@ public class CertificationController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Create consultant certification")
+    @Operation(summary = UserMessages.CREATE_CERTIFICATION)
     public ApiResponse<CertificationResponse> createCertification(
-            @NotBlank @RequestParam("name") String name,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam("image") MultipartFile image) {
-        return ApiResponse.success(userService.createCertification(name, image), null);
+            @Valid @ModelAttribute CertificationRequest request) {
+        return ApiResponse.success(userService.createCertification(request), null);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Update consultant certification")
+    @Operation(summary = UserMessages.UPDATE_CERTIFICATION)
     public ApiResponse<CertificationResponse> updateCertification(
             @PathVariable Long id,
-            @NotBlank @RequestParam("name") String name,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
-        return ApiResponse.success(userService.updateCertification(id, name, image), null);
+            @Valid @ModelAttribute CertificationRequest request) {
+        return ApiResponse.success(userService.updateCertification(id, request), null);
     }
 
     @GetMapping("/me")
-    @Operation(summary = "Get current consultant certifications")
+    @Operation(summary = UserMessages.GET_CERTIFICATIONS)
     public ApiResponse<List<CertificationResponse>> getMyCertifications() {
         return ApiResponse.success(userService.getMyCertifications(), null);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete consultant certification")
+    @Operation(summary = UserMessages.DELETE_CERTIFICATION)
     public ApiResponse<String> deleteCertification(@PathVariable Long id) {
         userService.deleteCertification(id);
-        return ApiResponse.success("Certification deleted successfully", null);
+        return ApiResponse.success(UserMessages.CERTIFICATION_DELETE_SUCCESS, null);
     }
 }

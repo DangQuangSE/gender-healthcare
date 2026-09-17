@@ -1,11 +1,9 @@
 package com.S_Health.GenderHealthCare.integrations.mail;
 
+import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
-
-
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,79 +13,68 @@ import org.thymeleaf.context.Context;
 import java.time.LocalDate;
 
 @Service
+@Slf4j
 public class EmailService {
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private TemplateEngine templateEngine;
-
+    public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
+        this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
+    }
 
     public void sendOtp(String toEmail, String otp) {
-        try{
+        try {
             Context context = new Context();
-
             context.setVariable("name", toEmail);
             context.setVariable("otp", otp);
-            context.setVariable("messageLine1", "Bạn vừa yêu cầu xác minh tài khoản. Đây là mã OTP của bạn:");
+            context.setVariable("messageLine1", IntegrationMessages.OTP_EMAIL_MESSAGE);
 
             String html = templateEngine.process("emailotp", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(toEmail);
-            helper.setSubject("Mã xác minh đăng ký");
-            helper.setText(html, true); // true = nội dung HTML
-
+            helper.setSubject(IntegrationMessages.OTP_EMAIL_SUBJECT);
+            helper.setText(html, true);
             mailSender.send(message);
         } catch (Exception e) {
-            System.out.println("Lỗi gửi email: " + e.getMessage());
+            log.error(IntegrationMessages.EMAIL_SEND_FAILED.formatted(e.getMessage()), e);
         }
     }
 
     public void sendForgotPasswordOtp(String toEmail, String otp) {
-        try{
+        try {
             Context context = new Context();
-
             context.setVariable("name", toEmail);
             context.setVariable("otp", otp);
-            context.setVariable("messageLine1", "Bạn đã yêu cầu khôi phục mật khẩu. Đây là mã OTP của bạn:");
+            context.setVariable("messageLine1", IntegrationMessages.PASSWORD_RESET_EMAIL_MESSAGE);
 
             String html = templateEngine.process("emailotp", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(toEmail);
-            helper.setSubject("Mã xác minh khôi phục mật khẩu");
-            helper.setText(html, true); // true = nội dung HTML
-
+            helper.setSubject(IntegrationMessages.PASSWORD_RESET_EMAIL_SUBJECT);
+            helper.setText(html, true);
             mailSender.send(message);
         } catch (Exception e) {
-            System.out.println("Lỗi gửi email quên mật khẩu : " + e.getMessage());
+            log.error(IntegrationMessages.EMAIL_PASSWORD_RESET_FAILED.formatted(e.getMessage()), e);
         }
     }
 
     public void sendWelcome(String toEmail) {
-        try{
-
+        try {
             Context context = new Context();
             context.setVariable("name", toEmail);
 
             String html = templateEngine.process("emailwelcome", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(toEmail);
-            helper.setSubject("Chào mừng bạn đến với S-HealthCare");
+            helper.setSubject(IntegrationMessages.WELCOME_EMAIL_SUBJECT);
             helper.setText(html, true);
-
             mailSender.send(message);
-        }catch (Exception e){
-            System.out.println("Lỗi gửi email chào mừng: " + e.getMessage());
+        } catch (Exception e) {
+            log.error(IntegrationMessages.EMAIL_WELCOME_FAILED.formatted(e.getMessage()), e);
         }
     }
 
@@ -99,23 +86,19 @@ public class EmailService {
             context.setVariable("role", role.name());
 
             String html = templateEngine.process("welcome-credentials", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(email);
-            helper.setSubject("Thông tin tài khoản " + role.name() + " - S-HealthCare");
+            helper.setSubject(IntegrationMessages.ACCOUNT_CREDENTIALS_EMAIL_SUBJECT.formatted(role.name()));
             helper.setText(html, true);
             mailSender.send(message);
         } catch (Exception e) {
-            System.out.println("Lỗi gửi email: " + e.getMessage());
+            log.error(IntegrationMessages.EMAIL_SEND_FAILED.formatted(e.getMessage()), e);
         }
-
     }
 
-    public void sendUrlCurtomerZoom (String toEmail, String startTime, String joinUrl, String serviceName) {
-        try{
-
+    public void sendUrlCurtomerZoom(String toEmail, String startTime, String joinUrl, String serviceName) {
+        try {
             Context context = new Context();
             context.setVariable("name", toEmail);
             context.setVariable("startTime", startTime);
@@ -123,23 +106,19 @@ public class EmailService {
             context.setVariable("serviceName", serviceName);
 
             String html = templateEngine.process("emailZoom", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(toEmail);
-            helper.setSubject("[SHeathCare] Thông tin buổi tư vấn của bạn");
+            helper.setSubject(IntegrationMessages.ZOOM_EMAIL_SUBJECT);
             helper.setText(html, true);
-
             mailSender.send(message);
-        }catch (Exception e){
-            System.out.println("Lỗi gửi email Zoom cho khách hàng: " + e.getMessage());
+        } catch (Exception e) {
+            log.error(IntegrationMessages.EMAIL_ZOOM_CUSTOMER_FAILED.formatted(e.getMessage()), e);
         }
     }
 
-    public void sendUrlConsultantZoom (String toEmail, String startTime, String startUrl, String serviceName) {
-        try{
-
+    public void sendUrlConsultantZoom(String toEmail, String startTime, String startUrl, String serviceName) {
+        try {
             Context context = new Context();
             context.setVariable("name", toEmail);
             context.setVariable("startTime", startTime);
@@ -147,47 +126,33 @@ public class EmailService {
             context.setVariable("serviceName", serviceName);
 
             String html = templateEngine.process("ConsultantZoom", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(toEmail);
-            helper.setSubject("[SHeathCare] Thông tin buổi tư vấn của bạn");
+            helper.setSubject(IntegrationMessages.ZOOM_EMAIL_SUBJECT);
             helper.setText(html, true);
-
             mailSender.send(message);
-        }catch (Exception e){
-            System.out.println("Lỗi gửi email Zoom cho bác sĩ: " + e.getMessage());
+        } catch (Exception e) {
+            log.error(IntegrationMessages.EMAIL_ZOOM_CONSULTANT_FAILED.formatted(e.getMessage()), e);
         }
     }
 
-    /**
-     * Gửi email nhắc nhở lịch hẹn sắp tới
-     */
     public void sendAppointmentReminder(String toEmail, LocalDate date) {
         try {
             Context context = new Context();
             context.setVariable("customerName", toEmail);
             context.setVariable("appointmentDate", date);
-//            context.setVariable("appointmentDate", appointmentDate);
-//            context.setVariable("consultantName", consultantName);
-//            context.setVariable("appointmentTime", appointmentTime);
-//            context.setVariable("note", note);
-//            context.setVariable("daysLeft", daysLeft);
 
             String html = templateEngine.process("appointment-reminder", context);
-
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
             helper.setTo(toEmail);
-            helper.setSubject("🔔 Nhắc nhở: Lịch hẹn sắp tới của bạn - SHealthCare");
+            helper.setSubject(IntegrationMessages.APPOINTMENT_REMINDER_EMAIL_SUBJECT);
             helper.setText(html, true);
-
             mailSender.send(message);
-            System.out.println("Đã gửi email nhắc nhở lịch hẹn tới: " + toEmail);
+            log.info(IntegrationMessages.EMAIL_REMINDER_SENT.formatted(toEmail));
         } catch (Exception e) {
-            System.out.println("Lỗi gửi email nhắc nhở lịch hẹn: " + e.getMessage());
+            log.error(IntegrationMessages.EMAIL_REMINDER_FAILED.formatted(e.getMessage()), e);
         }
     }
 }

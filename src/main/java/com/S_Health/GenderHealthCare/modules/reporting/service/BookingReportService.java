@@ -4,11 +4,11 @@ package com.S_Health.GenderHealthCare.modules.reporting.service;
 
 import com.S_Health.GenderHealthCare.dto.response.report.BookingReportResponse;
 import com.S_Health.GenderHealthCare.dto.response.report.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,16 +20,14 @@ public class BookingReportService {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public List<ServiceBookingReportDTO> getServiceBookingStats(
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            Long serviceId) {
-        return appointmentRepository.getServiceBookingReport(startDate, endDate, serviceId);
+    public List<ServiceBookingReportDTO> getServiceBookingStats(BookingReportQuery request) {
+        return appointmentRepository.getServiceBookingReport(
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getServiceId());
     }
 
-    public BookingReportResponse getServiceBookingSummary(
-            LocalDateTime startDate,
-            LocalDateTime endDate) {
-        return appointmentRepository.getBookingSummary(startDate, endDate);
+    public BookingReportResponse getServiceBookingSummary(BookingReportQuery request) {
+        return appointmentRepository.getBookingSummary(request.getStartDate(), request.getEndDate());
     }
 }

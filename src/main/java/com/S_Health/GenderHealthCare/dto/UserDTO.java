@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.dto;
 
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -17,9 +18,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
-    @NotBlank(message = "Tên không được để trống")
-    @Size(max = 50, message = "Tên không được vượt quá 50 ký tự")
-    @Pattern(regexp = "^[\\p{L} .'-]+$", message = "Tên chỉ được chứa chữ cái và khoảng trắng")
+    @NotBlank(message = UserMessages.FULLNAME_REQUIRED)
+    @Size(max = 50, message = UserMessages.FULLNAME_TOO_LONG)
+    @Pattern(regexp = "^[\\p{L} .'-]+$", message = UserMessages.FULLNAME_INVALID)
     String fullname;
     long id;
     String phone;

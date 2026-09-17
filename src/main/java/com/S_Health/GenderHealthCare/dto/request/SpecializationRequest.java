@@ -1,12 +1,13 @@
 package com.S_Health.GenderHealthCare.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class SpecializationRequest {
-    @NotBlank(message = "Tên chuyên môn không được để trống")
+    @NotBlank(message = CatalogConstants.SPECIALIZATION_NAME_REQUIRED)
     private String name;
 
     private String description;

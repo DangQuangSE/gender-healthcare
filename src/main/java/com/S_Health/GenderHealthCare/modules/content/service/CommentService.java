@@ -5,8 +5,8 @@ import com.S_Health.GenderHealthCare.modules.content.domain.Comment;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 
-import com.S_Health.GenderHealthCare.dto.request.blog.CommentRequest;
-import com.S_Health.GenderHealthCare.dto.response.CommentResponse;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.CommentRequest;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.CommentResponse;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;

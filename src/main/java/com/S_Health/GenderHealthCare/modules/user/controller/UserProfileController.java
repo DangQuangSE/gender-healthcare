@@ -3,6 +3,7 @@ package com.S_Health.GenderHealthCare.modules.user.controller;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.service.UserService;
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -20,19 +21,19 @@ public class UserProfileController {
     }
 
     @GetMapping
-    @Operation(summary = "Get current user profile")
+    @Operation(summary = UserMessages.GET_PROFILE)
     public ApiResponse<UserResponse> getProfile() {
         return ApiResponse.success(userService.getProfile(), null);
     }
 
     @PutMapping("/profile")
-    @Operation(summary = "Update current user profile")
+    @Operation(summary = UserMessages.UPDATE_PROFILE)
     public ApiResponse<UserResponse> updateProfile(@Valid @RequestBody UserDTO request) {
         return ApiResponse.success(userService.updateProfile(request), null);
     }
 
     @PutMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Update current user avatar")
+    @Operation(summary = UserMessages.UPDATE_AVATAR)
     public ApiResponse<UserResponse> updateAvatar(@RequestParam("file") MultipartFile file) {
         return ApiResponse.success(userService.updateAvatar(file), null);
     }

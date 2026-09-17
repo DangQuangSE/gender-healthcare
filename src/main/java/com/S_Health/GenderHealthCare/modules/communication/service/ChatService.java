@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.communication.service;
 
 import com.S_Health.GenderHealthCare.modules.communication.enums.ChatStatus;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.communication.domain.ChatMessage;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
@@ -204,7 +205,15 @@ public class ChatService {
     /**
      * Đánh dấu tin nhắn đã đọc khi staff/customer xem
      */
+    @Deprecated(since = "1.0", forRemoval = false)
     public void markMessagesAsRead(String sessionId, String readerName) {
+        ChatReaderRequest request = new ChatReaderRequest();
+        request.setReaderName(readerName);
+        markMessagesAsRead(sessionId, request);
+    }
+
+    public void markMessagesAsRead(String sessionId, ChatReaderRequest request) {
+        String readerName = request.getReaderName();
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
                 .orElseThrow(() -> new AppException(CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
@@ -228,7 +237,15 @@ public class ChatService {
     /**
      * Lấy số lượng tin nhắn chưa đọc cho một session
      */
+    @Deprecated(since = "1.0", forRemoval = false)
     public Integer getUnreadCount(String sessionId, String readerName) {
+        ChatReaderRequest request = new ChatReaderRequest();
+        request.setReaderName(readerName);
+        return getUnreadCount(sessionId, request);
+    }
+
+    public Integer getUnreadCount(String sessionId, ChatReaderRequest request) {
+        String readerName = request.getReaderName();
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
                 .orElseThrow(() -> new AppException(CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 

@@ -4,6 +4,7 @@ import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.service.CatalogService;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ServiceCreateRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ServiceQuery;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ServiceUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboServiceResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceResponse;
@@ -25,9 +26,8 @@ public class ServiceCatalogController {
     @GetMapping
     @Operation(summary = CatalogConstants.GET_SERVICES)
     public ApiResponse<List<ServiceResponse>> getServices(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Long specializationId) {
-        return ApiResponse.success(catalogService.getServices(name, specializationId), null);
+            @ModelAttribute ServiceQuery request) {
+        return ApiResponse.success(catalogService.getServices(request), null);
     }
 
     @GetMapping("/{id}")

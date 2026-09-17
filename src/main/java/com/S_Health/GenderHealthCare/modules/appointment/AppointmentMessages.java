@@ -46,6 +46,7 @@ public final class AppointmentMessages {
     public static final String DETAIL_STATUS_UPDATED = "Appointment detail status updated";
     public static final String RATE_APPOINTMENT = "Mark an appointment as rated";
     public static final String CREATE_BOOKING = "Create an appointment booking";
+    public static final String APPOINTMENT_DATE_REQUIRED = "Appointment date is required";
 
     private AppointmentMessages() {
     }

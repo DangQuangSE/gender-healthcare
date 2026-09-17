@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.dto.request.service;
 
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
 import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
 
@@ -18,30 +19,30 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Request để nhập kết quả khám bệnh/xét nghiệm")
 public class ResultRequest {
-    @NotNull(message = "ID chi tiết cuộc hẹn không được để trống")
-    @Positive(message = "ID chi tiết cuộc hẹn phải là số dương")
+    @NotNull(message = MedicalMessages.APPOINTMENT_DETAIL_ID_REQUIRED)
+    @Positive(message = MedicalMessages.APPOINTMENT_DETAIL_ID_POSITIVE)
     @Schema(description = "ID của appointment detail mà bác sĩ đang nhập kết quả", example = "123")
     Long appointmentDetailId;
 
-    @NotNull(message = "Loại kết quả không được để trống")
+    @NotNull(message = MedicalMessages.RESULT_TYPE_REQUIRED)
     @Schema(description = "Loại kết quả: CONSULTATION (tư vấn) hoặc LAB_TEST (xét nghiệm)", example = "LAB_TEST")
     ResultType resultType;
 
     // === THÔNG TIN CHUNG ===
-    @NotBlank(message = "Mô tả kết quả không được để trống")
-    @Size(min = 10, message = "Mô tả kết quả phải có ít nhất 10 ký tự")
+    @NotBlank(message = MedicalMessages.DESCRIPTION_REQUIRED)
+    @Size(min = 10, message = MedicalMessages.DESCRIPTION_TOO_SHORT)
     @Schema(description = "Mô tả chi tiết về triệu chứng, vấn đề hoặc quá trình xét nghiệm",
             example = "Bệnh nhân có triệu chứng ngứa, đau rát vùng kín")
     String description;
 
-    @NotBlank(message = "Chẩn đoán kết quả không được để trống")
-    @Size(min = 10, message = "Chẩn đoán kết quả phải có ít nhất 10 ký tự")
+    @NotBlank(message = MedicalMessages.DIAGNOSIS_REQUIRED)
+    @Size(min = 10, message = MedicalMessages.DIAGNOSIS_TOO_SHORT)
     @Schema(description = "Chẩn đoán của bác sĩ dựa trên kết quả khám/xét nghiệm",
             example = "Không phát hiện HIV")
     String diagnosis;
 
-    @NotBlank(message = "Kế hoạch điều trị không được để trống")
-    @Size(min = 10, message = "Kế hoạch điều trị phải có ít nhất 10 ký tự")
+    @NotBlank(message = MedicalMessages.TREATMENT_PLAN_REQUIRED)
+    @Size(min = 10, message = MedicalMessages.TREATMENT_PLAN_TOO_SHORT)
     @Schema(description = "Kế hoạch điều trị, tư vấn hoặc theo dõi tiếp theo",
             example = "Tiếp tục theo dõi, xét nghiệm định kỳ 6 tháng/lần")
     String treatmentPlan;

@@ -3,6 +3,8 @@ package com.S_Health.GenderHealthCare.modules.user.service;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
@@ -35,14 +37,14 @@ public class UserProfileService {
     public UserDTO updateUserProfile(UserDTO request) {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException("Người dùng không tồn tại"));
+                .orElseThrow(() -> new AppException(UserMessages.PROFILE_NOT_FOUND));
 
         if (request.getImg() != null) {
             try {
                 String imageUrl = cloudinaryService.uploadImage(request.getImg());
                 request.setImageUrl(imageUrl);
             } catch (IOException e) {
-                throw new AppException("Không thể tải lên hình ảnh: " + e.getMessage());
+                throw new AppException(CommonMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
             }
         }
 
@@ -59,14 +61,14 @@ public class UserProfileService {
     public UserDTO getUserProfile() {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException("Người dùng không tồn tại"));
+                .orElseThrow(() -> new AppException(UserMessages.PROFILE_NOT_FOUND));
         return modelMapper.map(user, UserDTO.class);
     }
 
     public UserDTO updateAvatar(MultipartFile file) {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException("Người dùng không tồn tại"));
+                .orElseThrow(() -> new AppException(UserMessages.PROFILE_NOT_FOUND));
 
         try {
             String imageUrl = cloudinaryService.uploadImage(file);
@@ -74,7 +76,7 @@ public class UserProfileService {
             User updated = userRepository.save(user);
             return modelMapper.map(updated, UserDTO.class);
         } catch (IOException e) {
-            throw new AppException("Không thể tải lên hình ảnh: " + e.getMessage());
+            throw new AppException(CommonMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
         }
     }
 }

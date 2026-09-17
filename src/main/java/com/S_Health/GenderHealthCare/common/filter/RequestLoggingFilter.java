@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.common.filter;
 
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         } finally {
             long durationInMillis = (System.nanoTime() - startTime) / 1_000_000;
             log.info(
+                    CommonMessages.LOG_REQUEST,
                     "request method={} path={} status={} durationMs={} requestId={}",
                     request.getMethod(),
                     request.getRequestURI(),

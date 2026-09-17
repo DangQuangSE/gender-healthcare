@@ -4,7 +4,7 @@ import com.S_Health.GenderHealthCare.modules.content.domain.Blog;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
 
-import com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, Long> {
-    @Query("SELECT new com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO(b.id, b.title, b.viewCount, b.likeCount, COUNT(c.id)) " +
+    @Query("SELECT new com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO(b.id, b.title, b.viewCount, b.likeCount, COUNT(c.id)) " +
             "FROM Blog b LEFT JOIN Comment c ON b.id = c.blog.id " +
             "WHERE b.status = 'PUBLISHED' " +
             "GROUP BY b.id " +

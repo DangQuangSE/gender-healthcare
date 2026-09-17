@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.dto.request.service;
 
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,35 +18,35 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Request để nhập kết quả xét nghiệm")
 public class LabTestResultRequest {
-    @NotNull(message = "ID chi tiết cuộc hẹn không được để trống")
-    @Positive(message = "ID chi tiết cuộc hẹn phải là số dương")
+    @NotNull(message = MedicalMessages.APPOINTMENT_DETAIL_ID_REQUIRED)
+    @Positive(message = MedicalMessages.APPOINTMENT_DETAIL_ID_POSITIVE)
     @Schema(description = "ID của appointment detail liên quan đến xét nghiệm", example = "123")
     private Long appointmentDetailId;
 
-    @NotBlank(message = "Mô tả kết quả không được để trống")
-    @Size(min = 10, message = "Mô tả kết quả phải có ít nhất 10 ký tự")
+    @NotBlank(message = MedicalMessages.DESCRIPTION_REQUIRED)
+    @Size(min = 10, message = MedicalMessages.DESCRIPTION_TOO_SHORT)
     @Schema(description = "Mô tả về mục đích hoặc tình trạng xét nghiệm", 
             example = "Kiểm tra định kỳ HIV theo yêu cầu của bệnh nhân")
     private String description;
 
-    @NotBlank(message = "Chẩn đoán không được để trống")
-    @Size(min = 10, message = "Chẩn đoán phải có ít nhất 10 ký tự")
+    @NotBlank(message = MedicalMessages.DIAGNOSIS_REQUIRED)
+    @Size(min = 10, message = MedicalMessages.DIAGNOSIS_TOO_SHORT)
     @Schema(description = "Kết luận từ kết quả xét nghiệm", 
             example = "Âm tính với HIV, không phát hiện kháng thể")
     private String diagnosis;
 
-    @NotBlank(message = "Kế hoạch điều trị không được để trống")
-    @Size(min = 10, message = "Kế hoạch điều trị phải có ít nhất 10 ký tự")
+    @NotBlank(message = MedicalMessages.TREATMENT_PLAN_REQUIRED)
+    @Size(min = 10, message = MedicalMessages.TREATMENT_PLAN_TOO_SHORT)
     @Schema(description = "Hướng dẫn điều trị / theo dõi", 
             example = "Không cần điều trị, kiểm tra lại sau 6 tháng")
     private String treatmentPlan;
 
     // === Các trường riêng cho LAB TEST ===
-    @NotBlank(message = "Tên xét nghiệm không được để trống")
+    @NotBlank(message = MedicalMessages.TEST_NAME_REQUIRED)
     @Schema(description = "Tên xét nghiệm", example = "HIV Ag/Ab Combo Test")
     private String testName;
 
-    @NotBlank(message = "Kết quả xét nghiệm không được để trống")
+    @NotBlank(message = MedicalMessages.TEST_RESULT_REQUIRED)
     @Schema(description = "Kết quả xét nghiệm", example = "Non-reactive")
     private String testResult;
 
@@ -58,7 +59,7 @@ public class LabTestResultRequest {
     @Schema(description = "Loại mẫu xét nghiệm", example = "Blood")
     private String specimenType;
 
-    @NotNull(message = "Trạng thái xét nghiệm không được để trống")
+    @NotNull(message = MedicalMessages.TEST_STATUS_REQUIRED)
     @Schema(description = "Trạng thái kết quả xét nghiệm", example = "NORMAL")
     private TestStatus testStatus;
 

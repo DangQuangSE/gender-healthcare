@@ -44,6 +44,15 @@ public final class CommunicationMessages {
     public static final String MARK_ALL_NOTIFICATIONS_READ = "Mark all notifications as read";
     public static final String GET_UNREAD_NOTIFICATION_COUNT = "Get unread notification count";
     public static final String DELETE_NOTIFICATION = "Delete a notification";
+    public static final String READER_NAME_REQUIRED = "Reader name is required";
+    public static final String CUSTOMER_NAME_REQUIRED = "Customer name is required";
+    public static final String SESSION_ID_REQUIRED = "Session id is required";
+    public static final String MESSAGE_REQUIRED = "Message is required";
+    public static final String SENDER_NAME_REQUIRED = "Sender name is required";
+    public static final String CHAT_TAG = "Chat API";
+    public static final String CHAT_TAG_DESCRIPTION = "APIs for customer support chat";
+    public static final String CHAT_STATUS_FILTER_DESCRIPTION =
+            "WAITING, ACTIVE, or ENDED";
 
     private CommunicationMessages() {
     }

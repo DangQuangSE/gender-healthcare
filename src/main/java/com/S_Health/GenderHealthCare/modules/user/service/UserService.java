@@ -5,6 +5,7 @@ package com.S_Health.GenderHealthCare.modules.user.service;
 import com.S_Health.GenderHealthCare.common.validation.ImageUploadValidator;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CertificationRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
@@ -57,14 +58,14 @@ public class UserService {
         return userMapper.toResponse(userProfileService.updateAvatar(file));
     }
 
-    public CertificationResponse createCertification(String name, MultipartFile image) {
-        imageUploadValidator.validateRequired(image);
-        return userMapper.toCertificationResponse(certificationService.createCertification(name, image));
+    public CertificationResponse createCertification(CertificationRequest request) {
+        imageUploadValidator.validateRequired(request.getImage());
+        return userMapper.toCertificationResponse(certificationService.createCertification(request));
     }
 
-    public CertificationResponse updateCertification(Long id, String name, MultipartFile image) {
-        imageUploadValidator.validateOptional(image);
-        return userMapper.toCertificationResponse(certificationService.updateCertification(id, name, image));
+    public CertificationResponse updateCertification(Long id, CertificationRequest request) {
+        imageUploadValidator.validateOptional(request.getImage());
+        return userMapper.toCertificationResponse(certificationService.updateCertification(id, request));
     }
 
     public List<CertificationResponse> getMyCertifications() {

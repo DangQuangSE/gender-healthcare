@@ -2,11 +2,12 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ConfigCreateRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ConfigUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.service.CatalogService;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ConfigValueResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,17 +32,18 @@ public class ConfigController {
     @PostMapping
     @Operation(summary = CatalogConstants.CREATE_CONFIG)
     public ApiResponse<ConfigValueResponse> createConfig(
-            @NotBlank @RequestParam String name,
-            @NotNull @RequestParam Integer value) {
-        return ApiResponse.success(catalogService.createConfig(name, value), null);
+            @Valid @ModelAttribute ConfigCreateRequest request) {
+        return ApiResponse.success(
+                catalogService.createConfig(request.getName(), request.getValue()),
+                null);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = CatalogConstants.UPDATE_CONFIG)
     public ApiResponse<ConfigValueResponse> updateConfig(
             @PathVariable Long id,
-            @NotNull @RequestParam Integer value) {
-        return ApiResponse.success(catalogService.updateConfig(id, value), null);
+            @Valid @ModelAttribute ConfigUpdateRequest request) {
+        return ApiResponse.success(catalogService.updateConfig(id, request.getValue()), null);
     }
 
     @DeleteMapping("/{id}")

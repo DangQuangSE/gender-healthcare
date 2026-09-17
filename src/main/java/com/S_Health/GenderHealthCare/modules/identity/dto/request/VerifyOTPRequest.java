@@ -1,5 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.identity.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -10,9 +12,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class VerifyOTPRequest {
-     @Email(message = "Email khong hop le")
-     @NotBlank(message = "Email khong duoc de trong")
+     @Email(message = IdentityMessages.EMAIL_INVALID)
+     @NotBlank(message = IdentityMessages.EMAIL_REQUIRED)
      String email;
-     @NotBlank(message = "OTP is required")
+     @NotBlank(message = IdentityMessages.OTP_REQUIRED)
      String otp;
 }

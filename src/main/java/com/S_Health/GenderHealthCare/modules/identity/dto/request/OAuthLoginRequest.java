@@ -1,5 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.identity.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class OAuthLoginRequest {
-     @NotBlank(message = "Access token is required")
+     @NotBlank(message = IdentityMessages.ACCESS_TOKEN_REQUIRED)
      String accessToken;
 }

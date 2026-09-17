@@ -10,6 +10,8 @@ public final class ReportMessages {
     public static final String GET_REVENUE_MONTH = "Get current month's revenue";
     public static final String GET_REVENUE_YEAR = "Get current year's revenue";
     public static final String GET_REVENUE_BY_RANGE = "Get revenue by date range";
+    public static final String START_DATE_REQUIRED = "Start date is required";
+    public static final String END_DATE_REQUIRED = "End date is required";
 
     private ReportMessages() {
     }

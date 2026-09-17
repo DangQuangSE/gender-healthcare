@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.user.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +11,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateConsultantSpecializationRequest {
-    @NotEmpty(message = "Danh sách ID chuyên môn không được để trống")
+    @NotEmpty(message = UserMessages.SPECIALIZATIONS_REQUIRED)
     private Set<Long> specializationIds;
 }

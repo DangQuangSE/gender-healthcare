@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.integrations.storage;
 
-
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
+import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -25,7 +26,7 @@ public class CloudinaryService {
     public String uploadImage(MultipartFile file, String folder) throws IOException {
         try {
             if (file.isEmpty()) {
-                throw new IllegalArgumentException("File cannot be empty");
+                throw new IllegalArgumentException(CommonMessages.FILE_EMPTY);
             }
 
             Map<?, ?> uploadResult = cloudinary.uploader().upload(
@@ -35,10 +36,10 @@ public class CloudinaryService {
                             "resource_type", "auto"
                     )
             );
-            log.info("File uploaded successfully to Cloudinary in folder: {}", folder);
+            log.info(IntegrationMessages.STORAGE_UPLOAD_SUCCESS, folder);
             return uploadResult.get("secure_url").toString();
         } catch (IOException e) {
-            log.error("Error uploading file to Cloudinary: {}", e.getMessage());
+            log.error(IntegrationMessages.STORAGE_UPLOAD_ERROR, e.getMessage(), e);
             throw e;
         }
     }
@@ -49,10 +50,10 @@ public class CloudinaryService {
     public Map<?, ?> deleteImage(String publicId) throws IOException {
         try {
             Map<?, ?> result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            log.info("File deleted successfully from Cloudinary");
+            log.info(IntegrationMessages.STORAGE_DELETE_SUCCESS);
             return result;
         } catch (IOException e) {
-            log.error("Error deleting file from Cloudinary: {}", e.getMessage());
+            log.error(IntegrationMessages.STORAGE_DELETE_ERROR, e.getMessage(), e);
             throw e;
         }
     }

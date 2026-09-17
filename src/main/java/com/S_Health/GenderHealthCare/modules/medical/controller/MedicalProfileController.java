@@ -4,6 +4,9 @@ import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.PatientMedicalHistoryDTO;
 import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalInfoResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoQuery;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MyMedicalProfileQuery;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.PatientHistoryQuery;
 import com.S_Health.GenderHealthCare.modules.medical.mapper.MedicalMapper;
 import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
@@ -15,7 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,18 +36,18 @@ public class MedicalProfileController {
 
     @GetMapping("/me")
     @Operation(summary = MedicalMessages.GET_MY_PROFILE)
-    public ApiResponse<MedicalProfileDTO> getMyProfile(@RequestParam Long serviceId) {
-        return ApiResponse.success(medicalProfileService.getMyProfile(serviceId), null);
+    public ApiResponse<MedicalProfileDTO> getMyProfile(
+            @Valid @ModelAttribute MyMedicalProfileQuery request) {
+        return ApiResponse.success(medicalProfileService.getMyProfile(request), null);
     }
 
     @GetMapping("/patients/{patientId}/history")
     @Operation(summary = MedicalMessages.GET_PATIENT_HISTORY)
     public ApiResponse<PatientMedicalHistoryDTO> getPatientHistory(
             @PathVariable Long patientId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @Valid @ModelAttribute PatientHistoryQuery request) {
         return ApiResponse.success(
-                medicalProfileService.getPatientHistory(patientId, page, size),
+                medicalProfileService.getPatientHistory(patientId, request),
                 null);
     }
 
@@ -59,11 +62,10 @@ public class MedicalProfileController {
     @GetMapping("/medical-info")
     @Operation(summary = MedicalMessages.GET_MEDICAL_INFO)
     public ApiResponse<MedicalInfoResponse> getMedicalInfo(
-            @RequestParam Long customerId,
-            @RequestParam Long serviceId) {
+            @Valid @ModelAttribute MedicalInfoQuery request) {
         return ApiResponse.success(
-                medicalMapper.toMedicalInfoResponse(
-                        medicalProfileService.getMedicalInfoForDoctor(customerId, serviceId)),
+                        medicalMapper.toMedicalInfoResponse(
+                        medicalProfileService.getMedicalInfoForDoctor(request)),
                 null);
     }
 }

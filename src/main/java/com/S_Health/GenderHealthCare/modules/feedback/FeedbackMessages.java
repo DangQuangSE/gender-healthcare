@@ -26,6 +26,13 @@ public final class FeedbackMessages {
     public static final String GET_AVERAGE_RATING = "Get the average service rating";
     public static final String GET_ALL_FEEDBACK = "Get all service feedback";
     public static final String GET_FEEDBACK_BY_SERVICE_FEEDBACK = "Get consultant feedback for a service feedback";
+    public static final String RATING_INVALID = "Rating must be between 1 and 5";
+    public static final String COMMENT_TOO_LONG = "Comment must not exceed 1000 characters";
+    public static final String CONSULTANT_COMMENT_TOO_LONG = "Consultant comment must not exceed 1000 characters";
+    public static final String APPOINTMENT_ID_REQUIRED = "Appointment id is required";
+    public static final String APPOINTMENT_ID_POSITIVE = "Appointment id must be positive";
+    public static final String CONSULTANT_FEEDBACK_TAG = "Consultant Feedback API";
+    public static final String CONSULTANT_FEEDBACK_TAG_DESCRIPTION = "API for managing consultant feedback";
 
     private FeedbackMessages() {
     }

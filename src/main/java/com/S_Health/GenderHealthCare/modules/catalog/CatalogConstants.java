@@ -33,6 +33,11 @@ public final class CatalogConstants {
     public static final String UPDATE_CONFIG = "Update configuration";
     public static final String DELETE_CONFIG = "Delete configuration";
     public static final String GET_CONSULTANTS = "Get consultants with optional service filter";
+    public static final String GET_ALL_CONSULTANTS = "Get all consultants";
+    public static final String SEARCH_SERVICES_BY_NAME = "Search services by name";
+    public static final String GET_SERVICES_BY_SPECIALIZATION = "Get services by specialization";
+    public static final String CONSULTANT_TAG = "Consultant API";
+    public static final String CONSULTANT_TAG_DESCRIPTION = "API for retrieving consultant information for booking";
 
     public static final String SERVICE_NOT_FOUND = "Không tìm thấy dịch vụ với ID: %d";
     public static final String SERVICE_INACTIVE = "Dịch vụ không hoạt động";
@@ -72,6 +77,17 @@ public final class CatalogConstants {
     public static final String CONSULTANT_REMOVED_FROM_ROOM = "Consultant removed from room";
     public static final String TAG_DELETED = "Tag deleted successfully";
     public static final String CONFIGURATION_DELETED = "Configuration deleted successfully";
+    public static final String CONFIG_NAME_REQUIRED = "Configuration name is required";
+    public static final String CONFIG_VALUE_REQUIRED = "Configuration value is required";
+    public static final String SERVICE_NAME_REQUIRED = "Service name is required";
+    public static final String SPECIALIZATION_NAME_REQUIRED = "Specialization name is required";
+    public static final String TAG_NAME_REQUIRED = "Tag name is required";
+    public static final String ROOM_NAME_REQUIRED = "Room name is required";
+    public static final String SPECIALIZATION_ID_REQUIRED = "Specialization ID is required";
+    public static final String CONSULTANT_ID_REQUIRED = "Consultant ID is required";
+    public static final String WORKING_DAY_REQUIRED = "Working day is required";
+    public static final String START_TIME_REQUIRED = "Start time is required";
+    public static final String END_TIME_REQUIRED = "End time is required";
 
     private CatalogConstants() {
     }

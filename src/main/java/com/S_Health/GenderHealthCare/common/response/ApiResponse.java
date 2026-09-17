@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.common.response;
 
 import com.S_Health.GenderHealthCare.common.filter.RequestIdFilter;
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public record ApiResponse<T>(
         String requestId) {
 
     public static <T> ApiResponse<T> success(T data, String path) {
-        return success(HttpStatus.OK, "SUCCESS", "Request completed successfully", data, path);
+        return success(HttpStatus.OK, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, data, path);
     }
 
     public static <T> ApiResponse<T> success(
@@ -52,7 +53,7 @@ public record ApiResponse<T>(
     }
 
     public static ApiResponse<List<?>> paged(Page<?> page, String path) {
-        return paged(HttpStatus.OK, "SUCCESS", "Request completed successfully", page, path);
+        return paged(HttpStatus.OK, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, page, path);
     }
 
     public static ApiResponse<List<?>> paged(

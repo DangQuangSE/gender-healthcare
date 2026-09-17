@@ -7,6 +7,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ServiceCreateRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ServiceQuery;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ServiceUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
@@ -60,7 +61,9 @@ public class CatalogService {
         return catalogMapper.toServiceResponses(serviceManagementService.getAllServices());
     }
 
-    public List<ServiceResponse> getServices(String name, Long specializationId) {
+    public List<ServiceResponse> getServices(ServiceQuery request) {
+        String name = request.getName();
+        Long specializationId = request.getSpecializationId();
         if (specializationId != null) {
             return getServicesBySpecialization(specializationId);
         }

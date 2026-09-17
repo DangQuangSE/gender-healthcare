@@ -3,6 +3,9 @@ package com.S_Health.GenderHealthCare.modules.user.service;
 import com.S_Health.GenderHealthCare.modules.user.domain.Certification;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CertificationRequest;
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 
 
 import com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse;
@@ -11,7 +14,6 @@ import com.S_Health.GenderHealthCare.repository.CertificationRepository;
 import com.S_Health.GenderHealthCare.integrations.storage.CloudinaryService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,25 +34,25 @@ public class CertificationService {
         this.authUtil = authUtil;
     }
     
-    public CertificationResponse createCertification(String name, MultipartFile image) {
+    public CertificationResponse createCertification(CertificationRequest request) {
         User currentUser = authUtil.getCurrentUser();
 
         // Kiểm tra user có phải là consultant không
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
-            throw new AppException("Chỉ bác sĩ mới có thể thêm chứng chỉ");
+            throw new AppException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
         }
 
         String imageUrl = null;
-        if (image != null && !image.isEmpty()) {
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                imageUrl = cloudinaryService.uploadCertificationImage(image);
+                imageUrl = cloudinaryService.uploadCertificationImage(request.getImage());
             } catch (IOException e) {
-                throw new AppException("Không thể tải lên hình ảnh: " + e.getMessage());
+                throw new AppException(CommonMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
             }
         }
 
         Certification certification = Certification.builder()
-                .name(name)
+                .name(request.getName())
                 .image(imageUrl)
                 .consultant(currentUser)
                 .isActive(true)
@@ -61,24 +63,24 @@ public class CertificationService {
         return mapToResponse(saved);
     }
     
-    public CertificationResponse updateCertification(Long id, String name, MultipartFile image) {
+    public CertificationResponse updateCertification(Long id, CertificationRequest request) {
         User currentUser = authUtil.getCurrentUser();
 
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
-                .orElseThrow(() -> new AppException("Không tìm thấy chứng chỉ hoặc bạn không có quyền chỉnh sửa"));
+                .orElseThrow(() -> new AppException(UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
 
         // Upload hình ảnh mới nếu có
-        if (image != null && !image.isEmpty()) {
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                String imageUrl = cloudinaryService.uploadCertificationImage(image);
+                String imageUrl = cloudinaryService.uploadCertificationImage(request.getImage());
                 certification.setImage(imageUrl);
             } catch (IOException e) {
-                throw new AppException("Không thể tải lên hình ảnh: " + e.getMessage());
+                throw new AppException(CommonMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
             }
         }
 
         // Cập nhật thông tin
-        certification.setName(name);
+        certification.setName(request.getName());
         Certification updated = certificationRepository.save(certification);
 
         return mapToResponse(updated);
@@ -88,7 +90,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
         
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
-            throw new AppException("Chỉ bác sĩ mới có thể xem chứng chỉ");
+            throw new AppException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
         }
         
         List<Certification> certifications = certificationRepository.findByConsultantAndIsActiveTrue(currentUser);
@@ -104,7 +106,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
         
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
-                .orElseThrow(() -> new AppException("Không tìm thấy chứng chỉ hoặc bạn không có quyền xóa"));
+                .orElseThrow(() -> new AppException(UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
         
         certification.setActive(false);
         certificationRepository.save(certification);

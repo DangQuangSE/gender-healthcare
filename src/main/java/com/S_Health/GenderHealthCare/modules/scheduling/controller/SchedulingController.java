@@ -9,19 +9,19 @@ import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
 import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRangeRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.WorkingDoctorRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.SchedulingService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -37,12 +37,9 @@ public class SchedulingController {
     @Operation(summary = SchedulingMessages.GET_CONSULTANT_SCHEDULE)
     public ApiResponse<List<WorkDateSlotResponse>> getConsultantSchedule(
             @PathVariable long consultantId,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+            @ModelAttribute ScheduleRangeRequest request) {
         return ApiResponse.success(
-                schedulingService.getConsultantSchedule(consultantId, from, to),
+                schedulingService.getConsultantSchedule(consultantId, request),
                 null);
     }
 
@@ -50,12 +47,9 @@ public class SchedulingController {
     @Operation(summary = SchedulingMessages.GET_AVAILABLE_SLOTS)
     public ApiResponse<ScheduleServiceResponse> getAvailableServiceSlots(
             @PathVariable long serviceId,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+            @ModelAttribute ScheduleRangeRequest request) {
         return ApiResponse.success(
-                schedulingService.getAvailableServiceSlots(serviceId, from, to),
+                schedulingService.getAvailableServiceSlots(serviceId, request),
                 null);
     }
 
@@ -76,10 +70,9 @@ public class SchedulingController {
     @GetMapping("/doctors")
     @Operation(summary = SchedulingMessages.GET_WORKING_DOCTORS)
     public ApiResponse<List<DoctorWorkingScheduleDTO>> getDoctorsWorkingOnDate(
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            @Valid @ModelAttribute WorkingDoctorRequest request) {
         return ApiResponse.success(
-                schedulingService.getDoctorsWorkingOnDate(date),
+                schedulingService.getDoctorsWorkingOnDate(request),
                 null);
     }
 }

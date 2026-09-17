@@ -1,17 +1,17 @@
 package com.S_Health.GenderHealthCare.modules.reporting.controller;
 
 import com.S_Health.GenderHealthCare.modules.reporting.ReportMessages;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.request.FinancialReportQuery;
 import com.S_Health.GenderHealthCare.modules.reporting.service.FinancialReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/reports/financial")
@@ -44,8 +44,7 @@ public class FinancialReportController {
     @GetMapping("/range")
     @Operation(summary = ReportMessages.GET_REVENUE_BY_RANGE)
     public BigDecimal getRevenueByDateRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return financialReportService.getRevenueByDateRange(startDate, endDate);
+            @Valid @ModelAttribute FinancialReportQuery request) {
+        return financialReportService.getRevenueByDateRange(request);
     }
 }

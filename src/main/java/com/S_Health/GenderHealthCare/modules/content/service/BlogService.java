@@ -8,9 +8,9 @@ import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
 
 
 import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.dto.request.blog.BlogRequest;
-import com.S_Health.GenderHealthCare.dto.response.BlogResponse;
-import com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogRequest;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.BlogRepository;
@@ -86,9 +86,9 @@ public class BlogService {
         }
 
         // Upload image to Cloudinary if provided
-        if (request.getImg() != null && !request.getImg().isEmpty()) {
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                String imageUrl = cloudinaryService.uploadImage(request.getImg());
+                String imageUrl = cloudinaryService.uploadImage(request.getImage());
                 request.setImgUrl(imageUrl);
             } catch (IOException e) {
                 throw new AppException(ContentMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
@@ -189,9 +189,9 @@ public class BlogService {
         }
 
         // Upload hình ảnh mới nếu có
-        if (request.getImg() != null && !request.getImg().isEmpty()) {
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                String imageUrl = cloudinaryService.uploadImage(request.getImg());
+                String imageUrl = cloudinaryService.uploadImage(request.getImage());
                 blog.setImgUrl(imageUrl);
             } catch (IOException e) {
                 throw new AppException(ContentMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
@@ -359,7 +359,7 @@ public class BlogService {
         blog.setStatus(BlogStatus.PUBLISHED);
         blogRepository.save(blog);
 
-        log.info("Blog {} đã được đăng bởi admin {}", blogId, currentUser.getId());
+        log.info(ContentMessages.BLOG_PUBLISHED_LOG, blogId, currentUser.getId());
 
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         if (blog.getAuthor() != null) {
@@ -381,7 +381,7 @@ public class BlogService {
         blog.setStatus(BlogStatus.PENDING);
         blogRepository.save(blog);
 
-        log.info("Blog {} đã được gửi để duyệt bởi author {}", blogId, currentUser.getId());
+        log.info(ContentMessages.BLOG_SUBMITTED_LOG, blogId, currentUser.getId());
 
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));

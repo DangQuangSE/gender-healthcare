@@ -56,9 +56,6 @@ public class VNPayService {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new AppException(PaymentMessages.APPOINTMENT_NOT_FOUND));
 
-//        AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointmentId)
-//                .orElseThrow(() -> new AuthenticationException("Cuộc hẹn không có chi tiết"));
-
         Optional<Payment> paid = paymentRepository.findByAppointmentIdAndStatus(appointmentId, PaymentStatus.SUCCESS);
         if (paid.isPresent()) {
             throw new AppException(PaymentMessages.APPOINTMENT_ALREADY_PAID);
@@ -151,9 +148,6 @@ public class VNPayService {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new AppException(PaymentMessages.APPOINTMENT_NOT_FOUND));
-
-//        AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointmentId)
-//                .orElseThrow(() -> new AuthenticationException("Cuộc hẹn không có chi tiết"));
 
         Optional<Payment> paid = paymentRepository.findByAppointmentIdAndStatus(appointmentId, PaymentStatus.SUCCESS);
         if (paid.isPresent()) {
@@ -317,10 +311,6 @@ public class VNPayService {
                 appointmentDetailRepository.save(appointmentDetail);
             }
 
-//            AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointment.getId())
-//                    .orElseThrow(() -> new AuthenticationException("Không tìm thấy chi tiết cuộc hẹn."));
-//            appointmentDetail.setStatus(AppointmentStatus.CONFIRMED);
-//            appointmentDetailRepository.save(appointmentDetail);
         } else {
             payment.setStatus(PaymentStatus.FAILED);
             payment.setPaidAt(LocalDateTime.now());
@@ -344,10 +334,6 @@ public class VNPayService {
                 appointmentDetailRepository.save(appointmentDetail);
             }
 
-//            AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointment.getId())
-//                    .orElseThrow(() -> new AuthenticationException("Không tìm thấy chi tiết cuộc hẹn."));
-//            appointmentDetail.setStatus(AppointmentStatus.CANCELED);
-//            appointmentDetailRepository.save(appointmentDetail);
         }
 
         paymentRepository.save(payment);

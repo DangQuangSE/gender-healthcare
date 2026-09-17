@@ -1,0 +1,59 @@
+package com.S_Health.GenderHealthCare.modules.catalog.controller;
+
+import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
+import com.S_Health.GenderHealthCare.dto.TagDTO;
+import com.S_Health.GenderHealthCare.dto.request.tag.TagRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.service.TagService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/tags")
+@SecurityRequirement(name = "api")
+/**
+ * Legacy compatibility controller. Use modules.catalog.controller.TagController for /api/v1.
+ */
+@Deprecated(since = "1.0", forRemoval = false)
+public class LegacyTagController {
+    @Autowired
+    private TagService tagService;
+
+    @PostMapping
+    @Operation(summary = CatalogConstants.CREATE_TAG)
+    public ResponseEntity<TagDTO> createTag(@Valid @RequestBody TagRequest request) {
+        return ResponseEntity.ok(tagService.createTag(request));
+    }
+
+    @GetMapping
+    @Operation(summary = CatalogConstants.GET_TAGS)
+    public ResponseEntity<List<TagDTO>> getAllTags() {
+        return ResponseEntity.ok(tagService.getAllTags());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = CatalogConstants.GET_TAG)
+    public ResponseEntity<TagDTO> getTagById(@PathVariable Long id) {
+        return ResponseEntity.ok(tagService.getTagById(id));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = CatalogConstants.UPDATE_TAG)
+    public ResponseEntity<TagDTO> updateTag(
+            @PathVariable Long id,
+            @Valid @RequestBody TagRequest request) {
+        return ResponseEntity.ok(tagService.updateTag(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = CatalogConstants.DELETE_TAG)
+    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
+        tagService.deleteTag(id);
+        return ResponseEntity.noContent().build();
+    }
+}

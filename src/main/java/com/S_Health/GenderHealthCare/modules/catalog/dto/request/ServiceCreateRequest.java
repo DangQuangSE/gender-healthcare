@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.catalog.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
 
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceCreateRequest {
-    @NotBlank(message = "Service name is required")
+    @NotBlank(message = CatalogConstants.SERVICE_NAME_REQUIRED)
     private String name;
     private String description;
     private Integer duration;

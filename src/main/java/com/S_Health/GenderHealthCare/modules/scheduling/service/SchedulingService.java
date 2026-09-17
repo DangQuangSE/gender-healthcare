@@ -12,6 +12,8 @@ import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
 import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRangeRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.WorkingDoctorRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,24 +38,22 @@ public class SchedulingService {
 
     public List<WorkDateSlotResponse> getConsultantSchedule(
             long consultantId,
-            LocalDate from,
-            LocalDate to) {
-        RangeDate rangeDate = buildRange(from, to);
-        ScheduleConsultantRequest request = ScheduleConsultantRequest.builder()
+            ScheduleRangeRequest rangeRequest) {
+        RangeDate rangeDate = buildRange(rangeRequest.getFrom(), rangeRequest.getTo());
+        ScheduleConsultantRequest scheduleRequest = ScheduleConsultantRequest.builder()
                 .consultant_id(consultantId)
                 .rangeDate(rangeDate)
                 .build();
-        return scheduleService.getScheduleOfConsultant(request);
+        return scheduleService.getScheduleOfConsultant(scheduleRequest);
     }
 
     public ScheduleServiceResponse getAvailableServiceSlots(
             long serviceId,
-            LocalDate from,
-            LocalDate to) {
-        ScheduleServiceRequest request = new ScheduleServiceRequest(
+            ScheduleRangeRequest rangeRequest) {
+        ScheduleServiceRequest serviceRequest = new ScheduleServiceRequest(
                 serviceId,
-                buildRange(from, to));
-        return serviceSlotPoolService.getSlotFreeService(request);
+                buildRange(rangeRequest.getFrom(), rangeRequest.getTo()));
+        return serviceSlotPoolService.getSlotFreeService(serviceRequest);
     }
 
     public ScheduleRegisterResponse registerSchedule(ScheduleRegisterRequest request) {
@@ -64,8 +64,8 @@ public class SchedulingService {
         return scheduleService.cancelSchedule(request);
     }
 
-    public List<DoctorWorkingScheduleDTO> getDoctorsWorkingOnDate(LocalDate date) {
-        return scheduleService.getDoctorsWorkingOnDate(date);
+    public List<DoctorWorkingScheduleDTO> getDoctorsWorkingOnDate(WorkingDoctorRequest request) {
+        return scheduleService.getDoctorsWorkingOnDate(request.getDate());
     }
 
     private RangeDate buildRange(LocalDate from, LocalDate to) {

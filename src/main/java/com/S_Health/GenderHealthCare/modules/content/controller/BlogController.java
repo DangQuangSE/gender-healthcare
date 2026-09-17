@@ -2,9 +2,10 @@ package com.S_Health.GenderHealthCare.modules.content.controller;
 
 import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
 
-import com.S_Health.GenderHealthCare.dto.request.blog.BlogRequest;
-import com.S_Health.GenderHealthCare.dto.response.BlogResponse;
-import com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogRequest;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogCreateRequest;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.modules.content.service.BlogService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,10 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -79,16 +80,7 @@ public class BlogController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = ContentMessages.CREATE_BLOG)
-    public BlogResponse createBlog(
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam MultipartFile image,
-            @RequestParam(required = false) List<String> tags) {
-        BlogRequest request = new BlogRequest();
-        request.setTitle(title);
-        request.setContent(content);
-        request.setImg(image);
-        request.setTagNames(tags);
+    public BlogResponse createBlog(@Valid @ModelAttribute BlogCreateRequest request) {
         return blogService.createBlog(request);
     }
 
@@ -104,15 +96,7 @@ public class BlogController {
     @Operation(summary = ContentMessages.UPDATE_BLOG)
     public BlogResponse updateBlog(
             @PathVariable Long id,
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam(required = false) MultipartFile image,
-            @RequestParam(required = false) List<String> tags) {
-        BlogRequest request = new BlogRequest();
-        request.setTitle(title);
-        request.setContent(content);
-        request.setImg(image);
-        request.setTagNames(tags);
+            @Valid @ModelAttribute BlogRequest request) {
         return blogService.updateBlog(id, request);
     }
 

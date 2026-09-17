@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.common.response;
 
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -42,10 +43,10 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         HttpStatus status = resolveStatus(response);
 
         if (body instanceof Page<?> page) {
-            return ApiResponse.paged(status, "SUCCESS", "Request completed successfully", page, path);
+            return ApiResponse.paged(status, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, page, path);
         }
 
-        return ApiResponse.success(status, "SUCCESS", "Request completed successfully", body, path);
+        return ApiResponse.success(status, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, body, path);
     }
 
     private boolean isVersionedApi(String path) {

@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.integrations.zoom;
 
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
 import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
@@ -42,18 +43,18 @@ public class ZoomMeetingService {
 
         //check id
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppException("Cuộc hẹn không tồn tại"));
+                .orElseThrow(() -> new AppException(IntegrationMessages.ZOOM_APPOINTMENT_NOT_FOUND));
 
         AppointmentDetail check = appointmentDetailRepository.findByAppointmentId(appointmentId)
-                .orElseThrow(() -> new AppException("Không tìm thấy chi tiết cuộc hẹn"));
+                .orElseThrow(() -> new AppException(IntegrationMessages.ZOOM_APPOINTMENT_DETAIL_NOT_FOUND));
 
         if(check.getStartUrl() != null || check.getJoinUrl() != null) {
-            throw new AppException("Cuộc họp đã được tạo trước đó");
+            throw new AppException(IntegrationMessages.ZOOM_MEETING_ALREADY_EXISTS);
         }
         //check status
         if (!appointment.getStatus().equals(AppointmentStatus.CONFIRMED) ||
         !appointment.getService().getType().equals(ServiceType.CONSULTING_ON)) {
-            throw new AppException("Cuộc hẹn chưa được xác nhận hoặc không phải cuộc hẹn tư vấn trực tuyến");
+            throw new AppException(IntegrationMessages.ZOOM_APPOINTMENT_INVALID);
         }
 
         Long userId = authUtil.getCurrentUserId();
@@ -61,7 +62,7 @@ public class ZoomMeetingService {
 
 
         if(!(Objects.equals(userId, customerId))) {
-            throw new AppException(" Bạn không có trong cuộc họp này");
+            throw new AppException(IntegrationMessages.ZOOM_USER_NOT_IN_MEETING);
         }
 
         String accessToken = zoomOAuthService.getAccessToken();
@@ -91,7 +92,6 @@ public class ZoomMeetingService {
         );
 
         Map<String, Object> responseBody = response.getBody();
-        System.out.println("Zoom Response = " + responseBody);
 
         // Lấy start_url và join_url từ response
         String joinUrl = (String) responseBody.get("join_url");
@@ -99,10 +99,10 @@ public class ZoomMeetingService {
         // id cho việc xóa cuộc hẹn nếu cần
 //        Integer meetingId = (Integer) responseBody.get("id");
         if(joinUrl == null || startUrl == null) {
-            throw new AppException("Không thể tạo cuộc họp Zoom, vui lòng thử lại sau");
+            throw new AppException(IntegrationMessages.ZOOM_MEETING_CREATE_FAILED);
         }else {
             AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointmentId)
-                    .orElseThrow(() -> new AppException("Không tìm thấy chi tiết cuộc hẹn"));
+                    .orElseThrow(() -> new AppException(IntegrationMessages.ZOOM_APPOINTMENT_DETAIL_NOT_FOUND));
             appointmentDetail.setJoinUrl(joinUrl);
             appointmentDetail.setStartUrl(startUrl);
             appointmentDetailRepository.save(appointmentDetail);

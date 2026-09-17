@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.content.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.blog.CommentRequest;
-import com.S_Health.GenderHealthCare.dto.response.CommentResponse;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.CommentRequest;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.CommentResponse;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.modules.content.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;

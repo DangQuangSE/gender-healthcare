@@ -46,6 +46,14 @@ public final class ContentMessages {
     public static final String LIKE_BLOG_SUCCESS = "Đã thả tim cho bài viết!";
     public static final String DELETE_COMMENT_SUCCESS = "Xóa bình luận thành công";
 
+    public static final String BLOG_TITLE_TOO_SHORT = "Blog title must contain at least 10 characters";
+    public static final String BLOG_CONTENT_TOO_SHORT = "Blog content must contain at least 50 characters";
+    public static final String BLOG_IMAGE_REQUIRED = "Image file is required";
+    public static final String BLOG_TITLE_REQUIRED = "Title is required";
+    public static final String BLOG_CONTENT_REQUIRED = "Content is required";
+    public static final String BLOG_PUBLISHED_LOG = "Blog {} was published by admin {}";
+    public static final String BLOG_SUBMITTED_LOG = "Blog {} was submitted for review by author {}";
+
     private ContentMessages() {
     }
 }

@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.dto.request.room;
 
+import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -8,15 +9,15 @@ import java.time.LocalTime;
 
 @Data
 public class RoomConsultantRequest {
-    @NotNull(message = "Consultant ID is required")
+    @NotNull(message = CatalogConstants.CONSULTANT_ID_REQUIRED)
     private Long consultantId;
 
-    @NotNull(message = "Working day is required")
+    @NotNull(message = CatalogConstants.WORKING_DAY_REQUIRED)
     private DayOfWeek workingDay;
 
-    @NotNull(message = "Start time is required")
+    @NotNull(message = CatalogConstants.START_TIME_REQUIRED)
     private LocalTime startTime;
 
-    @NotNull(message = "End time is required")
+    @NotNull(message = CatalogConstants.END_TIME_REQUIRED)
     private LocalTime endTime;
 }

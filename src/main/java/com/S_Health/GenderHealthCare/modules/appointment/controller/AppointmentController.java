@@ -5,13 +5,14 @@ import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
 import com.S_Health.GenderHealthCare.dto.PatientHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.request.AppointmentScheduleQuery;
 import com.S_Health.GenderHealthCare.dto.request.appointment.UpdateAppointmentRequest;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentService;
+import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -30,25 +32,27 @@ import java.util.List;
 @RequestMapping("/api/v1/appointments")
 public class AppointmentController {
     private final AppointmentService appointmentService;
+    private final AppointmentQueryService appointmentQueryService;
 
-    public AppointmentController(AppointmentService appointmentService) {
+    public AppointmentController(
+            AppointmentService appointmentService,
+            AppointmentQueryService appointmentQueryService) {
         this.appointmentService = appointmentService;
+        this.appointmentQueryService = appointmentQueryService;
     }
 
     @GetMapping("/{id}")
     @Operation(summary = AppointmentMessages.GET_APPOINTMENT)
     public ApiResponse<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
-        return ApiResponse.success(appointmentService.getAppointmentById(id), null);
+        return ApiResponse.success(appointmentQueryService.getAppointmentById(id), null);
     }
 
     @GetMapping("/consultant-schedule")
     @Operation(summary = AppointmentMessages.GET_CONSULTANT_SCHEDULE)
     public ApiResponse<List<AppointmentDTO>> getMySchedule(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam(required = false)
-            @Parameter(description = "Appointment detail status") AppointmentStatus status) {
+            @Valid @ModelAttribute AppointmentScheduleQuery request) {
         return ApiResponse.success(
-                appointmentService.getAppointmentsForConsultantOnDateByDetailStatus(date, status),
+                appointmentQueryService.getAppointmentsForConsultantOnDateByDetailStatus(request),
                 null);
     }
 
@@ -56,7 +60,7 @@ public class AppointmentController {
     @Operation(summary = AppointmentMessages.GET_BY_STATUS)
     public ApiResponse<List<AppointmentDTO>> getAppointmentsByStatus(
             @RequestParam AppointmentStatus status) {
-        return ApiResponse.success(appointmentService.getAppointmentsByStatus(status), null);
+        return ApiResponse.success(appointmentQueryService.getAppointmentsByStatus(status), null);
     }
 
     @PutMapping("/{id}")
@@ -89,7 +93,7 @@ public class AppointmentController {
     @Operation(summary = AppointmentMessages.GET_PATIENT_HISTORY)
     public ApiResponse<PatientHistoryDTO> getPatientHistory(@PathVariable Long appointmentId) {
         return ApiResponse.success(
-                appointmentService.getPatientHistoryFromAppointment(appointmentId),
+                appointmentQueryService.getPatientHistoryFromAppointment(appointmentId),
                 null);
     }
 

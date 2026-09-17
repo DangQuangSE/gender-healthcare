@@ -1,6 +1,9 @@
 package com.S_Health.GenderHealthCare.modules.medical.service;
 
 import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoQuery;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MyMedicalProfileQuery;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.PatientHistoryQuery;
 import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
@@ -18,7 +21,6 @@ import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.*;
-import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,6 @@ public class MedicalProfileService {
     private final ServiceRepository serviceRepository;
     private final AppointmentRepository appointmentRepository;
     private final AuthenticationRepository authenticationRepository;
-    private final AppointmentService appointmentService;
     private final AppointmentDetailRepository appointmentDetailRepository;
     private final MedicalResultRepository medicalResultRepository;
     private final AuthUtil authUtil;
@@ -47,7 +48,6 @@ public class MedicalProfileService {
             ServiceRepository serviceRepository,
             AppointmentRepository appointmentRepository,
             AuthenticationRepository authenticationRepository,
-            AppointmentService appointmentService,
             AppointmentDetailRepository appointmentDetailRepository,
             MedicalResultRepository medicalResultRepository,
             AuthUtil authUtil,
@@ -56,7 +56,6 @@ public class MedicalProfileService {
         this.serviceRepository = serviceRepository;
         this.appointmentRepository = appointmentRepository;
         this.authenticationRepository = authenticationRepository;
-        this.appointmentService = appointmentService;
         this.appointmentDetailRepository = appointmentDetailRepository;
         this.medicalResultRepository = medicalResultRepository;
         this.authUtil = authUtil;
@@ -89,7 +88,8 @@ public class MedicalProfileService {
         medicalProfileRepository.save(medicalProfile);
     }
 
-    public MedicalProfileDTO getMyProfile(Long serviceId) {
+    public MedicalProfileDTO getMyProfile(MyMedicalProfileQuery request) {
+        Long serviceId = request.getServiceId();
         User user = authUtil.getCurrentUser();
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
@@ -100,7 +100,11 @@ public class MedicalProfileService {
     /**
      * Xem lịch sử khám bệnh cần thiết của bệnh nhân (cho bác sĩ)
      */
-    public PatientMedicalHistoryDTO getPatientHistory(Long patientId, int page, int size) {
+    public PatientMedicalHistoryDTO getPatientHistory(
+            Long patientId,
+            PatientHistoryQuery request) {
+        int page = request.getPage();
+        int size = request.getSize();
         User currentDoctor = authUtil.getCurrentUser();
 
         // Kiểm tra quyền truy cập
@@ -186,7 +190,7 @@ public class MedicalProfileService {
                     .orElse(null);
 
             String doctorName = firstDetail != null ?
-                    firstDetail.getConsultant().getFullname() : "Chưa phân công";
+                    firstDetail.getConsultant().getFullname() : MedicalMessages.CONSULTANT_UNASSIGNED;
 
             String roomName = getRoomDisplayName(firstDetail);
 
@@ -199,7 +203,7 @@ public class MedicalProfileService {
                     .map(MedicalResult::getDiagnosis)
                     .filter(d -> d != null && !d.trim().isEmpty())
                     .findFirst()
-                    .orElse("Chưa có chẩn đoán");
+                    .orElse(MedicalMessages.DIAGNOSIS_UNAVAILABLE);
 
             return AppointmentHistoryDTO.builder()
                     .date(appointment.getPreferredDate())
@@ -254,7 +258,6 @@ public class MedicalProfileService {
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
-            System.err.println("Error building recent tests from appointments: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -301,7 +304,9 @@ public class MedicalProfileService {
     /**
      * Lấy thông tin y tế để hiển thị cho bác sĩ
      */
-    public MedicalProfile getMedicalInfoForDoctor(Long customerId, Long serviceId) {
+    public MedicalProfile getMedicalInfoForDoctor(MedicalInfoQuery request) {
+        Long customerId = request.getCustomerId();
+        Long serviceId = request.getServiceId();
         User customer = authenticationRepository.findById(customerId)
                 .orElseThrow(() -> new AppException(MedicalMessages.PATIENT_NOT_FOUND));
 
@@ -318,13 +323,13 @@ public class MedicalProfileService {
      */
     private String getRoomDisplayName(AppointmentDetail appointmentDetail) {
         if (appointmentDetail == null) {
-            return "Chưa phân công";
+            return MedicalMessages.CONSULTANT_UNASSIGNED;
         }
 
         // Kiểm tra nếu là consulting online
         if (appointmentDetail.getService() != null &&
             appointmentDetail.getService().getType() == ServiceType.CONSULTING_ON) {
-            return "Tư vấn trực tuyến";
+            return MedicalMessages.ONLINE_CONSULTATION;
         }
 
         // Trường hợp khác, hiển thị tên phòng
@@ -332,7 +337,7 @@ public class MedicalProfileService {
             return appointmentDetail.getRoom().getName();
         }
 
-        return "Chưa phân phòng";
+        return MedicalMessages.ROOM_UNASSIGNED;
     }
 }
 

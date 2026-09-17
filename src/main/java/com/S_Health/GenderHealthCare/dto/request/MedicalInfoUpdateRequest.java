@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -13,11 +14,11 @@ import lombok.experimental.FieldDefaults;
 @Schema(description = "Request cập nhật thông tin cơ bản khi check-in (dành cho staff)")
 public class MedicalInfoUpdateRequest {
 
-    @NotNull(message = "ID bệnh nhân không được để trống")
+    @NotNull(message = MedicalMessages.PATIENT_ID_REQUIRED)
     @Schema(description = "ID bệnh nhân", example = "123")
     Long customerId;
 
-    @NotNull(message = "ID dịch vụ không được để trống")
+    @NotNull(message = MedicalMessages.SERVICE_ID_REQUIRED)
     @Schema(description = "ID dịch vụ", example = "1")
     Long serviceId;
 

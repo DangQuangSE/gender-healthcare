@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.integrations.zoom;
 
 
+import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -48,7 +49,7 @@ public class ZoomOAuthService {
 
         Map<String, Object> body = response.getBody();
         if (body == null || !body.containsKey("access_token")) {
-            throw new RuntimeException("Không lấy được token từ Zoom!");
+            throw new RuntimeException(IntegrationMessages.ZOOM_TOKEN_NOT_FOUND);
         }
 
         String token = (String) body.get("access_token");

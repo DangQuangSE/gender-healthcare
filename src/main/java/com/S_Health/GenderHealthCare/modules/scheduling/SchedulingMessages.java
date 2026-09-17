@@ -23,6 +23,7 @@ public final class SchedulingMessages {
     public static final String MAX_BOOKING_CONFIG_KEY = "MAX_BOOKING";
     public static final int DEFAULT_MAX_BOOKING = 6;
     public static final long SLOT_DURATION_MINUTES = 90;
+    public static final String DATE_REQUIRED = "Date is required";
 
     private SchedulingMessages() {
     }

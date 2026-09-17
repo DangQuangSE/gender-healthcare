@@ -24,7 +24,7 @@ public class IdentityController {
     }
 
     @PostMapping("/registration/otp")
-    @Operation(summary = "Request registration OTP")
+    @Operation(summary = IdentityMessages.REQUEST_REGISTRATION_OTP)
     public ResponseEntity<ApiResponse<String>> requestRegistrationOtp(
             @Valid @RequestBody EmailRegisterRequest request) {
         identityService.requestRegistrationOtp(request.getEmail());
@@ -32,7 +32,7 @@ public class IdentityController {
     }
 
     @PostMapping("/registration/verify-otp")
-    @Operation(summary = "Verify registration OTP")
+    @Operation(summary = IdentityMessages.VERIFY_REGISTRATION_OTP)
     public ResponseEntity<ApiResponse<String>> verifyRegistrationOtp(
             @Valid @RequestBody VerifyOTPRequest request) {
         identityService.verifyOtpOrThrow(request.getEmail(), request.getOtp());
@@ -40,7 +40,7 @@ public class IdentityController {
     }
 
     @PostMapping("/registration/password")
-    @Operation(summary = "Set registration password")
+    @Operation(summary = IdentityMessages.SET_REGISTRATION_PASSWORD)
     public ResponseEntity<ApiResponse<String>> setRegistrationPassword(
             @Valid @RequestBody PasswordRequest request) {
         identityService.setPassword(request);
@@ -48,7 +48,7 @@ public class IdentityController {
     }
 
     @PostMapping("/forgot-password/otp")
-    @Operation(summary = "Request forgot-password OTP")
+    @Operation(summary = IdentityMessages.REQUEST_FORGOT_PASSWORD_OTP)
     public ResponseEntity<ApiResponse<String>> requestForgotPasswordOtp(
             @Valid @RequestBody EmailRegisterRequest request) {
         identityService.requestForgotPasswordOtp(request.getEmail());
@@ -56,7 +56,7 @@ public class IdentityController {
     }
 
     @PostMapping("/forgot-password/verify-otp")
-    @Operation(summary = "Verify forgot-password OTP")
+    @Operation(summary = IdentityMessages.VERIFY_FORGOT_PASSWORD_OTP)
     public ResponseEntity<ApiResponse<String>> verifyForgotPasswordOtp(
             @Valid @RequestBody VerifyOTPRequest request) {
         identityService.verifyOtpOrThrow(request.getEmail(), request.getOtp());
@@ -64,7 +64,7 @@ public class IdentityController {
     }
 
     @PutMapping("/forgot-password/password")
-    @Operation(summary = "Reset password")
+    @Operation(summary = IdentityMessages.RESET_PASSWORD)
     public ResponseEntity<ApiResponse<String>> resetPassword(
             @Valid @RequestBody PasswordRequest request) {
         identityService.resetPassword(request);
@@ -72,21 +72,21 @@ public class IdentityController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Login with email and password")
+    @Operation(summary = IdentityMessages.LOGIN_EMAIL)
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody LoginEmailRequest request) {
         return ResponseEntity.ok(ApiResponse.success(identityService.login(request), null));
     }
 
     @PostMapping("/oauth/google")
-    @Operation(summary = "Login with Google")
+    @Operation(summary = IdentityMessages.LOGIN_GOOGLE)
     public ResponseEntity<ApiResponse<LoginResponse>> loginWithGoogle(
             @Valid @RequestBody OAuthLoginRequest request) {
         return ResponseEntity.ok(ApiResponse.success(identityService.loginWithGoogle(request), null));
     }
 
     @PostMapping("/oauth/facebook")
-    @Operation(summary = "Login with Facebook")
+    @Operation(summary = IdentityMessages.LOGIN_FACEBOOK)
     public ResponseEntity<ApiResponse<LoginResponse>> loginWithFacebook(
             @Valid @RequestBody OAuthLoginRequest request) {
         return ResponseEntity.ok(ApiResponse.success(identityService.loginWithFacebook(request), null));

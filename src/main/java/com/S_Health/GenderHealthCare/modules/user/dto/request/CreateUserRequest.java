@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.user.dto.request;
 
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 import com.S_Health.GenderHealthCare.modules.user.enums.Gender;
 
@@ -13,26 +14,26 @@ import java.util.Set;
 @Data
 @Builder
 public class CreateUserRequest {
-    @NotBlank(message = "Fullname is required")
+    @NotBlank(message = UserMessages.FULLNAME_REQUIRED)
     private String fullname;
 
-    @Email(message = "Invalid email format")
-    @NotBlank(message = "Email is required")
+    @Email(message = UserMessages.EMAIL_INVALID)
+    @NotBlank(message = UserMessages.EMAIL_REQUIRED)
     private String email;
 
-    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = UserMessages.PHONE_INVALID)
     private String phone;
 
-    @NotNull(message = "Date of birth is required")
-    @Past(message = "Date of birth must be in the past")
+    @NotNull(message = UserMessages.DATE_OF_BIRTH_REQUIRED)
+    @Past(message = UserMessages.DATE_OF_BIRTH_PAST)
     private LocalDate dateOfBirth;
 
     private String address;
 
-    @NotNull(message = "Gender is required")
+    @NotNull(message = UserMessages.GENDER_REQUIRED)
     private Gender gender;
 
-    @NotNull(message = "Role is required")
+    @NotNull(message = UserMessages.ROLE_REQUIRED)
     private UserRole role;
 
     private String imageUrl;

@@ -1,5 +1,6 @@
 package com.S_Health.GenderHealthCare.config;
 
+import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +40,7 @@ public class CorsConfig {
                 .filter(origin -> !origin.isEmpty())
                 .toList();
         if (origins.contains("*")) {
-            throw new IllegalArgumentException("CORS_ALLOWED_ORIGINS cannot contain * when credentials are enabled");
+            throw new IllegalArgumentException(CommonMessages.CORS_WILDCARD_WITH_CREDENTIALS);
         }
         return origins;
     }
