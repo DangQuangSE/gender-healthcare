@@ -9,9 +9,9 @@ import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentMethod;
 
-import com.S_Health.GenderHealthCare.config.paymentConfig.VNPayConfig;
-import com.S_Health.GenderHealthCare.dto.response.payment.VNPayResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.payment.config.VNPayConfig;
+import com.S_Health.GenderHealthCare.modules.payment.dto.response.VNPayResponse;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.payment.PaymentMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 @Getter
@@ -38,33 +39,36 @@ public class VNPayService {
     private final PaymentRepository paymentRepository;
     private final TransactionRepository transactionRepository;
     private final AppointmentDetailRepository appointmentDetailRepository;
+    private final VNPayConfig vnPayConfig;
 
     public VNPayService(
             AppointmentRepository appointmentRepository,
             PaymentRepository paymentRepository,
             TransactionRepository transactionRepository,
-            AppointmentDetailRepository appointmentDetailRepository) {
+            AppointmentDetailRepository appointmentDetailRepository,
+            VNPayConfig vnPayConfig) {
         this.appointmentRepository = appointmentRepository;
         this.paymentRepository = paymentRepository;
         this.transactionRepository = transactionRepository;
         this.appointmentDetailRepository = appointmentDetailRepository;
+        this.vnPayConfig = vnPayConfig;
     }
 
 
     public VNPayResponse createOrder(Long appointmentId){
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppException(PaymentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.APPOINTMENT_NOT_FOUND));
 
         Optional<Payment> paid = paymentRepository.findByAppointmentIdAndStatus(appointmentId, PaymentStatus.SUCCESS);
         if (paid.isPresent()) {
-            throw new AppException(PaymentMessages.APPOINTMENT_ALREADY_PAID);
+            throw new ApiException(ErrorCode.CONFLICT, PaymentMessages.APPOINTMENT_ALREADY_PAID);
         }
 
         // Tìm giao dịch thanh toán thất bại
         Optional<Payment> failed = paymentRepository.findByAppointmentIdAndStatus(appointmentId, PaymentStatus.FAILED);
         if (failed.isPresent()) {
-            throw new AppException(PaymentMessages.APPOINTMENT_CANCELLED);
+            throw new ApiException(ErrorCode.CONFLICT, PaymentMessages.APPOINTMENT_CANCELLED);
         }
 
         BigDecimal price = BigDecimal.valueOf(appointment.getService().getPrice());
@@ -76,8 +80,7 @@ public class VNPayService {
         String vnp_Command = PaymentMessages.VNPAY_COMMAND;
         String vnp_TxnRef =  UUID.randomUUID().toString().replace("-", "").substring(0, 20);
         String vnp_IpAddr = PaymentMessages.LOCAL_IP_ADDRESS;
-        String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
-        String orderType = "order-type";
+        String vnp_TmnCode = vnPayConfig.getTmnCode();
         String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(PaymentMessages.VNPAY_TIME_ZONE));
@@ -97,7 +100,7 @@ public class VNPayService {
         params.put("vnp_Locale", PaymentMessages.VNPAY_LOCALE);
         params.put("vnp_OrderInfo", orderInfo);
         params.put("vnp_OrderType", PaymentMessages.VNPAY_ORDER_TYPE);
-        params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
+        params.put("vnp_ReturnUrl", vnPayConfig.getReturnUrl());
         params.put("vnp_ExpireDate", vnp_ExpireDate);
         params.put("vnp_TxnRef", vnp_TxnRef);
 
@@ -115,10 +118,10 @@ public class VNPayService {
         hashData.setLength(hashData.length() - 1);
         query.setLength(query.length() - 1);
 
-        String secureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
+        String secureHash = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
         query.append("&vnp_SecureHash=").append(secureHash);
 
-        String payUrl = VNPayConfig.vnp_PayUrl + "?" + query;
+        String payUrl = vnPayConfig.getPayUrl() + "?" + query;
 
         Payment payment = Payment.builder()
                 .amount(BigDecimal.valueOf(amount))
@@ -147,17 +150,17 @@ public class VNPayService {
     public VNPayResponse createOrderOff(Long appointmentId){
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppException(PaymentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.APPOINTMENT_NOT_FOUND));
 
         Optional<Payment> paid = paymentRepository.findByAppointmentIdAndStatus(appointmentId, PaymentStatus.SUCCESS);
         if (paid.isPresent()) {
-            throw new AppException(PaymentMessages.APPOINTMENT_ALREADY_PAID);
+            throw new ApiException(ErrorCode.CONFLICT, PaymentMessages.APPOINTMENT_ALREADY_PAID);
         }
 
         // Tìm giao dịch thanh toán thất bại
         Optional<Payment> failed = paymentRepository.findByAppointmentIdAndStatus(appointmentId, PaymentStatus.FAILED);
         if (failed.isPresent()) {
-            throw new AppException(PaymentMessages.APPOINTMENT_CANCELLED);
+            throw new ApiException(ErrorCode.CONFLICT, PaymentMessages.APPOINTMENT_CANCELLED);
         }
 
         BigDecimal percent = new BigDecimal("0.2");
@@ -173,8 +176,7 @@ public class VNPayService {
         String vnp_Command = PaymentMessages.VNPAY_COMMAND;
         String vnp_TxnRef =  UUID.randomUUID().toString().replace("-", "").substring(0, 20);
         String vnp_IpAddr = PaymentMessages.LOCAL_IP_ADDRESS;
-        String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
-        String orderType = "order-type";
+        String vnp_TmnCode = vnPayConfig.getTmnCode();
         String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone(PaymentMessages.VNPAY_TIME_ZONE));
@@ -194,7 +196,7 @@ public class VNPayService {
         params.put("vnp_Locale", PaymentMessages.VNPAY_LOCALE);
         params.put("vnp_OrderInfo", orderInfo);
         params.put("vnp_OrderType", PaymentMessages.VNPAY_ORDER_TYPE);
-        params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
+        params.put("vnp_ReturnUrl", vnPayConfig.getReturnUrl());
         params.put("vnp_ExpireDate", vnp_ExpireDate);
         params.put("vnp_TxnRef", vnp_TxnRef);
 
@@ -212,10 +214,10 @@ public class VNPayService {
         hashData.setLength(hashData.length() - 1);
         query.setLength(query.length() - 1);
 
-        String secureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
+        String secureHash = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
         query.append("&vnp_SecureHash=").append(secureHash);
 
-        String payUrl = VNPayConfig.vnp_PayUrl + "?" + query;
+        String payUrl = vnPayConfig.getPayUrl() + "?" + query;
 
         Payment payment = Payment.builder()
                 .amount(BigDecimal.valueOf(amount))
@@ -262,10 +264,10 @@ public class VNPayService {
             if (i < sortedKeys.size() - 1) hashData.append('&');
         }
 
-        String calculatedHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
+        String calculatedHash = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
 
         if (!calculatedHash.equals(receivedHash)) {
-            throw new AppException(PaymentMessages.INVALID_VNPAY_SIGNATURE);
+            throw new ApiException(ErrorCode.BAD_REQUEST, PaymentMessages.INVALID_VNPAY_SIGNATURE);
         }
 
         String vnp_ResponseCode = params.get("vnp_ResponseCode");
@@ -275,7 +277,7 @@ public class VNPayService {
         String vnp_PayDate = params.get("vnp_PayDate"); // yyyyMMddHHmmss
 
         Transaction transaction = transactionRepository.findByOrderId(vnp_TxnRef)
-                .orElseThrow(() -> new AppException(PaymentMessages.TRANSACTION_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.TRANSACTION_NOT_FOUND));
 
         Payment payment = transaction.getPayment();
 
@@ -298,7 +300,7 @@ public class VNPayService {
             if(appointment.getService().getIsCombo()){
                 List<AppointmentDetail> appointmentDetails = appointmentDetailRepository.findAllAppointmentDetails(appointment.getId());
                 if(appointmentDetails.isEmpty()){
-                    throw new AppException(PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND);
+                    throw new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND);
                 }
                 for(AppointmentDetail appointmentDetail : appointmentDetails){
                     appointmentDetail.setStatus(AppointmentStatus.CONFIRMED);
@@ -306,7 +308,7 @@ public class VNPayService {
                 appointmentDetailRepository.saveAll(appointmentDetails);
             } else {
                 AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointment.getId())
-                        .orElseThrow(() -> new AppException(PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND));
                 appointmentDetail.setStatus(AppointmentStatus.CONFIRMED);
                 appointmentDetailRepository.save(appointmentDetail);
             }
@@ -321,7 +323,7 @@ public class VNPayService {
             if(appointment.getService().getIsCombo()){
                 List<AppointmentDetail> appointmentDetails = appointmentDetailRepository.findAllAppointmentDetails(appointment.getId());
                 if(appointmentDetails.isEmpty()){
-                    throw new AppException(PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND);
+                    throw new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND);
                 }
                 for(AppointmentDetail appointmentDetail : appointmentDetails){
                     appointmentDetail.setStatus(AppointmentStatus.CANCELED);
@@ -329,7 +331,7 @@ public class VNPayService {
                 appointmentDetailRepository.saveAll(appointmentDetails);
             } else {
                 AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointment.getId())
-                        .orElseThrow(() -> new AppException(PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, PaymentMessages.APPOINTMENT_DETAIL_NOT_FOUND));
                 appointmentDetail.setStatus(AppointmentStatus.CANCELED);
                 appointmentDetailRepository.save(appointmentDetail);
             }

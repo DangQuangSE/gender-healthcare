@@ -1,12 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.user.controller;
 
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
-import com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CertificationRequest;
 import com.S_Health.GenderHealthCare.modules.user.service.CertificationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +19,11 @@ import java.util.List;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyCertificationController {
+    private final CertificationService certificationService;
 
-    @Autowired
-    CertificationService certificationService;
+    public LegacyCertificationController(CertificationService certificationService) {
+        this.certificationService = certificationService;
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CertificationResponse> createCertification(

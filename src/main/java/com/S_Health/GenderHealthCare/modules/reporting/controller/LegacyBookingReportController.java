@@ -1,11 +1,10 @@
 package com.S_Health.GenderHealthCare.modules.reporting.controller;
 
-import com.S_Health.GenderHealthCare.dto.response.report.BookingReportResponse;
-import com.S_Health.GenderHealthCare.dto.response.report.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
 import com.S_Health.GenderHealthCare.modules.reporting.service.BookingReportService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,8 +16,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/booking-reports")
 public class LegacyBookingReportController {
-    @Autowired
-    BookingReportService bookingReportService;
+    private final BookingReportService bookingReportService;
+
+    public LegacyBookingReportController(BookingReportService bookingReportService) {
+        this.bookingReportService = bookingReportService;
+    }
 
     @GetMapping("/stats")
     public ResponseEntity<List<ServiceBookingReportDTO>> getServiceBookingStats(

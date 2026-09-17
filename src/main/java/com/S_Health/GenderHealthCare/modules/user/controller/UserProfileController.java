@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.user.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.service.UserService;
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserResponse;

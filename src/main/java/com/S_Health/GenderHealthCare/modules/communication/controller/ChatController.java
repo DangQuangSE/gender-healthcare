@@ -1,9 +1,9 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
-import com.S_Health.GenderHealthCare.dto.ChatMessageDTO;
-import com.S_Health.GenderHealthCare.dto.ChatSessionDTO;
-import com.S_Health.GenderHealthCare.dto.request.SendMessageRequest;
-import com.S_Health.GenderHealthCare.dto.request.StartChatRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
 import com.S_Health.GenderHealthCare.modules.communication.service.ChatService;

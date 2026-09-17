@@ -3,9 +3,9 @@ package com.S_Health.GenderHealthCare.modules.medical.controller;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
 
-import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
-import com.S_Health.GenderHealthCare.dto.PatientMedicalHistoryDTO;
-import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoQuery;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MyMedicalProfileQuery;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +26,11 @@ import java.util.List;
 @SecurityRequirement(name = "api")
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyMedicalProfileController {
-    @Autowired
-    MedicalProfileService medicalProfileService;
+    private final MedicalProfileService medicalProfileService;
+
+    public LegacyMedicalProfileController(MedicalProfileService medicalProfileService) {
+        this.medicalProfileService = medicalProfileService;
+    }
 
     // API cho user xem profile của mình
     @GetMapping("/my-profile")

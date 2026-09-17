@@ -1,13 +1,13 @@
 package com.S_Health.GenderHealthCare.modules.scheduling.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleCancelRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleRegisterRequest;
-import com.S_Health.GenderHealthCare.dto.response.DoctorWorkingScheduleDTO;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
-import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCancelRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleCancelResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRangeRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.WorkingDoctorRequest;

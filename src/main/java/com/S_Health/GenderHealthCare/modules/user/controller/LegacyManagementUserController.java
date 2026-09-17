@@ -7,7 +7,6 @@ import com.S_Health.GenderHealthCare.modules.user.service.ManageUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +21,11 @@ import java.util.Map;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyManagementUserController {
-    @Autowired
-    ManageUserService manageUserService;
+    private final ManageUserService manageUserService;
+
+    public LegacyManagementUserController(ManageUserService manageUserService) {
+        this.manageUserService = manageUserService;
+    }
     
     @PostMapping("/user")
     @Operation(summary = UserMessages.CREATE_STAFF_ACCOUNT)

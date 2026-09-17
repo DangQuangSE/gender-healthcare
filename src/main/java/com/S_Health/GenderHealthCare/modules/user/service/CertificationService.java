@@ -8,29 +8,30 @@ import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 
 
-import com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.repository.CertificationRepository;
-import com.S_Health.GenderHealthCare.integrations.storage.CloudinaryService;
+import com.S_Health.GenderHealthCare.integrations.storage.ImageStorage;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class CertificationService {
     private final CertificationRepository certificationRepository;
-    private final CloudinaryService cloudinaryService;
+    private final ImageStorage imageStorage;
     private final AuthUtil authUtil;
 
     public CertificationService(
             CertificationRepository certificationRepository,
-            CloudinaryService cloudinaryService,
+            ImageStorage imageStorage,
             AuthUtil authUtil) {
         this.certificationRepository = certificationRepository;
-        this.cloudinaryService = cloudinaryService;
+        this.imageStorage = imageStorage;
         this.authUtil = authUtil;
     }
     
@@ -39,15 +40,15 @@ public class CertificationService {
 
         // Kiểm tra user có phải là consultant không
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
-            throw new AppException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
+            throw new ApiException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
         }
 
         String imageUrl = null;
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                imageUrl = cloudinaryService.uploadCertificationImage(request.getImage());
+                imageUrl = imageStorage.uploadCertificationImage(request.getImage());
             } catch (IOException e) {
-                throw new AppException(CommonMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
+                throw new ApiException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
             }
         }
 
@@ -67,15 +68,15 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
 
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
-                .orElseThrow(() -> new AppException(UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
 
         // Upload hình ảnh mới nếu có
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                String imageUrl = cloudinaryService.uploadCertificationImage(request.getImage());
+                String imageUrl = imageStorage.uploadCertificationImage(request.getImage());
                 certification.setImage(imageUrl);
             } catch (IOException e) {
-                throw new AppException(CommonMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
+                throw new ApiException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
             }
         }
 
@@ -90,7 +91,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
         
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
-            throw new AppException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
+            throw new ApiException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
         }
         
         List<Certification> certifications = certificationRepository.findByConsultantAndIsActiveTrue(currentUser);
@@ -106,7 +107,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
         
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
-                .orElseThrow(() -> new AppException(UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
         
         certification.setActive(false);
         certificationRepository.save(certification);

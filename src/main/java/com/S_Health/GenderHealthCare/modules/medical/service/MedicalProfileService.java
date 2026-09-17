@@ -14,11 +14,14 @@ import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 
-import com.S_Health.GenderHealthCare.dto.*;
-import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
-import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoUpdateRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientBasicInfoDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.RecentTestResultDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
 
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
@@ -31,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.*;
 import org.springframework.data.support.PageableExecutionUtils;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class MedicalProfileService {
@@ -65,7 +69,7 @@ public class MedicalProfileService {
     public void createMedicalProfile(Appointment appointment) {
         User user = authUtil.getCurrentUser();
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(appointment.getService().getId())
-                .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.SERVICE_NOT_FOUND));
         // Tìm MedicalProfile đã tồn tại
         Optional<MedicalProfile> existingProfile = medicalProfileRepository
                 .findByCustomerAndServiceAndIsActiveTrue(user, service);
@@ -92,9 +96,9 @@ public class MedicalProfileService {
         Long serviceId = request.getServiceId();
         User user = authUtil.getCurrentUser();
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.SERVICE_NOT_FOUND));
         MedicalProfile medicalProfile = medicalProfileRepository.findByCustomerAndServiceAndIsActiveTrue(user, service)
-                .orElseThrow(() -> new AppException(MedicalMessages.MEDICAL_PROFILE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.MEDICAL_PROFILE_NOT_FOUND));
         return modelMapper.map(medicalProfile, MedicalProfileDTO.class);
     }
     /**
@@ -109,18 +113,18 @@ public class MedicalProfileService {
 
         // Kiểm tra quyền truy cập
         if (currentDoctor.getRole() != UserRole.CONSULTANT) {
-            throw new AppException(MedicalMessages.HISTORY_ACCESS_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, MedicalMessages.HISTORY_ACCESS_FORBIDDEN);
         }
 
         // Lấy thông tin bệnh nhân
         User patient = authenticationRepository.findById(patientId)
-                .orElseThrow(() -> new AppException(MedicalMessages.PATIENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.PATIENT_NOT_FOUND));
 
         // Kiểm tra bác sĩ có quyền xem bệnh nhân này không
         boolean hasAccess = appointmentDetailRepository
                 .existsByConsultantIdAndAppointmentCustomerId(currentDoctor.getId(), patientId);
         if (!hasAccess) {
-            throw new AppException(MedicalMessages.PROFILE_ACCESS_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, MedicalMessages.PROFILE_ACCESS_FORBIDDEN);
         }
 
         // Approach mới: Lấy 5 appointments gần nhất của bệnh nhân (đơn giản và hiệu quả)
@@ -270,15 +274,15 @@ public class MedicalProfileService {
 
         // Kiểm tra quyền (chỉ staff và admin)
         if (currentStaff.getRole() != UserRole.STAFF && currentStaff.getRole() != UserRole.ADMIN) {
-            throw new AppException(MedicalMessages.MEDICAL_INFO_UPDATE_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, MedicalMessages.MEDICAL_INFO_UPDATE_FORBIDDEN);
         }
 
         // Lấy customer và service
         User customer = authenticationRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new AppException(MedicalMessages.PATIENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.PATIENT_NOT_FOUND));
 
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(request.getServiceId())
-                .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.SERVICE_NOT_FOUND));
 
         // Tìm hoặc tạo medical profile
         MedicalProfile profile = medicalProfileRepository
@@ -308,10 +312,10 @@ public class MedicalProfileService {
         Long customerId = request.getCustomerId();
         Long serviceId = request.getServiceId();
         User customer = authenticationRepository.findById(customerId)
-                .orElseThrow(() -> new AppException(MedicalMessages.PATIENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.PATIENT_NOT_FOUND));
 
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(serviceId)
-                .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.SERVICE_NOT_FOUND));
 
         return medicalProfileRepository
                 .findByCustomerAndServiceAndIsActiveTrue(customer, service)

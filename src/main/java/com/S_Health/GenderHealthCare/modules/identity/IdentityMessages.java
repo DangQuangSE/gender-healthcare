@@ -14,9 +14,9 @@ public final class IdentityMessages {
     public static final String LOGIN_INVALID = "Invalid email or password";
     public static final String ACCOUNT_INACTIVE = "Account is inactive";
     public static final String GOOGLE_TOKEN_INVALID = "Invalid Google token";
-    public static final String GOOGLE_LOGIN_FAILED = "Google login failed: %s";
+    public static final String GOOGLE_LOGIN_FAILED = "Google login failed";
     public static final String FACEBOOK_TOKEN_INVALID = "Invalid Facebook token";
-    public static final String FACEBOOK_LOGIN_FAILED = "Facebook login failed: %s";
+    public static final String FACEBOOK_LOGIN_FAILED = "Facebook login failed";
     public static final String EMAIL_INVALID = "Email is invalid";
     public static final String EMAIL_REQUIRED = "Email is required";
     public static final String OTP_REQUIRED = "OTP is required";

@@ -1,31 +1,33 @@
 package com.S_Health.GenderHealthCare.modules.payment.controller;
 
-import com.S_Health.GenderHealthCare.dto.response.payment.VNPayResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
-import com.S_Health.GenderHealthCare.modules.payment.PaymentMessages;
+import com.S_Health.GenderHealthCare.modules.payment.dto.response.VNPayResponse;
 import com.S_Health.GenderHealthCare.modules.payment.service.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/payment/vnpay")
 public class LegacyVNPayController {
+    private final VNPayService vnPayService;
 
-    @Autowired
-    private VNPayService vnPayService;
+    public LegacyVNPayController(VNPayService vnPayService) {
+        this.vnPayService = vnPayService;
+    }
 
     @GetMapping("/create")
     public ResponseEntity<VNPayResponse> createPayment(@RequestParam long appointmentId,
-                                                       HttpServletRequest request) throws Exception {
+                                                       HttpServletRequest request) {
         VNPayResponse response = vnPayService.createOrder(appointmentId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/create-off")
     public ResponseEntity<VNPayResponse> createPaymentOff(@RequestParam long appointmentId,
-                                                       HttpServletRequest request) throws Exception {
+                                                       HttpServletRequest request) {
         VNPayResponse response = vnPayService.createOrderOff(appointmentId);
         return ResponseEntity.ok(response);
     }
@@ -33,16 +35,7 @@ public class LegacyVNPayController {
 
     @GetMapping("/vnpay-return")
     public ResponseEntity<VNPayResponse> handleReturn(HttpServletRequest request) {
-        try {
-            VNPayResponse response = vnPayService.processReturn(request);
-            return ResponseEntity.ok(response);
-        } catch (AppException e) {
-            return ResponseEntity.badRequest()
-                    .body(VNPayResponse.builder().message(e.getMessage()).build());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(VNPayResponse.builder().message(PaymentMessages.PAYMENT_PROCESSING_FAILED).build());
-        }
+        return ResponseEntity.ok(vnPayService.processReturn(request));
     }
 
 

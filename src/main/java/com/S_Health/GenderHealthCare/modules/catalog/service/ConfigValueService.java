@@ -3,12 +3,13 @@ package com.S_Health.GenderHealthCare.modules.catalog.service;
 import com.S_Health.GenderHealthCare.modules.catalog.domain.ConfigValue;
 
 
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.ConfigValueRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class ConfigValueService {
@@ -31,7 +32,7 @@ public class ConfigValueService {
      */
     public ConfigValue createConfig(String name, Integer value) {
         if (configValueRepository.existsByName(name)) {
-            throw new AppException(CatalogConstants.CONFIG_EXISTS);
+            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.CONFIG_EXISTS);
         }
         ConfigValue config = ConfigValue.builder()
                 .name(name)
@@ -45,7 +46,7 @@ public class ConfigValueService {
      */
     public ConfigValue updateConfig(Long id, Integer value) {
         ConfigValue config = configValueRepository.findById(id)
-                .orElseThrow(() -> new AppException(CatalogConstants.CONFIG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.CONFIG_NOT_FOUND));
 
         config.setValue(value);
         return configValueRepository.save(config);
@@ -56,7 +57,7 @@ public class ConfigValueService {
      */
     public void deleteConfig(Long id) {
         if (!configValueRepository.existsById(id)) {
-            throw new AppException(CatalogConstants.CONFIG_NOT_FOUND);
+            throw new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.CONFIG_NOT_FOUND);
         }
 
         configValueRepository.deleteById(id);

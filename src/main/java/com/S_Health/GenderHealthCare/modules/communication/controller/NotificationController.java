@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.notification.NotificationRequest;
-import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.NotificationRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.modules.communication.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;

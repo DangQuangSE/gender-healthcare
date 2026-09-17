@@ -1,12 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.notification.NotificationRequest;
-import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.NotificationRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
 import com.S_Health.GenderHealthCare.modules.communication.service.NotificationService;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +15,11 @@ import java.util.List;
 @RequestMapping("/api/notifications")
 @SecurityRequirement(name = "api")
 public class LegacyNotificationController {
-    @Autowired
-    NotificationService notificationService;
+    private final NotificationService notificationService;
+
+    public LegacyNotificationController(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     @PostMapping
     @Operation(summary = CommunicationMessages.CREATE_NOTIFICATION)

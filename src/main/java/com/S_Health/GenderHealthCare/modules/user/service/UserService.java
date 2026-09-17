@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.user.service;
 
 
 import com.S_Health.GenderHealthCare.common.validation.ImageUploadValidator;
-import com.S_Health.GenderHealthCare.dto.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CertificationRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;

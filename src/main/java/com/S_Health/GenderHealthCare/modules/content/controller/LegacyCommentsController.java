@@ -5,9 +5,6 @@ import com.S_Health.GenderHealthCare.modules.content.dto.response.CommentRespons
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.modules.content.service.CommentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import javassist.NotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +14,11 @@ import java.util.List;
 @RequestMapping("/api/comment")
 @SecurityRequirement(name = "api")
 public class LegacyCommentsController {
+    private final CommentService commentService;
 
-    @Autowired
-    private CommentService commentService;
+    public LegacyCommentsController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@RequestBody CommentRequest request) {

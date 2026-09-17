@@ -10,7 +10,7 @@ public final class MedicalMessages {
     public static final String RESULT_NOT_FOUND_OR_DELETED = "Không tìm thấy kết quả hoặc đã bị xóa!";
     public static final String RESULT_UPDATE_NOT_FOUND = "Không tìm thấy kết quả để cập nhật!";
     public static final String RESULT_DELETE_NOT_FOUND = "Không tìm thấy kết quả để xóa!";
-    public static final String PROFILE_UPDATE_FAILED = "Lỗi khi update Medical Profile từ Result: %s";
+    public static final String PROFILE_UPDATE_FAILED = "Không thể cập nhật hồ sơ y tế từ kết quả";
 
     public static final String SERVICE_NOT_FOUND = "Không tìm thấy dịch vụ này!";
     public static final String MEDICAL_PROFILE_NOT_FOUND = "Không tìm thấy hồ sơ khám bệnh!";

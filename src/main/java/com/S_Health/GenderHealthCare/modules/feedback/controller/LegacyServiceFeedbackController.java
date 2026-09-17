@@ -1,12 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.feedback.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.ServiceFeedbackRequest;
-import com.S_Health.GenderHealthCare.dto.response.feedback.AverageRatingResponse;
-import com.S_Health.GenderHealthCare.dto.response.feedback.ServiceFeedbackResponse;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.request.ServiceFeedbackRequest;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.response.AverageRatingResponse;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ServiceFeedbackResponse;
 import com.S_Health.GenderHealthCare.modules.feedback.service.FeedbackService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +15,11 @@ import java.util.List;
 @RequestMapping("/api/feedback")
 @SecurityRequirement(name = "api")
 public class LegacyServiceFeedbackController {
-    @Autowired
-    FeedbackService feedbackService;
+    private final FeedbackService feedbackService;
+
+    public LegacyServiceFeedbackController(FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
+    }
 
     @PostMapping
     public ResponseEntity<ServiceFeedbackResponse> create(@Valid @RequestBody ServiceFeedbackRequest request) {

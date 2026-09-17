@@ -1,15 +1,14 @@
 package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.dto.request.room.RoomConsultantRequest;
-import com.S_Health.GenderHealthCare.dto.request.room.RoomRequest;
-import com.S_Health.GenderHealthCare.dto.response.RoomConsultantDTO;
-import com.S_Health.GenderHealthCare.dto.response.RoomDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDTO;
 import com.S_Health.GenderHealthCare.modules.catalog.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +22,11 @@ import java.util.List;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyRoomController {
-    @Autowired
-     RoomService roomService;
+    private final RoomService roomService;
+
+    public LegacyRoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
 
     @PostMapping
     @Operation(summary = CatalogConstants.CREATE_ROOM)

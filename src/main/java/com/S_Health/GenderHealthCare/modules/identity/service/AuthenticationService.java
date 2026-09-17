@@ -1,28 +1,19 @@
 package com.S_Health.GenderHealthCare.modules.identity.service;
 
-import com.S_Health.GenderHealthCare.modules.user.domain.User;
-import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
-import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
-
-
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
+import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
+import com.S_Health.GenderHealthCare.modules.identity.client.FacebookAuthClient;
+import com.S_Health.GenderHealthCare.modules.identity.client.GoogleAuthClient;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.JwtResponse;
-import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,10 +21,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-
+/**
+ * Application service for password, OTP and social-login authentication flows.
+ */
 @Service
 public class AuthenticationService implements UserDetailsService {
     private final AuthenticationRepository authenticationRepository;
@@ -41,11 +32,10 @@ public class AuthenticationService implements UserDetailsService {
     private final AuthenticationManager authenticationManager;
     private final OTPService otpService;
     private final JWTService jwtService;
-    @Value("${google.client.id}")
-    private String googleClientId;
     private final ModelMapper modelMapper;
     private final EmailService emailService;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final GoogleAuthClient googleAuthClient;
+    private final FacebookAuthClient facebookAuthClient;
 
     public AuthenticationService(
             AuthenticationRepository authenticationRepository,
@@ -54,7 +44,9 @@ public class AuthenticationService implements UserDetailsService {
             OTPService otpService,
             JWTService jwtService,
             ModelMapper modelMapper,
-            EmailService emailService) {
+            EmailService emailService,
+            GoogleAuthClient googleAuthClient,
+            FacebookAuthClient facebookAuthClient) {
         this.authenticationRepository = authenticationRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -62,168 +54,122 @@ public class AuthenticationService implements UserDetailsService {
         this.jwtService = jwtService;
         this.modelMapper = modelMapper;
         this.emailService = emailService;
+        this.googleAuthClient = googleAuthClient;
+        this.facebookAuthClient = facebookAuthClient;
     }
 
-    public boolean checkExistEmail(String email){
+    public boolean checkExistEmail(String email) {
         return authenticationRepository.existsByEmail(email);
     }
+
     public void setPassword(PasswordRequest request) {
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new AppException(IdentityMessages.PASSWORD_CONFIRMATION_MISMATCH);
-        }
-        String password = passwordEncoder.encode(request.getPassword());
+        validatePasswordConfirmation(request);
+
         authenticationRepository.save(User.builder()
                 .email(request.getEmail())
-                .password(password)
+                .password(passwordEncoder.encode(request.getPassword()))
                 .isVerify(true)
                 .isActive(true)
                 .role(UserRole.CUSTOMER)
                 .build());
+
         otpService.removeOtp(request.getEmail());
         emailService.sendWelcome(request.getEmail());
     }
 
     public void setPasswordForgot(PasswordRequest request) {
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new AppException(IdentityMessages.PASSWORD_CONFIRMATION_MISMATCH);
-        }
-        String password = passwordEncoder.encode(request.getPassword());
+        validatePasswordConfirmation(request);
+
         User user = authenticationRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(IdentityMessages.USER_NOT_FOUND.formatted(request.getEmail())));
+                .orElseThrow(() -> new ApiException(
+                        ErrorCode.NOT_FOUND,
+                        IdentityMessages.USER_NOT_FOUND.formatted(request.getEmail())));
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         authenticationRepository.save(user);
-
         otpService.removeOtp(request.getEmail());
     }
 
-    public JwtResponse loginWithEmail(LoginEmailRequest loginEmailRequest) {
+    public JwtResponse loginWithEmail(LoginEmailRequest request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    loginEmailRequest.getEmail(),
-                    loginEmailRequest.getPassword()
-            ));
-        } catch (Exception e) {
-            throw new AppException(IdentityMessages.LOGIN_INVALID);
-        }
-        User user = authenticationRepository.findUserByEmail(loginEmailRequest.getEmail());
-
-        // Kiểm tra user có bị vô hiệu hóa không
-        if (!user.isActive()) {
-            throw new AppException(IdentityMessages.ACCOUNT_INACTIVE);
+                    request.getEmail(),
+                    request.getPassword()));
+        } catch (Exception exception) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, IdentityMessages.LOGIN_INVALID);
         }
 
-        String jwt = jwtService.generateToken(user);
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        return new JwtResponse(jwt, userDTO, "email", true);
+        User user = authenticationRepository.findUserByEmail(request.getEmail());
+        ensureActive(user);
+        return createJwtResponse(user, "email");
     }
 
     public JwtResponse loginWithGoogleToken(String googleToken) {
-        try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    GsonFactory.getDefaultInstance()
-            ).setAudience(Collections.singletonList(googleClientId)).build();
-
-            GoogleIdToken idToken = verifier.verify(googleToken);
-            if (idToken == null) {
-                throw new AppException(IdentityMessages.GOOGLE_TOKEN_INVALID);
-            }
-
-            GoogleIdToken.Payload payload = idToken.getPayload();
-            String email = payload.getEmail();
-            String name = (String) payload.get("name");
-            String imageUrl = (String) payload.get("picture");
-
-            User user = authenticationRepository.findByEmail(email).orElseGet(() -> {
-                return authenticationRepository.save(User.builder()
-                        .email(email)
-                        .fullname(name)
-                        .imageUrl(imageUrl)
-                        .isVerify(true)
-                        .isActive(true)
-                        .role(UserRole.CUSTOMER)
-                        .build());
-            });
-
-            // Kiểm tra user có bị vô hiệu hóa không
-            if (!user.isActive()) {
-                throw new AppException(IdentityMessages.ACCOUNT_INACTIVE);
-            }
-
-            String jwt = jwtService.generateToken(user);
-            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-
-            return new JwtResponse(jwt, userDTO, "google", true);
-        } catch (Exception e) {
-            throw new AppException(IdentityMessages.GOOGLE_LOGIN_FAILED.formatted(e.getMessage()));
-        }
+        GoogleAuthClient.GoogleUser googleUser = googleAuthClient.verify(googleToken);
+        return loginWithSocialAccount(
+                googleUser.email(),
+                googleUser.name(),
+                googleUser.imageUrl(),
+                "google");
     }
 
     public JwtResponse loginWithFacebook(String accessToken) {
-        try{
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(accessToken); // chuẩn: Authorization: Bearer <token>
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-            // 2. Gọi Graph API để lấy thông tin user
-            String url = "https://graph.facebook.com/me?fields=id,name,email,picture.type(large)";
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    entity,
-                    String.class
-            );
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException(IdentityMessages.FACEBOOK_TOKEN_INVALID);
-            }
-
-            JSONObject fbUser = new JSONObject(response.getBody());
-            String fbId = fbUser.optString("id");
-            String name = fbUser.optString("name");
-            String email = fbUser.optString("email");
-            String imageUrl = fbUser.getJSONObject("picture")
-                    .getJSONObject("data")
-                    .getString("url");
-
-            // Kiểm tra hoặc tạo user trong DB
-            User user = authenticationRepository.findByEmail(email).orElseGet(() -> {
-                return authenticationRepository.save(User.builder()
-                        .email(email)
-                        .fullname(name)
-                        .imageUrl(imageUrl)
-                        .isVerify(true)
-                        .isActive(true)
-                        .role(UserRole.CUSTOMER)
-                        .build());
-            });
-
-            // Kiểm tra user có bị vô hiệu hóa không
-            if (!user.isActive()) {
-                throw new AppException(IdentityMessages.ACCOUNT_INACTIVE);
-            }
-
-            String jwt = jwtService.generateToken(user);
-            UserDTO userDTO =  modelMapper.map(user, UserDTO.class);
-
-            return new JwtResponse(jwt, userDTO, "facebook", true);
-        } catch (Exception e) {
-            throw new AppException(IdentityMessages.FACEBOOK_LOGIN_FAILED.formatted(e.getMessage()));
-        }
+        FacebookAuthClient.FacebookUser facebookUser = facebookAuthClient.getUser(accessToken);
+        return loginWithSocialAccount(
+                facebookUser.email(),
+                facebookUser.name(),
+                facebookUser.imageUrl(),
+                "facebook");
     }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = authenticationRepository.findUserByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException(IdentityMessages.USER_NOT_FOUND.formatted(email));
         }
-
-        // Kiểm tra user có bị vô hiệu hóa không
         if (!user.isActive()) {
             throw new UsernameNotFoundException(IdentityMessages.ACCOUNT_INACTIVE);
         }
-
         return user;
     }
 
+    private JwtResponse loginWithSocialAccount(
+            String email,
+            String fullName,
+            String imageUrl,
+            String provider) {
+        User user = authenticationRepository.findByEmail(email).orElseGet(() ->
+                authenticationRepository.save(User.builder()
+                        .email(email)
+                        .fullname(fullName)
+                        .imageUrl(imageUrl)
+                        .isVerify(true)
+                        .isActive(true)
+                        .role(UserRole.CUSTOMER)
+                        .build()));
+
+        ensureActive(user);
+        return createJwtResponse(user, provider);
+    }
+
+    private JwtResponse createJwtResponse(User user, String provider) {
+        String jwt = jwtService.generateToken(user);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        return new JwtResponse(jwt, userDTO, provider, true);
+    }
+
+    private void validatePasswordConfirmation(PasswordRequest request) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new ApiException(
+                    ErrorCode.BAD_REQUEST,
+                    IdentityMessages.PASSWORD_CONFIRMATION_MISMATCH);
+        }
+    }
+
+    private void ensureActive(User user) {
+        if (user == null || !user.isActive()) {
+            throw new ApiException(ErrorCode.UNAUTHENTICATED, IdentityMessages.ACCOUNT_INACTIVE);
+        }
+    }
 }

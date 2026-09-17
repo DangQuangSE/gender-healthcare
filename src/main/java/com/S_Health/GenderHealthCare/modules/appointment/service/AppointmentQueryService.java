@@ -1,12 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
-import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
-import com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO;
-import com.S_Health.GenderHealthCare.dto.BasicMedicalProfileDTO;
-import com.S_Health.GenderHealthCare.dto.PatientHistoryDTO;
-import com.S_Health.GenderHealthCare.dto.ResultDTO;
-import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class AppointmentQueryService {
@@ -56,7 +57,7 @@ public class AppointmentQueryService {
 
     public AppointmentDTO getAppointmentById(long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         List<AppointmentDetail> appointmentDetails = appointmentDetailRepository
                 .findByAppointmentAndIsActiveTrue(appointment);
@@ -64,7 +65,7 @@ public class AppointmentQueryService {
 
         for (AppointmentDetail appointmentDetail : appointmentDetails) {
             MedicalResult medicalResult = medicalResultRepository.findByAppointmentDetail(appointmentDetail)
-                    .orElseThrow(() -> new AppException(AppointmentMessages.RESULT_NOT_FOUND));
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.RESULT_NOT_FOUND));
 
             AppointmentDetailDTO detailDto = modelMapper.map(appointmentDetail, AppointmentDetailDTO.class);
             detailDto.setConsultantName(appointmentDetail.getConsultant().getFullname());
@@ -85,11 +86,11 @@ public class AppointmentQueryService {
 
     public PatientHistoryDTO getPatientHistoryFromAppointment(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         MedicalProfile medicalProfile = appointment.getMedicalProfile();
         if (medicalProfile == null) {
-            throw new AppException(AppointmentMessages.MEDICAL_PROFILE_NOT_FOUND);
+            throw new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.MEDICAL_PROFILE_NOT_FOUND);
         }
 
         List<Appointment> pastAppointments = appointmentRepository
@@ -178,14 +179,14 @@ public class AppointmentQueryService {
         return detailDto;
     }
 
-    private com.S_Health.GenderHealthCare.dto.SimpleRoomDTO mapRoomToSimpleDto(
+    private com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO mapRoomToSimpleDto(
             com.S_Health.GenderHealthCare.modules.catalog.domain.Room room) {
         if (room == null) {
             return null;
         }
 
-        com.S_Health.GenderHealthCare.dto.SimpleRoomDTO roomDto =
-                modelMapper.map(room, com.S_Health.GenderHealthCare.dto.SimpleRoomDTO.class);
+        com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO roomDto =
+                modelMapper.map(room, com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO.class);
         if (room.getSpecialization() != null) {
             roomDto.setSpecializationName(room.getSpecialization().getName());
         }

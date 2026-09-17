@@ -2,16 +2,16 @@ package com.S_Health.GenderHealthCare.modules.scheduling.service;
 
 
 
-import com.S_Health.GenderHealthCare.dto.RangeDate;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleCancelRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleConsultantRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleRegisterRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleServiceRequest;
-import com.S_Health.GenderHealthCare.dto.response.DoctorWorkingScheduleDTO;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
-import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.RangeDate;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCancelRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleConsultantRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleServiceRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleCancelResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRangeRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.WorkingDoctorRequest;
 import org.springframework.stereotype.Service;

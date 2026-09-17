@@ -28,11 +28,11 @@ public final class AppointmentMessages {
     public static final String CONSULTANT_SLOT_NOT_FOUND = "Khung giờ không tồn tại";
     public static final String NO_AVAILABLE_CONSULTANT =
             "Không tìm thấy tư vấn viên nào khả dụng cho thời gian đã chọn!";
-    public static final String AUTO_ASSIGN_ROOM_FAILED = "Có lỗi xảy ra khi auto-assign phòng: %s";
-    public static final String CONSULTANT_CHECK_FAILED = "Lỗi khi kiểm tra tư vấn viên %s: %s";
-    public static final String STATUS_UPDATE_FAILED = "Lỗi khi cập nhật trạng thái: %s";
+    public static final String AUTO_ASSIGN_ROOM_FAILED = "Không thể tự động phân phòng";
+    public static final String CONSULTANT_CHECK_FAILED = "Không thể kiểm tra tình trạng tư vấn viên";
+    public static final String STATUS_UPDATE_FAILED = "Không thể cập nhật trạng thái lịch hẹn";
     public static final String APPOINTMENT_STATUS_UPDATE_FAILED =
-            "Không thể cập nhật trạng thái lịch hẹn: %s";
+            "Không thể cập nhật trạng thái lịch hẹn";
 
     public static final String GET_APPOINTMENT = "Get appointment by ID";
     public static final String GET_CONSULTANT_SCHEDULE = "Get the current consultant schedule";
@@ -46,6 +46,7 @@ public final class AppointmentMessages {
     public static final String DETAIL_STATUS_UPDATED = "Appointment detail status updated";
     public static final String RATE_APPOINTMENT = "Mark an appointment as rated";
     public static final String CREATE_BOOKING = "Create an appointment booking";
+    public static final String CREATE_MEETING = "Create an online consultation meeting";
     public static final String APPOINTMENT_DATE_REQUIRED = "Appointment date is required";
 
     private AppointmentMessages() {

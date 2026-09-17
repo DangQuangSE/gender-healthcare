@@ -2,11 +2,11 @@ package com.S_Health.GenderHealthCare.modules.user.mapper;
 
 import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
 
-import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
-import com.S_Health.GenderHealthCare.dto.response.CreateUserResponse;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantCertification;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CreateUserResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantCertification;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDTO;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantCertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
@@ -99,7 +99,7 @@ public class UserMapper {
     }
 
     public CertificationResponse toCertificationResponse(
-            com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse source) {
+            com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse source) {
         if (source == null) {
             return null;
         }
@@ -116,7 +116,7 @@ public class UserMapper {
     }
 
     public List<CertificationResponse> toCertificationResponses(
-            List<com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse> sources) {
+            List<com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse> sources) {
         return sources.stream().map(this::toCertificationResponse).toList();
     }
 

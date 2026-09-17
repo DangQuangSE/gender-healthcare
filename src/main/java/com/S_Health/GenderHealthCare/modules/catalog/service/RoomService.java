@@ -7,12 +7,12 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 
 
-import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.dto.request.room.RoomConsultantRequest;
-import com.S_Health.GenderHealthCare.dto.request.room.RoomRequest;
-import com.S_Health.GenderHealthCare.dto.response.RoomConsultantDTO;
-import com.S_Health.GenderHealthCare.dto.response.RoomDTO;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDTO;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.RoomConsultantRepository;
 import com.S_Health.GenderHealthCare.repository.RoomRepository;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class RoomService {
@@ -51,11 +52,11 @@ public class RoomService {
     public RoomDTO createRoom(RoomRequest request) {
         // Validate request
         if (roomRepository.existsByNameAndIsActiveTrue(request.getName())) {
-            throw new AppException(CatalogConstants.ROOM_NAME_EXISTS);
+            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.ROOM_NAME_EXISTS);
         }
 
         Specialization specialization = specializationRepository.findById(request.getSpecializationId())
-                .orElseThrow(() -> new AppException(CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(request.getSpecializationId())));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(request.getSpecializationId())));
         Room room = new Room();
         room.setName(request.getName());
         room.setDescription(request.getDescription());
@@ -75,7 +76,7 @@ public class RoomService {
 
     public List<RoomDTO> getRoomsBySpecialization(Long specializationId) {
         Specialization specialization = specializationRepository.findById(specializationId)
-                .orElseThrow(() -> new AppException(CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
         return roomRepository.findBySpecializationAndIsActiveTrue(specialization).stream()
                 .map(this::convertToDTO)
@@ -84,10 +85,10 @@ public class RoomService {
 
     public RoomDTO getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(CatalogConstants.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
         if (!room.isActive()) {
-            throw new AppException(CatalogConstants.ROOM_INACTIVE);
+            throw new ApiException(CatalogConstants.ROOM_INACTIVE);
         }
 
         return convertToDTO(room);
@@ -96,20 +97,20 @@ public class RoomService {
     @Transactional
     public RoomDTO updateRoom(Long roomId, RoomRequest request) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(CatalogConstants.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
         if (!room.isActive()) {
-            throw new AppException(CatalogConstants.ROOM_INACTIVE);
+            throw new ApiException(CatalogConstants.ROOM_INACTIVE);
         }
 
         if (!room.getName().equals(request.getName()) &&
                 roomRepository.existsByNameAndIsActiveTrue(request.getName())) {
-            throw new AppException(CatalogConstants.ROOM_NAME_EXISTS);
+            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.ROOM_NAME_EXISTS);
         }
         // Get specialization if changed
         if (!(room.getSpecialization().getId() == (request.getSpecializationId()))) {
             Specialization specialization = specializationRepository.findById(request.getSpecializationId())
-                    .orElseThrow(() -> new AppException(CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(request.getSpecializationId())));
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(request.getSpecializationId())));
             room.setSpecialization(specialization);
         }
 
@@ -124,10 +125,10 @@ public class RoomService {
     @Transactional
     public void deleteRoom(Long roomId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(CatalogConstants.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
         if (!room.isActive()) {
-            throw new AppException(CatalogConstants.ROOM_ALREADY_DELETED);
+            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.ROOM_ALREADY_DELETED);
         }
 
         // Deactivate all consultant assignments
@@ -147,31 +148,31 @@ public class RoomService {
     @Transactional
     public RoomConsultantDTO addConsultantToRoom(Long roomId, RoomConsultantRequest request) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(CatalogConstants.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
         if (!room.isActive()) {
-            throw new AppException(CatalogConstants.ROOM_INACTIVE);
+            throw new ApiException(CatalogConstants.ROOM_INACTIVE);
         }
 
         if (request.getStartTime().isAfter(request.getEndTime())) {
-            throw new AppException(CatalogConstants.WORKING_TIME_INVALID);
+            throw new ApiException(CatalogConstants.WORKING_TIME_INVALID);
         }
         User consultant = authenticationRepository.findById(request.getConsultantId())
-                .orElseThrow(() -> new AppException(CatalogConstants.CONSULTANT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.CONSULTANT_NOT_FOUND));
 
         if (consultant.getRole() != UserRole.CONSULTANT) {
-            throw new AppException(CatalogConstants.USER_NOT_CONSULTANT);
+            throw new ApiException(CatalogConstants.USER_NOT_CONSULTANT);
         }
 
         boolean hasSpecialization = consultant.getSpecializations().stream()
                 .anyMatch(spec -> spec.getId() == (room.getSpecialization().getId()));
 
         if (!hasSpecialization) {
-            throw new AppException(CatalogConstants.CONSULTANT_SPECIALIZATION_MISMATCH);
+            throw new ApiException(CatalogConstants.CONSULTANT_SPECIALIZATION_MISMATCH);
         }
         if (roomConsultantRepository.existsByRoomAndConsultantAndStartTimeAndEndTimeAndIsActiveTrue(
                 room, consultant, request.getStartTime(), request.getEndTime())) {
-            throw new AppException(CatalogConstants.WORKING_TIME_EXISTS);
+            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.WORKING_TIME_EXISTS);
         }
         RoomConsultant roomConsultant = new RoomConsultant();
         roomConsultant.setRoom(room);
@@ -188,14 +189,14 @@ public class RoomService {
     @Transactional
     public void removeConsultantFromRoom(Long roomId, Long assignmentId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(CatalogConstants.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
         RoomConsultant assignment = roomConsultantRepository.findById(assignmentId)
-                .orElseThrow(() -> new AppException(CatalogConstants.WORKING_TIME_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.WORKING_TIME_NOT_FOUND));
         if (!(assignment.getRoom().getId() == (room.getId()))) {
-            throw new AppException(CatalogConstants.WORKING_TIME_WRONG_ROOM);
+            throw new ApiException(CatalogConstants.WORKING_TIME_WRONG_ROOM);
         }
         if (!assignment.isActive()) {
-            throw new AppException(CatalogConstants.WORKING_TIME_ALREADY_DELETED);
+            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.WORKING_TIME_ALREADY_DELETED);
         }
         // Deactivate assignment
         assignment.setActive(false);
@@ -205,7 +206,7 @@ public class RoomService {
 
     public List<RoomConsultantDTO> getConsultantsInRoom(Long roomId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new AppException(CatalogConstants.ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
         return roomConsultantRepository.findByRoomAndIsActiveTrue(room).stream()
                 .map(this::convertToConsultantDTO)

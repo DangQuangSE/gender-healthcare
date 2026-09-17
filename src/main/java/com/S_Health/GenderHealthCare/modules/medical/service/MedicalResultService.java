@@ -10,12 +10,12 @@ import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 
-import com.S_Health.GenderHealthCare.dto.ResultDTO;
-import com.S_Health.GenderHealthCare.dto.request.service.ConsultationResultRequest;
-import com.S_Health.GenderHealthCare.dto.request.service.LabTestResultRequest;
-import com.S_Health.GenderHealthCare.dto.request.service.ResultRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.ConsultationResultRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.LabTestResultRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.ResultRequest;
 
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentStatusCalculator;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class MedicalResultService {
@@ -67,11 +68,11 @@ public class MedicalResultService {
      */
     public ResultDTO saveConsultationResult(ConsultationResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new AppException(MedicalMessages.WRITER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(request.getAppointmentDetailId())
-                .orElseThrow(() -> new AppException(MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
         TreatmentProtocol protocol = treatmentProtocolRepository.findById(request.getTreatmentProtocolId())
-                .orElseThrow(()-> new AppException(MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
+                .orElseThrow(()-> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
 
 
         MedicalResult medicalResult = MedicalResult.builder()
@@ -100,11 +101,11 @@ public class MedicalResultService {
      */
     public ResultDTO saveLabTestResult(LabTestResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new AppException(MedicalMessages.WRITER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(request.getAppointmentDetailId())
-                .orElseThrow(() -> new AppException(MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
         TreatmentProtocol protocol = treatmentProtocolRepository.findById(request.getTreatmentProtocolId())
-                .orElseThrow(()-> new AppException(MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
+                .orElseThrow(()-> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
 
         MedicalResult medicalResult = MedicalResult.builder()
                 .appointmentDetail(appointmentDetail)
@@ -167,7 +168,7 @@ public class MedicalResultService {
 
     public ResultDTO getResultById(Long id) {
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new AppException(MedicalMessages.RESULT_NOT_FOUND_OR_DELETED));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_NOT_FOUND_OR_DELETED));
 
         return mapToFullResultDTO(result);
     }
@@ -183,9 +184,9 @@ public class MedicalResultService {
 
     public ResultDTO updateResult(Long id, ResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new AppException(MedicalMessages.WRITER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new AppException(MedicalMessages.RESULT_UPDATE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_UPDATE_NOT_FOUND));
         result.setConsultant(writer);
         result.setDescription(request.getDescription());
         result.setDiagnosis(request.getDiagnosis());
@@ -197,7 +198,7 @@ public class MedicalResultService {
 
     public void deleteResult(Long id) {
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new AppException(MedicalMessages.RESULT_DELETE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_DELETE_NOT_FOUND));
 
         result.setIsActive(false);
         medicalResultRepository.save(result);
@@ -224,7 +225,7 @@ public class MedicalResultService {
             medicalProfileRepository.save(profile);
         } catch (Exception e) {
             // Log error nhưng không throw để không ảnh hưởng đến việc lưu kết quả
-            throw new AppException(MedicalMessages.PROFILE_UPDATE_FAILED.formatted(e.getMessage()));
+            throw new ApiException(ErrorCode.INTERNAL_ERROR, MedicalMessages.PROFILE_UPDATE_FAILED, e);
         }
     }
     private void updateAppointmentStatus(AppointmentDetail appointmentDetail) {

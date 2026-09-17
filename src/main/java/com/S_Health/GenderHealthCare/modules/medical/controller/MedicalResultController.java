@@ -1,10 +1,10 @@
 package com.S_Health.GenderHealthCare.modules.medical.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.ResultDTO;
-import com.S_Health.GenderHealthCare.dto.request.service.ConsultationResultRequest;
-import com.S_Health.GenderHealthCare.dto.request.service.LabTestResultRequest;
-import com.S_Health.GenderHealthCare.dto.request.service.ResultRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.ConsultationResultRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.LabTestResultRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.ResultRequest;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalResultService;
 import io.swagger.v3.oas.annotations.Operation;

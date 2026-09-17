@@ -1,13 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.dto.TagDTO;
-import com.S_Health.GenderHealthCare.dto.request.tag.TagRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +20,11 @@ import java.util.List;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyTagController {
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
+
+    public LegacyTagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @PostMapping
     @Operation(summary = CatalogConstants.CREATE_TAG)

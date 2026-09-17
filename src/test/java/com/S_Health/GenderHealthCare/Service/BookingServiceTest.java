@@ -7,8 +7,8 @@ import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
 import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
 
-import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
-import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.request.BookingRequest;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingResponse;
 
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
@@ -98,8 +98,8 @@ class BookingServiceTest {
         when(consultantSlotRepository.findByConsultantAndDateAndStartTimeAndStatus(any(), any(), any(), any()))
                 .thenReturn(Optional.of(consultantSlot));
 
-        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO.class)))
-                .thenReturn(new com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO());
+        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO.class)))
+                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO());
 
         BookingResponse response = bookingService.bookingService(bookingRequest);
 

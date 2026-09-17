@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.healthtracking.mapper;
 
-import com.S_Health.GenderHealthCare.dto.request.service.CycleTrackingRequest;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.request.CycleTrackingRequest;
 import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleLogResponse;
 import org.springframework.stereotype.Component;
 

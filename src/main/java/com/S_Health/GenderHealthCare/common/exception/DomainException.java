@@ -24,6 +24,22 @@ public class DomainException extends RuntimeException {
         this.errors = errors == null ? Collections.emptyMap() : Map.copyOf(errors);
     }
 
+    public DomainException(ErrorCode errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+        this.errors = Collections.emptyMap();
+    }
+
+    public DomainException(
+            ErrorCode errorCode,
+            String message,
+            Map<String, String> errors,
+            Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+        this.errors = errors == null ? Collections.emptyMap() : Map.copyOf(errors);
+    }
+
     public ErrorCode getErrorCode() {
         return errorCode;
     }

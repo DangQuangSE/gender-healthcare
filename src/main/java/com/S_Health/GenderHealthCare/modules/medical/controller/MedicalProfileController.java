@@ -1,14 +1,14 @@
 package com.S_Health.GenderHealthCare.modules.medical.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.PatientMedicalHistoryDTO;
-import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalInfoResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoQuery;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MyMedicalProfileQuery;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.PatientHistoryQuery;
 import com.S_Health.GenderHealthCare.modules.medical.mapper.MedicalMapper;
-import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import io.swagger.v3.oas.annotations.Operation;

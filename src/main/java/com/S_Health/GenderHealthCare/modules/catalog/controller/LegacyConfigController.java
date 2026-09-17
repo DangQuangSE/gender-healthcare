@@ -8,7 +8,6 @@ import com.S_Health.GenderHealthCare.modules.catalog.dto.request.ConfigUpdateReq
 import com.S_Health.GenderHealthCare.modules.catalog.service.ConfigValueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -23,9 +22,11 @@ import java.util.List;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyConfigController {
+    private final ConfigValueService configValueService;
 
-    @Autowired
-    ConfigValueService configValueService;
+    public LegacyConfigController(ConfigValueService configValueService) {
+        this.configValueService = configValueService;
+    }
     
     @GetMapping
     @Operation(summary = CatalogConstants.GET_CONFIGS)

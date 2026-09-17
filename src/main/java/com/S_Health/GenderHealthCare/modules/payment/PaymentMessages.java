@@ -23,6 +23,7 @@ public final class PaymentMessages {
     public static final String VNPAY_LOCALE = "vn";
     public static final String VNPAY_ORDER_TYPE = "other";
     public static final String LOCAL_IP_ADDRESS = "127.0.0.1";
+    public static final String VNPAY_SIGNATURE_GENERATION_FAILED = "Unable to generate VNPay signature";
     public static final String VNPAY_TIME_ZONE = "Etc/GMT+7";
     public static final int VNPAY_TIMEOUT_MINUTES = 5;
     public static final int OFFLINE_PAYMENT_TIMEOUT_MINUTES = 1;

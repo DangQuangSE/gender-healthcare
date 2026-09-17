@@ -8,12 +8,12 @@ import com.S_Health.GenderHealthCare.modules.feedback.domain.ConsultantFeedback;
 
 
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
-import com.S_Health.GenderHealthCare.dto.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantCertification;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
-import com.S_Health.GenderHealthCare.dto.response.CreateUserResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantCertification;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CreateUserResponse;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.repository.CertificationRepository;
 import com.S_Health.GenderHealthCare.repository.ConsultantFeedbackRepository;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 @Transactional
@@ -57,13 +58,13 @@ public class ManageUserService {
 
     public CreateUserResponse createStaffAccount(CreateUserRequest request) {
         if (authenticationRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(UserMessages.EMAIL_EXISTS);
+            throw new ApiException(ErrorCode.CONFLICT, UserMessages.EMAIL_EXISTS);
         }
         validateRole(request.getRole());
         List<Specialization> specializations = null;
         if (request.getRole() == UserRole.CONSULTANT) {
             if (request.getSpecializationIds() == null || request.getSpecializationIds().isEmpty()) {
-                throw new AppException(UserMessages.CONSULTANT_SPECIALIZATION_REQUIRED);
+                throw new ApiException(UserMessages.CONSULTANT_SPECIALIZATION_REQUIRED);
             }
             specializations = validateAndGetSpecializations(request.getSpecializationIds());
         }
@@ -93,14 +94,14 @@ public class ManageUserService {
 
     private void validateRole(UserRole role) {
         if (role == UserRole.CUSTOMER) {
-            throw new AppException(UserMessages.CUSTOMER_CREATION_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, UserMessages.CUSTOMER_CREATION_FORBIDDEN);
         }
     }
 
     private List<Specialization> validateAndGetSpecializations(Set<Long> specializationIds) {
         List<Specialization> specializations = specializationRepository.findAllById(specializationIds);
         if (specializations.size() != specializationIds.size()) {
-            throw new AppException(UserMessages.SPECIALIZATION_NOT_FOUND);
+            throw new ApiException(ErrorCode.NOT_FOUND, UserMessages.SPECIALIZATION_NOT_FOUND);
         }
         return specializations;
     }
@@ -114,10 +115,10 @@ public class ManageUserService {
 
     public User addSpecializationsToConsultant(Long userId, Set<Long> specializationIds) {
         User consultant = authenticationRepository.findById(userId)
-                .orElseThrow(() -> new AppException(UserMessages.USER_NOT_FOUND.formatted(userId)));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
 
         if (consultant.getRole() != UserRole.CONSULTANT) {
-            throw new AppException(UserMessages.USER_NOT_CONSULTANT);
+            throw new ApiException(UserMessages.USER_NOT_CONSULTANT);
         }
         List<Specialization> specializationsToAdd = validateAndGetSpecializations(specializationIds);
         if (consultant.getSpecializations() == null) {
@@ -133,21 +134,21 @@ public class ManageUserService {
 
     public void removeSpecializationFromConsultant(Long userId, Long specializationId) {
         User consultant = authenticationRepository.findById(userId)
-                .orElseThrow(() -> new AppException(UserMessages.USER_NOT_FOUND.formatted(userId)));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
         // Kiểm tra xem người dùng có phải là tư vấn viên không
         if (consultant.getRole() != UserRole.CONSULTANT) {
-            throw new AppException(UserMessages.USER_NOT_CONSULTANT);
+            throw new ApiException(UserMessages.USER_NOT_CONSULTANT);
         }
         // Kiểm tra xem chuyên môn có tồn tại không
         Specialization specialization = specializationRepository.findById(specializationId)
-                .orElseThrow(() -> new AppException(UserMessages.SPECIALIZATION_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.SPECIALIZATION_NOT_FOUND));
         // Kiểm tra xem tư vấn viên có chuyên môn này không
         if (consultant.getSpecializations() == null || !consultant.getSpecializations().contains(specialization)) {
-            throw new AppException(UserMessages.SPECIALIZATION_NOT_ASSIGNED);
+            throw new ApiException(UserMessages.SPECIALIZATION_NOT_ASSIGNED);
         }
         // Đảm bảo tư vấn viên có ít nhất một chuyên môn sau khi xóa
         if (consultant.getSpecializations().size() <= 1) {
-            throw new AppException(UserMessages.CONSULTANT_SPECIALIZATION_REQUIRED);
+            throw new ApiException(UserMessages.CONSULTANT_SPECIALIZATION_REQUIRED);
         }
         // Xóa chuyên môn
         consultant.getSpecializations().remove(specialization);
@@ -156,10 +157,10 @@ public class ManageUserService {
 
     public List<Specialization> getConsultantSpecializations(Long userId) {
         User consultant = authenticationRepository.findById(userId)
-                .orElseThrow(() -> new AppException(UserMessages.USER_NOT_FOUND.formatted(userId)));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
         // Kiểm tra xem người dùng có phải là tư vấn viên không
         if (consultant.getRole() != UserRole.CONSULTANT) {
-            throw new AppException(UserMessages.USER_NOT_CONSULTANT);
+            throw new ApiException(UserMessages.USER_NOT_CONSULTANT);
         }
         return consultant.getSpecializations() != null ? consultant.getSpecializations() : new ArrayList<>();
     }
@@ -231,17 +232,17 @@ public class ManageUserService {
 
     public void softDeleteUser(Long userId) {
         User user = authenticationRepository.findById(userId)
-                .orElseThrow(() -> new AppException(UserMessages.USER_NOT_FOUND.formatted(userId)));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
 
         user.setActive(false);
         authenticationRepository.save(user);
     }
     public void restoreUser(Long userId) {
         User user = authenticationRepository.findById(userId)
-                .orElseThrow(() -> new AppException(UserMessages.USER_NOT_FOUND.formatted(userId)));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
 
         if (user.isActive()) {
-            throw new AppException(UserMessages.USER_ACTIVE);
+            throw new ApiException(UserMessages.USER_ACTIVE);
         }
 
         user.setActive(true);

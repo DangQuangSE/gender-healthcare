@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.feedback.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.ServiceFeedbackRequest;
-import com.S_Health.GenderHealthCare.dto.response.feedback.AverageRatingResponse;
-import com.S_Health.GenderHealthCare.dto.response.feedback.ServiceFeedbackResponse;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.request.ServiceFeedbackRequest;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.response.AverageRatingResponse;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ServiceFeedbackResponse;
 import com.S_Health.GenderHealthCare.modules.feedback.FeedbackMessages;
 import com.S_Health.GenderHealthCare.modules.feedback.service.FeedbackService;
 import io.swagger.v3.oas.annotations.Operation;

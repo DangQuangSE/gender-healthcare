@@ -6,7 +6,7 @@ import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
-import com.S_Health.GenderHealthCare.modules.identity.IdentityException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.LoginResponse;
 import com.S_Health.GenderHealthCare.modules.identity.mapper.IdentityMapper;
@@ -37,14 +37,14 @@ public class IdentityService {
 
     public void requestRegistrationOtp(String email) {
         if (authenticationService.checkExistEmail(email)) {
-            throw new IdentityException(ErrorCode.CONFLICT, IdentityMessages.REGISTRATION_EMAIL_EXISTS);
+            throw new ApiException(ErrorCode.CONFLICT, IdentityMessages.REGISTRATION_EMAIL_EXISTS);
         }
         otpService.generateOTP(email);
     }
 
     public void verifyOtpOrThrow(String email, String otp) {
         if (!otpService.verifyOtp(email, otp)) {
-            throw new IdentityException(ErrorCode.VALIDATION_ERROR, IdentityMessages.OTP_INVALID);
+            throw new ApiException(ErrorCode.VALIDATION_ERROR, IdentityMessages.OTP_INVALID);
         }
     }
 
@@ -54,7 +54,7 @@ public class IdentityService {
 
     public void requestForgotPasswordOtp(String email) {
         if (!authenticationService.checkExistEmail(email)) {
-            throw new IdentityException(
+            throw new ApiException(
                     ErrorCode.NOT_FOUND,
                     IdentityMessages.FORGOT_PASSWORD_EMAIL_NOT_FOUND);
         }

@@ -14,13 +14,13 @@ import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 
 import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
 
-import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
-import com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO;
-import com.S_Health.GenderHealthCare.dto.BasicMedicalProfileDTO;
-import com.S_Health.GenderHealthCare.dto.SimpleRoomDTO;
-import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.request.BookingRequest;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingResponse;
 
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class BookingService {
@@ -124,22 +125,22 @@ public class BookingService {
     //validate request
     public BookingContext validateAndFetchBookingEntities(BookingRequest request, long customerId) {
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(request.getService_id())
-                .orElseThrow(() -> new AppException(AppointmentMessages.BOOKING_SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.BOOKING_SERVICE_NOT_FOUND));
 
         ServiceSlotPool slotPool = serviceSlotPoolRepository.findById(request.getSlot_id())
-                .orElseThrow(() -> new AppException(AppointmentMessages.BOOKING_SLOT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.BOOKING_SLOT_NOT_FOUND));
 
         if (!slotPool.getDate().equals(request.getPreferredDate()) ||
                 !slotPool.getStartTime().equals(request.getSlot())) {
-            throw new AppException(AppointmentMessages.BOOKING_SLOT_MISMATCH);
+            throw new ApiException(AppointmentMessages.BOOKING_SLOT_MISMATCH);
         }
 
         User customer = authenticationRepository.findById(customerId)
-                .orElseThrow(() -> new AppException(AppointmentMessages.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.CUSTOMER_NOT_FOUND));
 
         LocalDateTime slotTime = LocalDateTime.of(request.getPreferredDate(), request.getSlot());
         if (appointmentDetailRepository.existsByAppointment_Customer_IdAndSlotTime(customerId, slotTime)) {
-            throw new AppException(AppointmentMessages.DUPLICATE_BOOKING);
+            throw new ApiException(ErrorCode.CONFLICT, AppointmentMessages.DUPLICATE_BOOKING);
         }
         List<com.S_Health.GenderHealthCare.modules.catalog.domain.Service> services = service.getIsCombo()
                 ? service.getComboItems().stream().map(ComboItem::getSubService).toList()
@@ -165,15 +166,15 @@ public class BookingService {
             consultant = consultants.stream()
                     .filter(c -> c.getId() == (request.getConsultantId()))
                     .findFirst()
-                    .orElseThrow(() -> new AppException(AppointmentMessages.CONSULTANT_SERVICE_MISMATCH));
+                    .orElseThrow(() -> new ApiException(AppointmentMessages.CONSULTANT_SERVICE_MISMATCH));
 
             // Kiểm tra bác sĩ có slot trống không
             ConsultantSlot checkSlot = consultantSlotRepository
                     .findByConsultantAndDateAndStartTimeAndStatus(consultant, request.getPreferredDate(), request.getSlot(), SlotStatus.ACTIVE)
-                    .orElseThrow(() -> new AppException(AppointmentMessages.CONSULTANT_SLOT_UNAVAILABLE));
+                    .orElseThrow(() -> new ApiException(AppointmentMessages.CONSULTANT_SLOT_UNAVAILABLE));
 
             if (checkSlot.getAvailableBooking() <= 0) {
-                throw new AppException(AppointmentMessages.CONSULTANT_SLOT_FULL);
+                throw new ApiException(AppointmentMessages.CONSULTANT_SLOT_FULL);
             }
         } else {
             // Auto assign - dùng logic phân bổ đều
@@ -182,7 +183,7 @@ public class BookingService {
 
         ConsultantSlot slot = consultantSlotRepository
                 .findByConsultantAndDateAndStartTimeAndStatus(consultant, request.getPreferredDate(), request.getSlot(), SlotStatus.ACTIVE)
-                .orElseThrow(() -> new AppException(AppointmentMessages.CONSULTANT_SLOT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.CONSULTANT_SLOT_NOT_FOUND));
         slot.setCurrentBooking(slot.getCurrentBooking() + 1);
         slot.setAvailableBooking(slot.getAvailableBooking() - 1);
         if (slot.getAvailableBooking() == 0) {
@@ -250,12 +251,12 @@ public class BookingService {
                     }
                 }
             } catch (Exception e) {
-                throw new AppException(AppointmentMessages.CONSULTANT_CHECK_FAILED.formatted(consultant.getFullname(), e.getMessage()));
+                throw new ApiException(ErrorCode.INTERNAL_ERROR, AppointmentMessages.CONSULTANT_CHECK_FAILED, e);
             }
         }
 
         if (bestConsultant == null) {
-            throw new AppException(AppointmentMessages.NO_AVAILABLE_CONSULTANT);
+            throw new ApiException(AppointmentMessages.NO_AVAILABLE_CONSULTANT);
         }
 
         return bestConsultant;
@@ -293,7 +294,7 @@ public class BookingService {
             return consultantRooms.get(0).getRoom();
 
         } catch (Exception e) {
-            throw new AppException(AppointmentMessages.AUTO_ASSIGN_ROOM_FAILED.formatted(e.getMessage()));
+            throw new ApiException(ErrorCode.INTERNAL_ERROR, AppointmentMessages.AUTO_ASSIGN_ROOM_FAILED, e);
         }
     }
 
@@ -318,7 +319,7 @@ public class BookingService {
             return availableRooms.isEmpty() ? null : availableRooms.get(0);
 
         } catch (Exception e) {
-            throw new AppException(AppointmentMessages.AUTO_ASSIGN_ROOM_FAILED.formatted(e.getMessage()));
+            throw new ApiException(ErrorCode.INTERNAL_ERROR, AppointmentMessages.AUTO_ASSIGN_ROOM_FAILED, e);
         }
     }
 

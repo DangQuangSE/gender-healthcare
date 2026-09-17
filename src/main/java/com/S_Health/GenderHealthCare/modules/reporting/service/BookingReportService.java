@@ -2,8 +2,8 @@ package com.S_Health.GenderHealthCare.modules.reporting.service;
 
 
 
-import com.S_Health.GenderHealthCare.dto.response.report.BookingReportResponse;
-import com.S_Health.GenderHealthCare.dto.response.report.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;

@@ -6,7 +6,6 @@ import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,10 +14,12 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class CloudinaryService {
+public class CloudinaryService implements ImageStorage {
+    private final Cloudinary cloudinary;
 
-    @Autowired
-    private Cloudinary cloudinary;
+    public CloudinaryService(Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
+    }
     public String uploadImage(MultipartFile file) throws IOException {
         return uploadImage(file, "blog_images");
     }

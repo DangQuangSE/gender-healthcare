@@ -1,11 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.scheduling.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleCancelRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleRegisterRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleConsultantRequest;
-import com.S_Health.GenderHealthCare.dto.response.DoctorWorkingScheduleDTO;
-import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCancelRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleConsultantRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ScheduleService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.SchedulingService;

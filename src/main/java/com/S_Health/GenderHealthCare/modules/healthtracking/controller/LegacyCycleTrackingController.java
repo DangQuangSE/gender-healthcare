@@ -1,11 +1,10 @@
 package com.S_Health.GenderHealthCare.modules.healthtracking.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.service.CycleTrackingRequest;
-import com.S_Health.GenderHealthCare.dto.response.CycleTrackingResponse;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.request.CycleTrackingRequest;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleTrackingResponse;
 import com.S_Health.GenderHealthCare.modules.healthtracking.service.CycleTrackingService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +16,15 @@ import java.util.List;
 @SecurityRequirement(name = "api")
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyCycleTrackingController {
-    @Autowired
-    private CycleTrackingService cycleTrackingService;
-    @Autowired
-    private AuthUtil authUtil;
+    private final CycleTrackingService cycleTrackingService;
+    private final AuthUtil authUtil;
+
+    public LegacyCycleTrackingController(
+            CycleTrackingService cycleTrackingService,
+            AuthUtil authUtil) {
+        this.cycleTrackingService = cycleTrackingService;
+        this.authUtil = authUtil;
+    }
 
     @PostMapping("/log")
     public ResponseEntity<CycleTrackingResponse> saveDailyLog(@RequestBody CycleTrackingRequest request) {

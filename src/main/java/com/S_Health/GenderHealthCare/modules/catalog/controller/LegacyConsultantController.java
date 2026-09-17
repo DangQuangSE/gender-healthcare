@@ -3,14 +3,13 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 
 
-import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDTO;
 import com.S_Health.GenderHealthCare.modules.user.service.ManageUserService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +20,11 @@ import java.util.List;
 @SecurityRequirement(name = "api")
 @Tag(name = CatalogConstants.CONSULTANT_TAG, description = CatalogConstants.CONSULTANT_TAG_DESCRIPTION)
 public class LegacyConsultantController {
+    private final ManageUserService manageUserService;
 
-    @Autowired
-    private ManageUserService manageUserService;
+    public LegacyConsultantController(ManageUserService manageUserService) {
+        this.manageUserService = manageUserService;
+    }
 
     @GetMapping("/by-service/{serviceId}")
     @Operation(summary = CatalogConstants.GET_CONSULTANTS)

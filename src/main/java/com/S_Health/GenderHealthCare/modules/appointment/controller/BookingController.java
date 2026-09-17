@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.appointment.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
-import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.request.BookingRequest;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingResponse;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;

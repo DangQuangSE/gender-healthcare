@@ -2,13 +2,12 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 
-import com.S_Health.GenderHealthCare.dto.ServiceDTO;
-import com.S_Health.GenderHealthCare.dto.response.ComboResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.service.ServiceManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +21,11 @@ import java.util.List;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacyServiceController {
-    @Autowired
-    ServiceManagementService serviceManagementService;
+    private final ServiceManagementService serviceManagementService;
+
+    public LegacyServiceController(ServiceManagementService serviceManagementService) {
+        this.serviceManagementService = serviceManagementService;
+    }
 
     @GetMapping
     @Operation(summary = CatalogConstants.GET_SERVICES)

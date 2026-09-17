@@ -26,9 +26,9 @@ public final class CommunicationMessages {
     public static final String READ_TOPIC_SUFFIX = "/read";
     public static final String CHAT_SESSION_ENDED = "Chat session ended";
     public static final String CHAT_SOMEONE_JOINED = "Someone joined the chat";
-    public static final String CHAT_SEND_ERROR = "Error sending message: %s";
-    public static final String CHAT_JOIN_ERROR = "Error joining session: %s";
-    public static final String CHAT_MARK_READ_ERROR = "Error marking messages as read: %s";
+    public static final String CHAT_SEND_ERROR = "Unable to send message";
+    public static final String CHAT_JOIN_ERROR = "Unable to join chat session";
+    public static final String CHAT_MARK_READ_ERROR = "Unable to mark messages as read";
     public static final String START_CHAT = "Start a chat session";
     public static final String SEND_CHAT_MESSAGE = "Send a chat message";
     public static final String JOIN_CHAT = "Join a chat session";

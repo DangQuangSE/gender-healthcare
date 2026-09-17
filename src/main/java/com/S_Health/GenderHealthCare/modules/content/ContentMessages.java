@@ -5,7 +5,7 @@ package com.S_Health.GenderHealthCare.modules.content;
  */
 public final class ContentMessages {
     public static final String BLOG_NOT_FOUND = "Không tìm thấy bài viết";
-    public static final String IMAGE_UPLOAD_FAILED = "Không thể tải lên hình ảnh: %s";
+    public static final String IMAGE_UPLOAD_FAILED = "Không thể tải lên hình ảnh";
     public static final String INVALID_TAGS = "Các tag sau không tồn tại: %s";
     public static final String VIEW_ALL_BLOGS_FORBIDDEN = "Bạn không có quyền xem tất cả blog";
     public static final String UPDATE_BLOG_FORBIDDEN = "Bạn không có quyền chỉnh sửa bài viết này";

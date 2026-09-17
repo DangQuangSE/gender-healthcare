@@ -7,11 +7,11 @@ import com.S_Health.GenderHealthCare.modules.communication.domain.Notification;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 
-import com.S_Health.GenderHealthCare.dto.request.notification.NotificationRequest;
-import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationAppointmentResponse;
-import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationCycleTrackingResponse;
-import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.NotificationRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationAppointmentResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationCycleTrackingResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
 import com.S_Health.GenderHealthCare.repository.CycleTrackingRepository;
@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class NotificationService {
@@ -61,18 +62,18 @@ public class NotificationService {
         Long userId = authUtil.getCurrentUserId();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(CommunicationMessages.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.USER_NOT_FOUND));
 
         Appointment appointment = null;
         if (request.getAppointmentId() != null) {
             appointment = appointmentRepository.findById(request.getAppointmentId())
-                    .orElseThrow(() -> new AppException(CommunicationMessages.APPOINTMENT_NOT_FOUND));
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.APPOINTMENT_NOT_FOUND));
         }
 
         CycleTracking cycleTracking = null;
         if (request.getCycleTrackingId() != null) {
             cycleTracking = cycleTrackingRepository.findById(request.getCycleTrackingId())
-                    .orElseThrow(() -> new AppException(CommunicationMessages.CYCLE_NOT_FOUND));
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CYCLE_NOT_FOUND));
         }
 
         Notification notification = Notification.builder()
@@ -107,7 +108,7 @@ public class NotificationService {
     public NotificationResponse getNotificationById(Long notificationId) {
         Long userId = authUtil.getCurrentUserId();
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
-                .orElseThrow(() -> new AppException(CommunicationMessages.NOTIFICATION_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
         return mapToResponse(notification);
     }
 
@@ -116,7 +117,7 @@ public class NotificationService {
     public void markAsRead(Long notificationId) {
         Long userId = authUtil.getCurrentUserId();
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
-                .orElseThrow(() -> new AppException(CommunicationMessages.NOTIFICATION_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
         if (!notification.getIsRead()) {
             notification.setIsRead(true);
             notificationRepository.save(notification);
@@ -154,7 +155,7 @@ public class NotificationService {
     public void deleteNotification(Long notificationId) {
         Long userId = authUtil.getCurrentUserId();
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
-                .orElseThrow(() -> new AppException(CommunicationMessages.NOTIFICATION_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
         notification.setIsActive(false);
         notificationRepository.save(notification);
     }

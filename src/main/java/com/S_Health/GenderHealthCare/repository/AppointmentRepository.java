@@ -5,8 +5,8 @@ import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
-import com.S_Health.GenderHealthCare.dto.response.report.BookingReportResponse;
-import com.S_Health.GenderHealthCare.dto.response.report.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,7 +33,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByStatusAndIsActiveTrue(AppointmentStatus status);
 
     @Query("""
-    SELECT new com.S_Health.GenderHealthCare.dto.response.report.ServiceBookingReportDTO(
+    SELECT new com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO(
         a.service.id,
         a.service.name,
         SUM(CASE WHEN a.status IN ('PENDING','CONFIRMED','PROCESSING','COMPLETED','CHECKED','ABSENT') THEN 1 ELSE 0 END),
@@ -53,7 +53,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
 
     @Query("""
-    SELECT new com.S_Health.GenderHealthCare.dto.response.report.BookingReportResponse(
+    SELECT new com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse(
         SUM(CASE WHEN a.status IN ('PENDING','CONFIRMED','PROCESSING','COMPLETED','CHECKED') THEN 1 ELSE 0 END),
         SUM(CASE WHEN a.status IN ('CANCELED','DELETED') THEN 1 ELSE 0 END)
     )

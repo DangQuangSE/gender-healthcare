@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
@@ -9,8 +9,8 @@ import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
-import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
-import com.S_Health.GenderHealthCare.dto.request.appointment.UpdateAppointmentRequest;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.request.UpdateAppointmentRequest;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class AppointmentService {
@@ -56,7 +57,7 @@ public class AppointmentService {
     @Transactional
     public AppointmentDTO updateAppointment(Long appointmentId, UpdateAppointmentRequest request) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         Long userId = authUtil.getCurrentUserId();
         User user = authUtil.getCurrentUser();
@@ -65,16 +66,16 @@ public class AppointmentService {
                 || user.getRole() == UserRole.STAFF;
 
         if (!isOwner && !isPrivileged) {
-            throw new AppException(AppointmentMessages.UPDATE_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, AppointmentMessages.UPDATE_FORBIDDEN);
         }
 
         if (request.getSlotId() != null) {
             ServiceSlotPool newSlot = serviceSlotPoolRepository.findById(request.getSlotId())
-                    .orElseThrow(() -> new AppException(AppointmentMessages.SLOT_NOT_FOUND));
+                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.SLOT_NOT_FOUND));
 
             LocalDateTime newSlotTime = LocalDateTime.of(request.getPreferredDate(), newSlot.getStartTime());
             if (isOwner && newSlotTime.minusDays(1).isBefore(LocalDateTime.now())) {
-                throw new AppException(AppointmentMessages.SLOT_CHANGE_TOO_LATE);
+                throw new ApiException(AppointmentMessages.SLOT_CHANGE_TOO_LATE);
             }
 
             ServiceSlotPool oldSlot = appointment.getServiceSlotPool();
@@ -99,7 +100,7 @@ public class AppointmentService {
             }
             if (request.getConsultantId() != null) {
                 User consultant = authenticationRepository.findById(request.getConsultantId())
-                        .orElseThrow(() -> new AppException(AppointmentMessages.CONSULTANT_NOT_FOUND));
+                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.CONSULTANT_NOT_FOUND));
                 appointment.setConsultant(consultant);
             }
             if (request.getPrice() != null) {
@@ -114,7 +115,7 @@ public class AppointmentService {
     @Transactional
     public void deleteAppointment(long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
         List<AppointmentDetail> details = appointmentDetailRepository.findByAppointment(appointment);
         details.forEach(detail -> detail.setIsActive(false));
         appointmentDetailRepository.saveAll(details);
@@ -125,10 +126,10 @@ public class AppointmentService {
     @Transactional
     public void cancelAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         if (appointment.getStatus() == AppointmentStatus.CANCELED) {
-            throw new AppException(AppointmentMessages.ALREADY_CANCELED);
+            throw new ApiException(ErrorCode.CONFLICT, AppointmentMessages.ALREADY_CANCELED);
         }
 
         List<AppointmentDetail> details = appointmentDetailRepository
@@ -164,7 +165,7 @@ public class AppointmentService {
     @Transactional
     public void checkInAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
         try {
             appointment.setStatus(AppointmentStatus.CHECKED);
             appointment.setUpdate_at(LocalDateTime.now());
@@ -176,25 +177,27 @@ public class AppointmentService {
             }
             appointmentRepository.save(appointment);
         } catch (Exception exception) {
-            throw new AppException(
-                    AppointmentMessages.APPOINTMENT_STATUS_UPDATE_FAILED.formatted(exception.getMessage()));
+            throw new ApiException(
+                    ErrorCode.INTERNAL_ERROR,
+                    AppointmentMessages.APPOINTMENT_STATUS_UPDATE_FAILED,
+                    exception);
         }
     }
 
     @Transactional
     public void updateAppointmentDetailStatus(Long detailId, AppointmentStatus status) {
         AppointmentDetail detail = appointmentDetailRepository.findById(detailId)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_DETAIL_NOT_FOUND));
 
         User currentUser = authUtil.getCurrentUser();
         if (detail.getConsultant().getId() != currentUser.getId()) {
-            throw new AppException(AppointmentMessages.DETAIL_UPDATE_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, AppointmentMessages.DETAIL_UPDATE_FORBIDDEN);
         }
 
         if (status != AppointmentStatus.IN_PROGRESS
                 && status != AppointmentStatus.WAITING_RESULT
                 && status != AppointmentStatus.COMPLETED) {
-            throw new AppException(AppointmentMessages.DETAIL_STATUS_INVALID);
+            throw new ApiException(AppointmentMessages.DETAIL_STATUS_INVALID);
         }
 
         try {
@@ -213,14 +216,14 @@ public class AppointmentService {
                 appointmentRepository.save(appointment);
             }
         } catch (Exception exception) {
-            throw new AppException(AppointmentMessages.STATUS_UPDATE_FAILED.formatted(exception.getMessage()));
+            throw new ApiException(ErrorCode.INTERNAL_ERROR, AppointmentMessages.STATUS_UPDATE_FAILED, exception);
         }
     }
 
     @Transactional
     public void updateIsRated(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppException(AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
         appointment.setIsRated(true);
         appointmentRepository.save(appointment);
     }

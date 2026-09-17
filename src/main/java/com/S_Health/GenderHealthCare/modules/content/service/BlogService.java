@@ -7,14 +7,14 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Tag;
 import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
 
 
-import com.S_Health.GenderHealthCare.dto.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.BlogRepository;
-import com.S_Health.GenderHealthCare.integrations.storage.CloudinaryService;
+import com.S_Health.GenderHealthCare.integrations.storage.ImageStorage;
 import com.S_Health.GenderHealthCare.modules.catalog.service.TagService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import jakarta.transaction.Transactional;
@@ -28,25 +28,26 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 @Slf4j
 public class BlogService {
     private final BlogRepository blogRepository;
     private final ModelMapper modelMapper;
-    private final CloudinaryService cloudinaryService;
+    private final ImageStorage imageStorage;
     private final AuthUtil authUtil;
     private final TagService tagService;
 
     public BlogService(
             BlogRepository blogRepository,
             ModelMapper modelMapper,
-            CloudinaryService cloudinaryService,
+            ImageStorage imageStorage,
             AuthUtil authUtil,
             TagService tagService) {
         this.blogRepository = blogRepository;
         this.modelMapper = modelMapper;
-        this.cloudinaryService = cloudinaryService;
+        this.imageStorage = imageStorage;
         this.authUtil = authUtil;
         this.tagService = tagService;
     }
@@ -54,7 +55,7 @@ public class BlogService {
     @Transactional
     public BlogResponse viewBlog(long blogId) {
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
         blog.setViewCount(blog.getViewCount() + 1);
         BlogResponse blogRp = modelMapper.map(blog, BlogResponse.class);
         return blogRp;
@@ -88,10 +89,10 @@ public class BlogService {
         // Upload image to Cloudinary if provided
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                String imageUrl = cloudinaryService.uploadImage(request.getImage());
+                String imageUrl = imageStorage.uploadImage(request.getImage());
                 request.setImgUrl(imageUrl);
             } catch (IOException e) {
-                throw new AppException(ContentMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
+                throw new ApiException(ErrorCode.INTERNAL_ERROR, ContentMessages.IMAGE_UPLOAD_FAILED, e);
             }
         }
 
@@ -110,7 +111,7 @@ public class BlogService {
             // Kiểm tra tag không hợp lệ
             List<String> invalidTags = tagService.validateTagNames(request.getTagNames());
             if (!invalidTags.isEmpty()) {
-                throw new AppException(ContentMessages.INVALID_TAGS.formatted(String.join(", ", invalidTags)));
+                throw new ApiException(ContentMessages.INVALID_TAGS.formatted(String.join(", ", invalidTags)));
             }
 
             // Lấy các tag đã tồn tại
@@ -142,7 +143,7 @@ public class BlogService {
 
         // Chỉ admin hoặc staff mới có thể xem tất cả blog
         if (currentUser.getRole() != UserRole.ADMIN) {
-            throw new AppException(ContentMessages.VIEW_ALL_BLOGS_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.VIEW_ALL_BLOGS_FORBIDDEN);
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -179,22 +180,22 @@ public class BlogService {
 
         // Tìm blog
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
         // Kiểm tra quyền sở hữu (admin có thể chỉnh sửa bất kỳ blog nào)
         User currentUser = authUtil.getCurrentUser();
         if (currentUser.getRole() != UserRole.ADMIN &&
                 !(blog.getAuthor().getId() == (currentUser.getId()))) {
-            throw new AppException(ContentMessages.UPDATE_BLOG_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.UPDATE_BLOG_FORBIDDEN);
         }
 
         // Upload hình ảnh mới nếu có
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             try {
-                String imageUrl = cloudinaryService.uploadImage(request.getImage());
+                String imageUrl = imageStorage.uploadImage(request.getImage());
                 blog.setImgUrl(imageUrl);
             } catch (IOException e) {
-                throw new AppException(ContentMessages.IMAGE_UPLOAD_FAILED.formatted(e.getMessage()));
+                throw new ApiException(ErrorCode.INTERNAL_ERROR, ContentMessages.IMAGE_UPLOAD_FAILED, e);
             }
         } else if (request.getImgUrl() != null) {
             blog.setImgUrl(request.getImgUrl());
@@ -209,7 +210,7 @@ public class BlogService {
             // Kiểm tra tag không hợp lệ
             List<String> invalidTags = tagService.validateTagNames(request.getTagNames());
             if (!invalidTags.isEmpty()) {
-                throw new AppException(ContentMessages.INVALID_TAGS.formatted(String.join(", ", invalidTags)));
+                throw new ApiException(ContentMessages.INVALID_TAGS.formatted(String.join(", ", invalidTags)));
             }
             // Lấy các tag đã tồn tại
             List<Tag> tags = tagService.getExistingTags(request.getTagNames());
@@ -227,13 +228,13 @@ public class BlogService {
     public void deleteBlog(Long blogId) {
         // Tìm blog
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
         // Kiểm tra quyền sở hữu
         User currentUser = authUtil.getCurrentUser();
         if (currentUser.getRole() != UserRole.ADMIN) {
             if (!(blog.getAuthor().getId() == (currentUser.getId()))) {
-                throw new AppException(ContentMessages.DELETE_BLOG_FORBIDDEN);
+                throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.DELETE_BLOG_FORBIDDEN);
             }
         }
 
@@ -257,7 +258,7 @@ public class BlogService {
 
     public BlogResponse getBlogById(Long blogId) {
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         if (blog.getAuthor() != null) {
@@ -284,7 +285,7 @@ public class BlogService {
         // Chỉ admin/staff mới có thể xem blog theo status
         User currentUser = authUtil.getCurrentUser();
         if (currentUser.getRole() != UserRole.ADMIN) {
-            throw new AppException(ContentMessages.VIEW_STATUS_BLOGS_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.VIEW_STATUS_BLOGS_FORBIDDEN);
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -303,14 +304,14 @@ public class BlogService {
     public BlogResponse approveBlog(Long blogId) {
         User currentUser = authUtil.getCurrentUser();
         if (currentUser.getRole() != UserRole.ADMIN && currentUser.getRole() != UserRole.STAFF) {
-            throw new AppException(ContentMessages.APPROVE_BLOG_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.APPROVE_BLOG_FORBIDDEN);
         }
 
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
         if (blog.getStatus() != BlogStatus.PENDING) {
-            throw new AppException(ContentMessages.APPROVE_PENDING_ONLY);
+            throw new ApiException(ContentMessages.APPROVE_PENDING_ONLY);
         }
 
         blog.setStatus(BlogStatus.PUBLISHED);
@@ -326,14 +327,14 @@ public class BlogService {
     public BlogResponse rejectBlog(Long blogId) {
         User currentUser = authUtil.getCurrentUser();
         if (currentUser.getRole() != UserRole.ADMIN && currentUser.getRole() != UserRole.STAFF) {
-            throw new AppException(ContentMessages.REJECT_BLOG_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.REJECT_BLOG_FORBIDDEN);
         }
 
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
         if (blog.getStatus() != BlogStatus.PENDING) {
-            throw new AppException(ContentMessages.REJECT_PENDING_ONLY);
+            throw new ApiException(ContentMessages.REJECT_PENDING_ONLY);
         }
 
         blog.setStatus(BlogStatus.REJECTED);
@@ -349,11 +350,11 @@ public class BlogService {
     public BlogResponse publishBlog(Long blogId) {
         User currentUser = authUtil.getCurrentUser();
         if (currentUser.getRole() != UserRole.ADMIN && currentUser.getRole() != UserRole.STAFF) {
-            throw new AppException(ContentMessages.PUBLISH_BLOG_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.PUBLISH_BLOG_FORBIDDEN);
         }
 
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
 
         blog.setStatus(BlogStatus.PUBLISHED);
@@ -372,11 +373,11 @@ public class BlogService {
     @Transactional
     public BlogResponse submitBlogForReview(Long blogId) {
         Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new AppException(ContentMessages.BLOG_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.BLOG_NOT_FOUND));
 
         User currentUser = authUtil.getCurrentUser();
         if (!(blog.getAuthor().getId() == (currentUser.getId()))) {
-            throw new AppException(ContentMessages.SUBMIT_BLOG_FORBIDDEN);
+            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.SUBMIT_BLOG_FORBIDDEN);
         }
         blog.setStatus(BlogStatus.PENDING);
         blogRepository.save(blog);

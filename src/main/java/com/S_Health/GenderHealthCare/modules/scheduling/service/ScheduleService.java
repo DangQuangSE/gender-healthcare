@@ -9,16 +9,16 @@ import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 
 import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
 
-import com.S_Health.GenderHealthCare.dto.SlotDTO;
-import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleCancelRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleConsultantRequest;
-import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleRegisterRequest;
-import com.S_Health.GenderHealthCare.dto.response.DoctorWorkingScheduleDTO;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
-import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
-import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.SlotDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCancelRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleConsultantRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleCancelResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
+import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class ScheduleService {
@@ -95,7 +96,7 @@ public class ScheduleService {
 
     public ScheduleRegisterResponse registerSchedule(ScheduleRegisterRequest request) {
         User consultant = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new AppException(SchedulingMessages.CONSULTANT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.CONSULTANT_NOT_FOUND));
         List<ScheduleRegisterRequest.ScheduleItem> scheduleItems = request.getScheduleItems();
         for (ScheduleRegisterRequest.ScheduleItem item : scheduleItems) {
             if (!item.getWorkDate().isAfter(LocalDate.now())) {
@@ -176,7 +177,7 @@ public class ScheduleService {
                     .findByConsultant_idAndSlotDate(consultantId, date);
             List<ConsultantSlot> slots = consultantSlotRepository.findByConsultantIdAndDate(consultantId, date);
             if (slots.isEmpty()) {
-                throw new AppException(SchedulingMessages.SLOTS_NOT_FOUND);
+                throw new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.SLOTS_NOT_FOUND);
             }
             for (ConsultantSlot slot : slots) {
                 slot.setIsActive(false);
@@ -195,7 +196,7 @@ public class ScheduleService {
                 slot.setStatus(SlotStatus.DEACTIVE);
                 consultantSlotRepository.save(slot);
             } else {
-                throw new AppException(SchedulingMessages.SLOT_NOT_FOUND);
+                throw new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.SLOT_NOT_FOUND);
             }
         }
 

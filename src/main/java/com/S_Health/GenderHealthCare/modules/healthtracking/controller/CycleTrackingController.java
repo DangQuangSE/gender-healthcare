@@ -2,8 +2,8 @@ package com.S_Health.GenderHealthCare.modules.healthtracking.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.common.security.CurrentUserProvider;
-import com.S_Health.GenderHealthCare.dto.request.service.CycleTrackingRequest;
-import com.S_Health.GenderHealthCare.dto.response.CycleTrackingResponse;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.request.CycleTrackingRequest;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleTrackingResponse;
 import com.S_Health.GenderHealthCare.modules.healthtracking.HealthTrackingMessages;
 import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleLogResponse;
 import com.S_Health.GenderHealthCare.modules.healthtracking.mapper.CycleTrackingMapper;

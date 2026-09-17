@@ -1,11 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.catalog.mapper;
 
-import com.S_Health.GenderHealthCare.dto.ServiceDTO;
-import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
-import com.S_Health.GenderHealthCare.dto.TagDTO;
-import com.S_Health.GenderHealthCare.dto.response.ComboResponse;
-import com.S_Health.GenderHealthCare.dto.response.RoomConsultantDTO;
-import com.S_Health.GenderHealthCare.dto.response.RoomDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDTO;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
@@ -94,41 +94,41 @@ public class CatalogMapper {
         return target;
     }
 
-    public com.S_Health.GenderHealthCare.dto.request.SpecializationRequest
+    public com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest
     toLegacySpecializationRequest(SpecializationRequest source) {
         if (source == null) {
             return null;
         }
 
-        com.S_Health.GenderHealthCare.dto.request.SpecializationRequest target =
-                new com.S_Health.GenderHealthCare.dto.request.SpecializationRequest();
+        com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest target =
+                new com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest();
         target.setName(source.getName());
         target.setDescription(source.getDescription());
         return target;
     }
 
-    public com.S_Health.GenderHealthCare.dto.request.room.RoomRequest
+    public com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest
     toLegacyRoomRequest(RoomRequest source) {
         if (source == null) {
             return null;
         }
 
-        com.S_Health.GenderHealthCare.dto.request.room.RoomRequest target =
-                new com.S_Health.GenderHealthCare.dto.request.room.RoomRequest();
+        com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest target =
+                new com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest();
         target.setName(source.getName());
         target.setDescription(source.getDescription());
         target.setSpecializationId(source.getSpecializationId());
         return target;
     }
 
-    public com.S_Health.GenderHealthCare.dto.request.room.RoomConsultantRequest
+    public com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest
     toLegacyRoomConsultantRequest(RoomConsultantRequest source) {
         if (source == null) {
             return null;
         }
 
-        com.S_Health.GenderHealthCare.dto.request.room.RoomConsultantRequest target =
-                new com.S_Health.GenderHealthCare.dto.request.room.RoomConsultantRequest();
+        com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest target =
+                new com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest();
         target.setConsultantId(source.getConsultantId());
         target.setWorkingDay(source.getWorkingDay());
         target.setStartTime(source.getStartTime());
@@ -136,14 +136,14 @@ public class CatalogMapper {
         return target;
     }
 
-    public com.S_Health.GenderHealthCare.dto.request.tag.TagRequest
+    public com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest
     toLegacyTagRequest(TagRequest source) {
         if (source == null) {
             return null;
         }
 
-        com.S_Health.GenderHealthCare.dto.request.tag.TagRequest target =
-                new com.S_Health.GenderHealthCare.dto.request.tag.TagRequest();
+        com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest target =
+                new com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest();
         target.setName(source.getName());
         target.setDescription(source.getDescription());
         return target;

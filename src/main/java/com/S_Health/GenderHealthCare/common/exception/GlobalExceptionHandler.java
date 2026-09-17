@@ -4,20 +4,28 @@ import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 
 import java.util.LinkedHashMap;
@@ -27,16 +35,15 @@ import java.util.Map;
  * Converts expected and unexpected exceptions into the common error envelope.
  */
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException exception,
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    public ResponseEntity<ApiResponse<Void>> handleValidation(
+            BindException exception,
             HttpServletRequest request) {
-        Map<String, String> errors = new LinkedHashMap<>();
-        exception.getBindingResult().getFieldErrors().forEach(error ->
-                errors.putIfAbsent(error.getField(), error.getDefaultMessage()));
+        Map<String, String> errors = validationErrors(exception.getBindingResult());
         return errorResponse(ErrorCode.VALIDATION_ERROR, errors, request);
     }
 
@@ -53,8 +60,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
+            MissingPathVariableException.class,
             MethodArgumentTypeMismatchException.class,
-            BindException.class,
             IllegalArgumentException.class
     })
     public ResponseEntity<ApiResponse<Void>> handleBadRequest(
@@ -64,11 +71,39 @@ public class GlobalExceptionHandler {
         return errorResponse(ErrorCode.BAD_REQUEST, Map.of(), request);
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotAllowed(
+            HttpRequestMethodNotSupportedException exception,
+            HttpServletRequest request) {
+        return errorResponse(ErrorCode.METHOD_NOT_ALLOWED, Map.of(), request);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnsupportedMediaType(
+            HttpMediaTypeNotSupportedException exception,
+            HttpServletRequest request) {
+        return errorResponse(ErrorCode.UNSUPPORTED_MEDIA_TYPE, Map.of(), request);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePayloadTooLarge(
+            MaxUploadSizeExceededException exception,
+            HttpServletRequest request) {
+        return errorResponse(ErrorCode.PAYLOAD_TOO_LARGE, Map.of(), request);
+    }
+
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ApiResponse<Void>> handleDomainException(
             DomainException exception,
             HttpServletRequest request) {
-        return errorResponse(exception.getErrorCode(), exception.getErrors(), request, exception.getMessage());
+        String message = exception.getMessage();
+        if (message == null || message.isBlank()) {
+            message = exception.getErrorCode().getDefaultMessage();
+        }
+        if (exception.getCause() != null) {
+            log.error(CommonMessages.LOG_DOMAIN_ERROR, request.getRequestURI(), exception);
+        }
+        return errorResponse(exception.getErrorCode(), exception.getErrors(), request, message);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -79,9 +114,9 @@ public class GlobalExceptionHandler {
         return errorResponse(ErrorCode.CONFLICT, Map.of(), request);
     }
 
-    @ExceptionHandler(NoResourceFoundException.class)
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
     public ResponseEntity<ApiResponse<Void>> handleNotFound(
-            NoResourceFoundException exception,
+            Exception exception,
             HttpServletRequest request) {
         return errorResponse(ErrorCode.NOT_FOUND, Map.of(), request);
     }
@@ -127,5 +162,14 @@ public class GlobalExceptionHandler {
                 errors.isEmpty() ? null : errors,
                 request.getRequestURI());
         return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    private Map<String, String> validationErrors(BindingResult bindingResult) {
+        Map<String, String> errors = new LinkedHashMap<>();
+        bindingResult.getFieldErrors().forEach(error ->
+                errors.putIfAbsent(error.getField(), error.getDefaultMessage()));
+        bindingResult.getGlobalErrors().forEach(error ->
+                errors.putIfAbsent(error.getObjectName(), error.getDefaultMessage()));
+        return errors;
     }
 }

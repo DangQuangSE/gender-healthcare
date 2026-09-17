@@ -6,13 +6,11 @@ import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogCreateRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.content.service.BlogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/blog")
 @SecurityRequirement(name = "api")
 public class LegacyBlogController {
-    @Autowired
-    BlogService blogService;
+    private final BlogService blogService;
+
+    public LegacyBlogController(BlogService blogService) {
+        this.blogService = blogService;
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = ContentMessages.VIEW_BLOG)
@@ -95,23 +96,14 @@ public class LegacyBlogController {
     public ResponseEntity updateBlog(
             @PathVariable Long id,
             @Valid @ModelAttribute BlogRequest request) {
-        try {
-            BlogResponse response = blogService.updateBlog(id, request);
-            return ResponseEntity.ok(response);
-        } catch (AppException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(blogService.updateBlog(id, request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = ContentMessages.DELETE_BLOG)
     public ResponseEntity<String> deleteBlog(@PathVariable Long id) {
-        try {
-            blogService.deleteBlog(id);
-            return ResponseEntity.ok(ContentMessages.DELETE_BLOG_SUCCESS);
-        } catch (AppException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        blogService.deleteBlog(id);
+        return ResponseEntity.ok(ContentMessages.DELETE_BLOG_SUCCESS);
     }
 
     // API cho admin xem blog theo status

@@ -5,8 +5,8 @@ import com.S_Health.GenderHealthCare.modules.healthtracking.enums.Symptoms;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 
-import com.S_Health.GenderHealthCare.dto.request.service.CycleTrackingRequest;
-import com.S_Health.GenderHealthCare.dto.response.CycleTrackingResponse;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.request.CycleTrackingRequest;
+import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleTrackingResponse;
 import com.S_Health.GenderHealthCare.repository.CycleTrackingRepository;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;

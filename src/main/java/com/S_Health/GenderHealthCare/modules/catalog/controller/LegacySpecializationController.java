@@ -2,13 +2,12 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 
-import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
-import com.S_Health.GenderHealthCare.dto.request.SpecializationRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.service.SpecializationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +21,11 @@ import java.util.List;
  */
 @Deprecated(since = "1.0", forRemoval = false)
 public class LegacySpecializationController {
+    private final SpecializationService specializationService;
 
-    @Autowired
-    SpecializationService specializationService;
+    public LegacySpecializationController(SpecializationService specializationService) {
+        this.specializationService = specializationService;
+    }
 
     @GetMapping
     @Operation(summary = CatalogConstants.GET_SPECIALIZATIONS)

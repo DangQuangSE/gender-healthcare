@@ -3,7 +3,6 @@ package com.S_Health.GenderHealthCare.modules.reporting.controller;
 import com.S_Health.GenderHealthCare.modules.reporting.service.FinancialReportService;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.FinancialReportQuery;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,8 +13,11 @@ import java.math.BigDecimal;
 @RestController
 @RequestMapping("/api/financial-reports")
 public class LegacyFinancialReportController {
-    @Autowired
-    FinancialReportService financialReportService;
+    private final FinancialReportService financialReportService;
+
+    public LegacyFinancialReportController(FinancialReportService financialReportService) {
+        this.financialReportService = financialReportService;
+    }
 
     @GetMapping("/revenue-today")
     public BigDecimal getTodayRevenue() {

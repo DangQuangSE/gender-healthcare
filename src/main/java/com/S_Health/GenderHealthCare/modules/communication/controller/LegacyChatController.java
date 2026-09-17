@@ -2,10 +2,10 @@ package com.S_Health.GenderHealthCare.modules.communication.controller;
 
 
 
-import com.S_Health.GenderHealthCare.dto.ChatMessageDTO;
-import com.S_Health.GenderHealthCare.dto.ChatSessionDTO;
-import com.S_Health.GenderHealthCare.dto.request.SendMessageRequest;
-import com.S_Health.GenderHealthCare.dto.request.StartChatRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.modules.communication.service.ChatService;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +24,11 @@ import java.util.List;
 @SecurityRequirement(name = "api")
 @Tag(name = CommunicationMessages.CHAT_TAG, description = CommunicationMessages.CHAT_TAG_DESCRIPTION)
 public class LegacyChatController {
+    private final ChatService chatService;
 
-    @Autowired
-    ChatService chatService;
+    public LegacyChatController(ChatService chatService) {
+        this.chatService = chatService;
+    }
 
     @PostMapping("/start")
     @Operation(summary = CommunicationMessages.START_CHAT)

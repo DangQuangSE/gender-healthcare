@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.medical.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.request.TreatmentProtocolRequest;
-import com.S_Health.GenderHealthCare.dto.response.TreatmentProtocolResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.request.TreatmentProtocolRequest;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.TreatmentProtocolResponse;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.service.TreatmentProtocolService;
 import io.swagger.v3.oas.annotations.Operation;

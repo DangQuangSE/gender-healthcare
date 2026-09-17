@@ -2,14 +2,13 @@ package com.S_Health.GenderHealthCare.modules.feedback.controller;
 
 
 
-import com.S_Health.GenderHealthCare.dto.request.ConsultantFeedbackRequest;
-import com.S_Health.GenderHealthCare.dto.response.feedback.ConsultantFeedbackResponse;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.request.ConsultantFeedbackRequest;
+import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ConsultantFeedbackResponse;
 import com.S_Health.GenderHealthCare.modules.feedback.service.FeedbackService;
 import com.S_Health.GenderHealthCare.modules.feedback.FeedbackMessages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +20,11 @@ import java.util.List;
 @Tag(name = FeedbackMessages.CONSULTANT_FEEDBACK_TAG,
         description = FeedbackMessages.CONSULTANT_FEEDBACK_TAG_DESCRIPTION)
 public class LegacyConsultantFeedbackController {
+    private final FeedbackService feedbackService;
 
-    @Autowired
-    FeedbackService feedbackService;    
+    public LegacyConsultantFeedbackController(FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
+    }
 
     @PostMapping
     public ResponseEntity<ConsultantFeedbackResponse> create(@RequestBody ConsultantFeedbackRequest request) {
