@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    hibernate:
+      # Set JPA_DDL_AUTO=validate after a migration tool is introduced.
+      ddl-auto: ${JPA_DDL_AUTO:update}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}

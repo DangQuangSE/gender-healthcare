@@ -1,34 +1,25 @@
 package com.S_Health.GenderHealthCare.utils;
 
+import com.S_Health.GenderHealthCare.common.security.CurrentUserProvider;
 import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+/**
+ * Backward-compatible adapter for legacy services.
+ */
 @Component
 public class AuthUtil {
+    private final CurrentUserProvider currentUserProvider;
+
+    public AuthUtil(CurrentUserProvider currentUserProvider) {
+        this.currentUserProvider = currentUserProvider;
+    }
 
     public Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AppException("Bạn chưa đăng nhập");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User user) {
-            return user.getId();
-        }
-        throw new AppException("Không thể lấy userId từ token");
+        return currentUserProvider.requireUserId();
     }
-    public User getCurrentUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AppException("Bạn chưa đăng nhập");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User user) {
-            return user;
-        }
-        throw new AppException("Không thể xác thực người dùng hiện tại");
+
+    public User getCurrentUser() {
+        return currentUserProvider.requireUser();
     }
 }
