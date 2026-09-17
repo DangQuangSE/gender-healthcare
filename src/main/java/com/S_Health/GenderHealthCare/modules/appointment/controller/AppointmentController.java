@@ -1,10 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.appointment.controller;
 
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
 import com.S_Health.GenderHealthCare.dto.PatientHistoryDTO;
 import com.S_Health.GenderHealthCare.dto.request.appointment.UpdateAppointmentRequest;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.Certification;
-import com.S_Health.GenderHealthCare.entity.User;
+import com.S_Health.GenderHealthCare.modules.user.domain.Certification;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

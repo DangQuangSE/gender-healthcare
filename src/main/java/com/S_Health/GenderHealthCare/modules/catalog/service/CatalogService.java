@@ -1,6 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.catalog.service;
 
-import com.S_Health.GenderHealthCare.entity.ConfigValue;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.ConfigValue;
+
+
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;

@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.ChatMessage;
-import com.S_Health.GenderHealthCare.entity.ChatSession;
+import com.S_Health.GenderHealthCare.modules.communication.domain.ChatMessage;
+import com.S_Health.GenderHealthCare.modules.communication.domain.ChatSession;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

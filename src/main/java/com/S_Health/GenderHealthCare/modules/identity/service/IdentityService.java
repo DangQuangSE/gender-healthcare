@@ -1,15 +1,17 @@
 package com.S_Health.GenderHealthCare.modules.identity.service;
 
+
+
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
-import com.S_Health.GenderHealthCare.dto.request.authentication.LoginEmailRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.OAuthLoginRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.PasswordRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityException;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.LoginResponse;
 import com.S_Health.GenderHealthCare.modules.identity.mapper.IdentityMapper;
-import com.S_Health.GenderHealthCare.service.authentication.AuthenticationService;
-import com.S_Health.GenderHealthCare.service.authentication.OTPService;
+import com.S_Health.GenderHealthCare.modules.identity.service.AuthenticationService;
+import com.S_Health.GenderHealthCare.modules.identity.service.OTPService;
 import org.springframework.stereotype.Service;
 
 /**

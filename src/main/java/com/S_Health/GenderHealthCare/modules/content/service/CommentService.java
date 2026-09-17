@@ -1,10 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.content.service;
 
+import com.S_Health.GenderHealthCare.modules.content.domain.Blog;
+import com.S_Health.GenderHealthCare.modules.content.domain.Comment;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+
+
 import com.S_Health.GenderHealthCare.dto.request.blog.CommentRequest;
 import com.S_Health.GenderHealthCare.dto.response.CommentResponse;
-import com.S_Health.GenderHealthCare.entity.Blog;
-import com.S_Health.GenderHealthCare.entity.Comment;
-import com.S_Health.GenderHealthCare.entity.User;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;

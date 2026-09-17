@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.dto;
 
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
 
-import com.S_Health.GenderHealthCare.enums.ServiceType;
+
 import lombok.Data;
 
 import java.time.LocalDateTime;

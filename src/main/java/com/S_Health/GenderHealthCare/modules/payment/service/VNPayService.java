@@ -1,14 +1,16 @@
 package com.S_Health.GenderHealthCare.modules.payment.service;
 
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Transaction;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentMethod;
+
 import com.S_Health.GenderHealthCare.config.paymentConfig.VNPayConfig;
 import com.S_Health.GenderHealthCare.dto.response.payment.VNPayResponse;
-import com.S_Health.GenderHealthCare.entity.Appointment;
-import com.S_Health.GenderHealthCare.entity.AppointmentDetail;
-import com.S_Health.GenderHealthCare.entity.Payment;
-import com.S_Health.GenderHealthCare.entity.Transaction;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.PaymentMethod;
-import com.S_Health.GenderHealthCare.enums.PaymentStatus;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.payment.PaymentMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;

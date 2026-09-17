@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.dto;
 
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

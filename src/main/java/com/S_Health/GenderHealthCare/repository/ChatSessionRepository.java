@@ -1,8 +1,9 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.ChatSession;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.ChatStatus;
+import com.S_Health.GenderHealthCare.modules.communication.enums.ChatStatus;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.communication.domain.ChatSession;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,11 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.identity.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.request.authentication.EmailRegisterRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.LoginEmailRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.OAuthLoginRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.PasswordRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.VerifyOTPRequest;
+import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.EmailRegisterRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.VerifyOTPRequest;
 import com.S_Health.GenderHealthCare.modules.identity.service.IdentityService;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.LoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<String>> requestRegistrationOtp(
             @Valid @RequestBody EmailRegisterRequest request) {
         identityService.requestRegistrationOtp(request.getEmail());
-        return success("Registration OTP sent");
+        return success(IdentityMessages.REGISTRATION_OTP_SENT);
     }
 
     @PostMapping("/registration/verify-otp")
@@ -35,7 +36,7 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<String>> verifyRegistrationOtp(
             @Valid @RequestBody VerifyOTPRequest request) {
         identityService.verifyOtpOrThrow(request.getEmail(), request.getOtp());
-        return success("OTP is valid");
+        return success(IdentityMessages.OTP_VALID);
     }
 
     @PostMapping("/registration/password")
@@ -43,7 +44,7 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<String>> setRegistrationPassword(
             @Valid @RequestBody PasswordRequest request) {
         identityService.setPassword(request);
-        return success("Password configured successfully");
+        return success(IdentityMessages.PASSWORD_CONFIGURED);
     }
 
     @PostMapping("/forgot-password/otp")
@@ -51,7 +52,7 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<String>> requestForgotPasswordOtp(
             @Valid @RequestBody EmailRegisterRequest request) {
         identityService.requestForgotPasswordOtp(request.getEmail());
-        return success("Password reset OTP sent");
+        return success(IdentityMessages.FORGOT_PASSWORD_OTP_SENT);
     }
 
     @PostMapping("/forgot-password/verify-otp")
@@ -59,7 +60,7 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<String>> verifyForgotPasswordOtp(
             @Valid @RequestBody VerifyOTPRequest request) {
         identityService.verifyOtpOrThrow(request.getEmail(), request.getOtp());
-        return success("OTP is valid");
+        return success(IdentityMessages.OTP_VALID);
     }
 
     @PutMapping("/forgot-password/password")
@@ -67,7 +68,7 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<String>> resetPassword(
             @Valid @RequestBody PasswordRequest request) {
         identityService.resetPassword(request);
-        return success("Password reset successfully");
+        return success(IdentityMessages.PASSWORD_RESET_SUCCESS);
     }
 
     @PostMapping("/login")

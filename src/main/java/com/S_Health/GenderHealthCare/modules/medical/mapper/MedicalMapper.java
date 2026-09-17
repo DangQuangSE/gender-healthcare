@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.medical.mapper;
 
-import com.S_Health.GenderHealthCare.entity.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalInfoResponse;
 import org.springframework.stereotype.Component;
 

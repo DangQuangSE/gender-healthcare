@@ -1,8 +1,10 @@
 package com.S_Health.GenderHealthCare.modules.catalog.service;
 
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Tag;
+
+
 import com.S_Health.GenderHealthCare.dto.TagDTO;
 import com.S_Health.GenderHealthCare.dto.request.tag.TagRequest;
-import com.S_Health.GenderHealthCare.entity.Tag;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.TagRepository;

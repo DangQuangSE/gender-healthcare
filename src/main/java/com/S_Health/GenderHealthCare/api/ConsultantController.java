@@ -1,8 +1,10 @@
 package com.S_Health.GenderHealthCare.api;
 
+
+
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
-import com.S_Health.GenderHealthCare.service.authentication.ManageUserService;
+import com.S_Health.GenderHealthCare.modules.user.service.ManageUserService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

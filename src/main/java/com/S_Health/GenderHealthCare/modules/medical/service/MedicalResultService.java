@@ -1,12 +1,20 @@
 package com.S_Health.GenderHealthCare.modules.medical.service;
 
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.medical.domain.TreatmentProtocol;
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
+
 import com.S_Health.GenderHealthCare.dto.ResultDTO;
 import com.S_Health.GenderHealthCare.dto.request.service.ConsultationResultRequest;
 import com.S_Health.GenderHealthCare.dto.request.service.LabTestResultRequest;
 import com.S_Health.GenderHealthCare.dto.request.service.ResultRequest;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.ResultType;
+
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.*;
@@ -202,7 +210,7 @@ public class MedicalResultService {
             }
             // Tìm MedicalProfile của bệnh nhân
             User customer = appointmentDetail.getAppointment().getCustomer();
-            com.S_Health.GenderHealthCare.entity.Service service = appointmentDetail.getService();
+            com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = appointmentDetail.getService();
 
             Optional<MedicalProfile> profileOpt = medicalProfileRepository
                     .findByCustomerAndServiceAndIsActiveTrue(customer, service);

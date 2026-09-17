@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.dto.response;
 
-import com.S_Health.GenderHealthCare.entity.Appointment;
-import com.S_Health.GenderHealthCare.entity.User;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

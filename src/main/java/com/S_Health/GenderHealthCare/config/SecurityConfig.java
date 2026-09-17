@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.config;
 import com.S_Health.GenderHealthCare.common.security.JwtAuthenticationFilter;
 import com.S_Health.GenderHealthCare.common.security.RestAccessDeniedHandler;
 import com.S_Health.GenderHealthCare.common.security.RestAuthenticationEntryPoint;
-import com.S_Health.GenderHealthCare.service.authentication.AuthenticationService;
+import com.S_Health.GenderHealthCare.modules.identity.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;

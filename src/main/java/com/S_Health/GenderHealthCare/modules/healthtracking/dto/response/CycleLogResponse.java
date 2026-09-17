@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.healthtracking.dto.response;
 
-import com.S_Health.GenderHealthCare.enums.Symptoms;
+import com.S_Health.GenderHealthCare.modules.healthtracking.enums.Symptoms;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

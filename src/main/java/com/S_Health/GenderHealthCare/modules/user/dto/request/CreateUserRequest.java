@@ -1,7 +1,8 @@
-package com.S_Health.GenderHealthCare.dto.request.authentication;
+package com.S_Health.GenderHealthCare.modules.user.dto.request;
 
-import com.S_Health.GenderHealthCare.enums.Gender;
-import com.S_Health.GenderHealthCare.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.user.enums.Gender;
+
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;

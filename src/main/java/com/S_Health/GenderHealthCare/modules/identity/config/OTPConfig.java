@@ -1,4 +1,4 @@
-package com.S_Health.GenderHealthCare.config;
+package com.S_Health.GenderHealthCare.modules.identity.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;

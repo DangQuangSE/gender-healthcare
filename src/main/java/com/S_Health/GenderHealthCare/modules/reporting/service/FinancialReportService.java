@@ -1,6 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.reporting.service;
 
-import com.S_Health.GenderHealthCare.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+
+
 import com.S_Health.GenderHealthCare.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 

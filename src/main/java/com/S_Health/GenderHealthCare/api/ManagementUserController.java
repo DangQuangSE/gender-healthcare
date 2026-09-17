@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.api;
 
-import com.S_Health.GenderHealthCare.dto.request.authentication.CreateUserRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.UpdateConsultantSpecializationRequest;
-import com.S_Health.GenderHealthCare.service.authentication.ManageUserService;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;
+import com.S_Health.GenderHealthCare.modules.user.service.ManageUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;

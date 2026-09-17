@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.AppointmentDetail;
-import com.S_Health.GenderHealthCare.entity.MedicalResult;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

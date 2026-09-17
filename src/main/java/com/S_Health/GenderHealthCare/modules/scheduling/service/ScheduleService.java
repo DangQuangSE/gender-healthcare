@@ -1,5 +1,14 @@
 package com.S_Health.GenderHealthCare.modules.scheduling.service;
 
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.scheduling.enums.ScheduleStatus;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.Schedule;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+
+import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.dto.SlotDTO;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleCancelRequest;
@@ -9,13 +18,6 @@ import com.S_Health.GenderHealthCare.dto.response.DoctorWorkingScheduleDTO;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleRegisterResponse;
-import com.S_Health.GenderHealthCare.entity.AppointmentDetail;
-import com.S_Health.GenderHealthCare.entity.ConsultantSlot;
-import com.S_Health.GenderHealthCare.entity.Schedule;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.ScheduleStatus;
-import com.S_Health.GenderHealthCare.enums.SlotStatus;
-import com.S_Health.GenderHealthCare.enums.UserRole;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;

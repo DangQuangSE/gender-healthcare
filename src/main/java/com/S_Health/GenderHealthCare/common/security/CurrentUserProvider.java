@@ -1,8 +1,9 @@
 package com.S_Health.GenderHealthCare.common.security;
 
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+
 import com.S_Health.GenderHealthCare.common.exception.ApiException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
-import com.S_Health.GenderHealthCare.entity.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

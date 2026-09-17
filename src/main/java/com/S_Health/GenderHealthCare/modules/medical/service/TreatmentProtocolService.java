@@ -1,8 +1,10 @@
 package com.S_Health.GenderHealthCare.modules.medical.service;
 
+import com.S_Health.GenderHealthCare.modules.medical.domain.TreatmentProtocol;
+
+
 import com.S_Health.GenderHealthCare.dto.request.TreatmentProtocolRequest;
 import com.S_Health.GenderHealthCare.dto.response.TreatmentProtocolResponse;
-import com.S_Health.GenderHealthCare.entity.TreatmentProtocol;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.TreatmentProtocolRepository;

@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.CycleTracking;
+import com.S_Health.GenderHealthCare.modules.healthtracking.domain.CycleTracking;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

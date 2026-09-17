@@ -1,13 +1,20 @@
 package com.S_Health.GenderHealthCare.modules.medical.service;
 
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
+
 import com.S_Health.GenderHealthCare.dto.*;
 import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.ResultType;
-import com.S_Health.GenderHealthCare.enums.ServiceType;
-import com.S_Health.GenderHealthCare.enums.TestStatus;
-import com.S_Health.GenderHealthCare.enums.UserRole;
+
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.*;
@@ -58,7 +65,7 @@ public class MedicalProfileService {
 
     public void createMedicalProfile(Appointment appointment) {
         User user = authUtil.getCurrentUser();
-        com.S_Health.GenderHealthCare.entity.Service service = serviceRepository.findById(appointment.getService().getId())
+        com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(appointment.getService().getId())
                 .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
         // Tìm MedicalProfile đã tồn tại
         Optional<MedicalProfile> existingProfile = medicalProfileRepository
@@ -84,7 +91,7 @@ public class MedicalProfileService {
 
     public MedicalProfileDTO getMyProfile(Long serviceId) {
         User user = authUtil.getCurrentUser();
-        com.S_Health.GenderHealthCare.entity.Service service = serviceRepository.findById(serviceId)
+        com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
         MedicalProfile medicalProfile = medicalProfileRepository.findByCustomerAndServiceAndIsActiveTrue(user, service)
                 .orElseThrow(() -> new AppException(MedicalMessages.MEDICAL_PROFILE_NOT_FOUND));
@@ -267,7 +274,7 @@ public class MedicalProfileService {
         User customer = authenticationRepository.findById(request.getCustomerId())
                 .orElseThrow(() -> new AppException(MedicalMessages.PATIENT_NOT_FOUND));
 
-        com.S_Health.GenderHealthCare.entity.Service service = serviceRepository.findById(request.getServiceId())
+        com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(request.getServiceId())
                 .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
 
         // Tìm hoặc tạo medical profile
@@ -298,7 +305,7 @@ public class MedicalProfileService {
         User customer = authenticationRepository.findById(customerId)
                 .orElseThrow(() -> new AppException(MedicalMessages.PATIENT_NOT_FOUND));
 
-        com.S_Health.GenderHealthCare.entity.Service service = serviceRepository.findById(serviceId)
+        com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new AppException(MedicalMessages.SERVICE_NOT_FOUND));
 
         return medicalProfileRepository

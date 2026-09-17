@@ -1,14 +1,25 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Room;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.ComboItem;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.RoomConsultant;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+
+import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
 import com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO;
 import com.S_Health.GenderHealthCare.dto.BasicMedicalProfileDTO;
 import com.S_Health.GenderHealthCare.dto.SimpleRoomDTO;
 import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.ServiceType;
-import com.S_Health.GenderHealthCare.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.repository.*;
@@ -86,7 +97,7 @@ public class BookingService {
         // 3. Lặp các service con (nếu combo)
         List<AppointmentDetailDTO> appointmentDetails = new ArrayList<>();
         List<ConsultantSlot> updatedSlots = new ArrayList<>();
-        for (com.S_Health.GenderHealthCare.entity.Service sub : context.services()) {
+        for (com.S_Health.GenderHealthCare.modules.catalog.domain.Service sub : context.services()) {
             AppointmentDetailData result = createAppointmentDetail(request, appointment, sub);
             appointmentDetails.add(result.dto());
             updatedSlots.add(result.slot());
@@ -112,7 +123,7 @@ public class BookingService {
 
     //validate request
     public BookingContext validateAndFetchBookingEntities(BookingRequest request, long customerId) {
-        com.S_Health.GenderHealthCare.entity.Service service = serviceRepository.findById(request.getService_id())
+        com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(request.getService_id())
                 .orElseThrow(() -> new AppException(AppointmentMessages.BOOKING_SERVICE_NOT_FOUND));
 
         ServiceSlotPool slotPool = serviceSlotPoolRepository.findById(request.getSlot_id())
@@ -130,22 +141,22 @@ public class BookingService {
         if (appointmentDetailRepository.existsByAppointment_Customer_IdAndSlotTime(customerId, slotTime)) {
             throw new AppException(AppointmentMessages.DUPLICATE_BOOKING);
         }
-        List<com.S_Health.GenderHealthCare.entity.Service> services = service.getIsCombo()
+        List<com.S_Health.GenderHealthCare.modules.catalog.domain.Service> services = service.getIsCombo()
                 ? service.getComboItems().stream().map(ComboItem::getSubService).toList()
                 : List.of(service);
         return new BookingContext(service, slotPool, customer, services);
     }
 
     public static record BookingContext(
-            com.S_Health.GenderHealthCare.entity.Service service,
+            com.S_Health.GenderHealthCare.modules.catalog.domain.Service service,
             ServiceSlotPool slotPool,
             User customer,
-            List<com.S_Health.GenderHealthCare.entity.Service> services
+            List<com.S_Health.GenderHealthCare.modules.catalog.domain.Service> services
     ) {
     }
 
     //tạo appointmentDetail và cập nhật consultantSlot
-    public AppointmentDetailData createAppointmentDetail(BookingRequest request, Appointment appointment, com.S_Health.GenderHealthCare.entity.Service subService) {
+    public AppointmentDetailData createAppointmentDetail(BookingRequest request, Appointment appointment, com.S_Health.GenderHealthCare.modules.catalog.domain.Service subService) {
         List<User> consultants = serviceSlotPoolService.getConsultantInSpecialization(subService.getId());
 
         User consultant;

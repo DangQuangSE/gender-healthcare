@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.dto;
 
-import com.S_Health.GenderHealthCare.enums.SenderType;
+import com.S_Health.GenderHealthCare.modules.communication.enums.SenderType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

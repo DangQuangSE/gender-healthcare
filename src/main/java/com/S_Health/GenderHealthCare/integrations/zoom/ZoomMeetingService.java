@@ -1,9 +1,11 @@
 package com.S_Health.GenderHealthCare.integrations.zoom;
 
-import com.S_Health.GenderHealthCare.entity.Appointment;
-import com.S_Health.GenderHealthCare.entity.AppointmentDetail;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
+
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;

@@ -1,12 +1,13 @@
 package com.S_Health.GenderHealthCare.modules.catalog.service;
 
+import com.S_Health.GenderHealthCare.modules.catalog.domain.ComboItem;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
+
 
 import com.S_Health.GenderHealthCare.dto.ServiceDTO;
 import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
 import com.S_Health.GenderHealthCare.dto.response.ComboResponse;
-import com.S_Health.GenderHealthCare.entity.ComboItem;
-import com.S_Health.GenderHealthCare.entity.Service;
-import com.S_Health.GenderHealthCare.entity.Specialization;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.ComboItemRepository;

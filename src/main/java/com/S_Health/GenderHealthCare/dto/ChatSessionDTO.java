@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.dto;
 
-import com.S_Health.GenderHealthCare.enums.ChatStatus;
+import com.S_Health.GenderHealthCare.modules.communication.enums.ChatStatus;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

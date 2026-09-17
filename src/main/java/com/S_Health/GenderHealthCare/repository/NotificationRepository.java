@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.Notification;
+import com.S_Health.GenderHealthCare.modules.communication.domain.Notification;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

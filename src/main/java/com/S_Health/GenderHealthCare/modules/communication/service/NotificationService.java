@@ -1,14 +1,16 @@
 package com.S_Health.GenderHealthCare.modules.communication.service;
 
+import com.S_Health.GenderHealthCare.modules.healthtracking.domain.CycleTracking;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.communication.enums.NotificationType;
+import com.S_Health.GenderHealthCare.modules.communication.domain.Notification;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
+
 import com.S_Health.GenderHealthCare.dto.request.notification.NotificationRequest;
 import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationAppointmentResponse;
 import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationCycleTrackingResponse;
 import com.S_Health.GenderHealthCare.dto.response.nofitication.NotificationResponse;
-import com.S_Health.GenderHealthCare.entity.Appointment;
-import com.S_Health.GenderHealthCare.entity.CycleTracking;
-import com.S_Health.GenderHealthCare.entity.Notification;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.NotificationType;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;

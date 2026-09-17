@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.catalog.dto.request;
 
-import com.S_Health.GenderHealthCare.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

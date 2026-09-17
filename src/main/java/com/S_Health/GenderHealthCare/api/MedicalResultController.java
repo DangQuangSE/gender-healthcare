@@ -1,5 +1,7 @@
 package com.S_Health.GenderHealthCare.api;
 
+
+
 import com.S_Health.GenderHealthCare.dto.request.service.ConsultationResultRequest;
 import com.S_Health.GenderHealthCare.dto.request.service.LabTestResultRequest;
 import com.S_Health.GenderHealthCare.dto.request.service.ResultRequest;

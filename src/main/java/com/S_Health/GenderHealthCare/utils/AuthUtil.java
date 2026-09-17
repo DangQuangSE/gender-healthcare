@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.utils;
 
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+
 import com.S_Health.GenderHealthCare.common.security.CurrentUserProvider;
-import com.S_Health.GenderHealthCare.entity.User;
 import org.springframework.stereotype.Component;
 
 /**

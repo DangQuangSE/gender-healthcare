@@ -1,84 +1,97 @@
-package com.S_Health.GenderHealthCare.api;
+package com.S_Health.GenderHealthCare.modules.identity.controller;
 
-import com.S_Health.GenderHealthCare.dto.request.authentication.*;
-import com.S_Health.GenderHealthCare.service.authentication.AuthenticationService;
-import com.S_Health.GenderHealthCare.service.authentication.OTPService;
+import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.EmailRegisterRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
+import com.S_Health.GenderHealthCare.modules.identity.dto.request.VerifyOTPRequest;
+import com.S_Health.GenderHealthCare.modules.identity.service.AuthenticationService;
+import com.S_Health.GenderHealthCare.modules.identity.service.OTPService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api")
-@RestController
-@SecurityRequirement(name = "api")
 /**
- * Legacy compatibility controller. Use modules.identity.api.IdentityController for /api/v1.
+ * Legacy endpoint compatibility. New clients should use IdentityController
+ * under /api/v1/auth.
  */
 @Deprecated(since = "1.0", forRemoval = false)
+@RestController
+@RequestMapping("/api")
+@SecurityRequirement(name = "api")
 public class AuthenticationController {
-    @Autowired
-    private AuthenticationService authenticationService;
-    @Autowired
-    private OTPService otpService;
+    private final AuthenticationService authenticationService;
+    private final OTPService otpService;
 
-
+    public AuthenticationController(
+            AuthenticationService authenticationService,
+            OTPService otpService) {
+        this.authenticationService = authenticationService;
+        this.otpService = otpService;
+    }
 
     @PostMapping("/auth/request-OTP")
-    public ResponseEntity loginWithEmail(@Valid @RequestBody EmailRegisterRequest request) {
-        if(authenticationService.checkExistEmail(request.getEmail())){
-            return ResponseEntity.badRequest().body("Email đã tồn tại!");
+    public ResponseEntity<String> requestRegistrationOtp(
+            @Valid @RequestBody EmailRegisterRequest request) {
+        if (authenticationService.checkExistEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body(IdentityMessages.REGISTRATION_EMAIL_EXISTS);
         }
         otpService.generateOTP(request.getEmail());
-        return ResponseEntity.ok("OTP đã được gửi tới email!");
+        return ResponseEntity.ok(IdentityMessages.REGISTRATION_OTP_SENT);
     }
 
     @PostMapping("/auth/verify-Otp")
-    public ResponseEntity verifyOTP(@RequestBody VerifyOTPRequest request) {
-        Boolean check = otpService.verifyOtp(request.getEmail(), request.getOtp());
-        return check ? ResponseEntity.ok("OTP hợp lệ!") : ResponseEntity.badRequest().body("OTP không hợp lệ hoặc đã hết hạn!");
+    public ResponseEntity<String> verifyOtp(@RequestBody VerifyOTPRequest request) {
+        boolean valid = otpService.verifyOtp(request.getEmail(), request.getOtp());
+        return valid
+                ? ResponseEntity.ok(IdentityMessages.OTP_VALID)
+                : ResponseEntity.badRequest().body(IdentityMessages.OTP_INVALID);
     }
+
     @PostMapping("/auth/config-password")
-    public ResponseEntity setPassword(@Valid @RequestBody PasswordRequest request){
-            authenticationService.setPassword(request);
-            return ResponseEntity.ok("Thiết lập mật khẩu thành công!");
+    public ResponseEntity<String> setPassword(@Valid @RequestBody PasswordRequest request) {
+        authenticationService.setPassword(request);
+        return ResponseEntity.ok(IdentityMessages.PASSWORD_CONFIGURED);
     }
 
     @PostMapping("/auth/forgot-password/request-otp")
-    public ResponseEntity sendForgotOtp(@RequestBody EmailRegisterRequest request) {
+    public ResponseEntity<String> requestForgotPasswordOtp(
+            @RequestBody EmailRegisterRequest request) {
         if (!authenticationService.checkExistEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("Email chưa được đăng ký.");
+            return ResponseEntity.badRequest().body(IdentityMessages.FORGOT_PASSWORD_EMAIL_NOT_FOUND);
         }
-        otpService.generateForgotPasswordOTP(request.getEmail()); // true = quên mật khẩu
-        return ResponseEntity.ok("OTP đã được gửi tới email để đặt lại mật khẩu!");
+        otpService.generateForgotPasswordOTP(request.getEmail());
+        return ResponseEntity.ok(IdentityMessages.FORGOT_PASSWORD_OTP_SENT);
     }
 
     @PostMapping("/auth/forgot-password/verify-otp")
-    public ResponseEntity verifyForgotOtp(@RequestBody VerifyOTPRequest request) {
-        Boolean check = otpService.verifyOtp(request.getEmail(), request.getOtp());
-        return check ? ResponseEntity.ok("OTP hợp lệ!") : ResponseEntity.badRequest().body("OTP không hợp lệ hoặc đã hết hạn!");
+    public ResponseEntity<String> verifyForgotPasswordOtp(@RequestBody VerifyOTPRequest request) {
+        boolean valid = otpService.verifyOtp(request.getEmail(), request.getOtp());
+        return valid
+                ? ResponseEntity.ok(IdentityMessages.OTP_VALID)
+                : ResponseEntity.badRequest().body(IdentityMessages.OTP_INVALID);
     }
 
     @PutMapping("/auth/forgot-password/resetPass")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody PasswordRequest request) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordRequest request) {
         authenticationService.setPasswordForgot(request);
-        return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công.");
+        return ResponseEntity.ok(IdentityMessages.PASSWORD_RESET_SUCCESS);
     }
-    
 
     @PostMapping("/auth/google")
-    public ResponseEntity loginWithGoogle(@RequestBody OAuthLoginRequest request) {
+    public ResponseEntity<?> loginWithGoogle(@RequestBody OAuthLoginRequest request) {
         return ResponseEntity.ok(authenticationService.loginWithGoogleToken(request.getAccessToken()));
     }
+
     @PostMapping("/auth/login")
-    public ResponseEntity loginWithEmail(@RequestBody LoginEmailRequest request){
+    public ResponseEntity<?> loginWithEmail(@RequestBody LoginEmailRequest request) {
         return ResponseEntity.ok(authenticationService.loginWithEmail(request));
     }
 
-
-    //login facebook
     @PostMapping("/auth/facebook")
-    public ResponseEntity loginFacebook(@RequestBody OAuthLoginRequest request) {
+    public ResponseEntity<?> loginWithFacebook(@RequestBody OAuthLoginRequest request) {
         return ResponseEntity.ok(authenticationService.loginWithFacebook(request.getAccessToken()));
     }
 }

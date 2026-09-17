@@ -1,14 +1,16 @@
 package com.S_Health.GenderHealthCare.modules.content.service;
 
+import com.S_Health.GenderHealthCare.modules.content.domain.Blog;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Tag;
+import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
+
+
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.request.blog.BlogRequest;
 import com.S_Health.GenderHealthCare.dto.response.BlogResponse;
 import com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO;
-import com.S_Health.GenderHealthCare.entity.Blog;
-import com.S_Health.GenderHealthCare.entity.Tag;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.BlogStatus;
-import com.S_Health.GenderHealthCare.enums.UserRole;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.BlogRepository;

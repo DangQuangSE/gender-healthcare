@@ -1,8 +1,9 @@
 package com.S_Health.GenderHealthCare.dto.response;
 
+import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
+
 import com.S_Health.GenderHealthCare.dto.TagDTO;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.enums.BlogStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

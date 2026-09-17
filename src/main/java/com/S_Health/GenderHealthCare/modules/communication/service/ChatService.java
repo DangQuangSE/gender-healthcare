@@ -1,15 +1,17 @@
 package com.S_Health.GenderHealthCare.modules.communication.service;
 
+import com.S_Health.GenderHealthCare.modules.communication.enums.ChatStatus;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.communication.domain.ChatMessage;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.communication.domain.ChatSession;
+import com.S_Health.GenderHealthCare.modules.communication.enums.SenderType;
+
+
 import com.S_Health.GenderHealthCare.dto.ChatMessageDTO;
 import com.S_Health.GenderHealthCare.dto.ChatSessionDTO;
 import com.S_Health.GenderHealthCare.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.dto.request.StartChatRequest;
-import com.S_Health.GenderHealthCare.entity.ChatMessage;
-import com.S_Health.GenderHealthCare.entity.ChatSession;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.ChatStatus;
-import com.S_Health.GenderHealthCare.enums.SenderType;
-import com.S_Health.GenderHealthCare.enums.UserRole;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;

@@ -1,12 +1,12 @@
 package com.S_Health.GenderHealthCare.repository;
 
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
 import com.S_Health.GenderHealthCare.dto.response.report.BookingReportResponse;
 import com.S_Health.GenderHealthCare.dto.response.report.ServiceBookingReportDTO;
-import com.S_Health.GenderHealthCare.entity.Appointment;
-import com.S_Health.GenderHealthCare.entity.MedicalProfile;
-import com.S_Health.GenderHealthCare.entity.Payment;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

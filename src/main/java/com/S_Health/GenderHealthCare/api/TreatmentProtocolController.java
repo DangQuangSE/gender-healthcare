@@ -4,7 +4,6 @@ import com.S_Health.GenderHealthCare.dto.TagDTO;
 import com.S_Health.GenderHealthCare.dto.request.TreatmentProtocolRequest;
 import com.S_Health.GenderHealthCare.dto.request.tag.TagRequest;
 import com.S_Health.GenderHealthCare.dto.response.TreatmentProtocolResponse;
-import com.S_Health.GenderHealthCare.entity.TreatmentProtocol;
 import com.S_Health.GenderHealthCare.modules.medical.service.TreatmentProtocolService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;

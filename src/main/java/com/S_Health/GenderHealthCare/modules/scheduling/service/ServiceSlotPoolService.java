@@ -1,12 +1,18 @@
 package com.S_Health.GenderHealthCare.modules.scheduling.service;
 
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
+import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.dto.ServiceDTO;
 import com.S_Health.GenderHealthCare.dto.SlotDTO;
 import com.S_Health.GenderHealthCare.dto.request.schedule.ScheduleServiceRequest;
 import com.S_Health.GenderHealthCare.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.dto.response.ScheduleServiceResponse;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.repository.*;
 import org.modelmapper.ModelMapper;

@@ -1,0 +1,68 @@
+package com.S_Health.GenderHealthCare.modules.appointment.domain;
+
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.feedback.domain.ServiceFeedback;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Appointment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
+
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    Service service;
+
+    @OneToMany(mappedBy = "appointment")
+    List<AppointmentDetail> appointmentDetails;
+    @ManyToOne
+    @JoinColumn(name = "medicalProfile_id")
+    MedicalProfile medicalProfile;
+
+    @ManyToOne
+    @JoinColumn(name = "slot_id")
+    ServiceSlotPool serviceSlotPool;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    User customer;
+    @ManyToOne
+    @JoinColumn(name = "consultant_id")
+    User consultant;
+    //User updatedBy;
+    @OneToMany(mappedBy = "appointment")
+    List<Payment> payments;
+    Double price;
+    String note;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    AppointmentStatus status;
+    @CreationTimestamp
+    LocalDateTime created_at;
+    LocalDateTime update_at;
+    LocalDate preferredDate;
+    Boolean isActive = true;
+    Boolean isRated = false;
+
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ServiceFeedback> serviceFeedbacks;
+}

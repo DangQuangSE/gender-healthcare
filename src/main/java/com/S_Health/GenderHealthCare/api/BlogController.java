@@ -1,9 +1,9 @@
 package com.S_Health.GenderHealthCare.api;
 
+import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
+
 import com.S_Health.GenderHealthCare.dto.request.blog.BlogRequest;
 import com.S_Health.GenderHealthCare.dto.response.BlogResponse;
-import com.S_Health.GenderHealthCare.entity.Blog;
-import com.S_Health.GenderHealthCare.enums.BlogStatus;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.content.service.BlogService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.dto.request.service;
 
-import com.S_Health.GenderHealthCare.enums.Symptoms;
+import com.S_Health.GenderHealthCare.modules.healthtracking.enums.Symptoms;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

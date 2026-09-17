@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.Specialization;
-import com.S_Health.GenderHealthCare.entity.User;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

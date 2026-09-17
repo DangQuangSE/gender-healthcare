@@ -1,4 +1,4 @@
-package com.S_Health.GenderHealthCare.dto.response;
+package com.S_Health.GenderHealthCare.modules.identity.dto.response;
 
 
 import com.S_Health.GenderHealthCare.dto.UserDTO;

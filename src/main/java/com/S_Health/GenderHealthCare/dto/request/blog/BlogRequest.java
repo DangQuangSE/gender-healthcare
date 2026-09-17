@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.dto.request.blog;
 
-import com.S_Health.GenderHealthCare.enums.BlogStatus;
+import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

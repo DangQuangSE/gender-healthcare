@@ -1,0 +1,142 @@
+package com.S_Health.GenderHealthCare.modules.user.domain;
+
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.healthtracking.domain.CycleTracking;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.content.domain.Blog;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.Schedule;
+import com.S_Health.GenderHealthCare.modules.content.domain.Comment;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.RoomConsultant;
+import com.S_Health.GenderHealthCare.modules.communication.domain.Notification;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
+import com.S_Health.GenderHealthCare.modules.user.enums.Gender;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
+public class User implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    String fullname;
+    String email;
+    String phone;
+    LocalDate dateOfBirth;
+    String password;
+    String imageUrl;
+    String address;
+    boolean isVerify;
+    boolean isActive;
+    @CreationTimestamp
+    LocalDate createdAt;
+    @UpdateTimestamp
+    LocalDate updatedAt;
+    @Enumerated(EnumType.STRING)
+    Gender gender;
+    @Enumerated(EnumType.STRING)
+    UserRole role;
+
+    @OneToMany(mappedBy = "consultant")
+    @JsonIgnore
+    List<Schedule> schedules;
+
+    @OneToMany(mappedBy = "consultant")
+    @JsonIgnore
+    List<Certification> certifications;
+
+    // Quan hệ nhiều-nhiều với Specialization (cho consultant)
+    @ManyToMany
+    @JoinTable(
+            name = "user_specialization",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "specialization_id")
+    )
+    List<Specialization> specializations;
+
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    List<MedicalProfile> medicalProfiles;
+
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    List<Appointment> appointments;
+    @OneToMany(mappedBy = "consultant")
+    @JsonIgnore
+    List<AppointmentDetail> appointmentDetails;
+    @OneToMany(mappedBy = "consultant")
+    @JsonIgnore
+    List<ConsultantSlot> consultantSlots;
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    List<CycleTracking> cycleTrackings;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    List<Notification> notifications;
+
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    List<Blog> blogs;
+
+    @OneToMany(mappedBy = "commenter")
+    @JsonIgnore
+    List<Comment> comments;
+    @OneToMany(mappedBy = "paidBy")
+    @JsonIgnore
+    List<Payment> payments;
+    @OneToMany(mappedBy = "consultant")
+    @JsonIgnore
+    List<MedicalResult> medicalResults;
+
+    @OneToMany(mappedBy = "consultant")
+    @JsonIgnore
+    List<RoomConsultant> roomAssignments;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null) {
+            return List.of();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+}

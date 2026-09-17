@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.user.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.dto.request.authentication.CreateUserRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.UpdateConsultantSpecializationRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.user.service.UserService;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserAccountResponse;

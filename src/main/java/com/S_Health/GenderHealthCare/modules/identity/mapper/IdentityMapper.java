@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.identity.mapper;
 
-import com.S_Health.GenderHealthCare.dto.response.JwtResponse;
+import com.S_Health.GenderHealthCare.modules.identity.dto.response.JwtResponse;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.LoginResponse;
 import com.S_Health.GenderHealthCare.modules.user.mapper.UserMapper;
 import org.springframework.stereotype.Component;

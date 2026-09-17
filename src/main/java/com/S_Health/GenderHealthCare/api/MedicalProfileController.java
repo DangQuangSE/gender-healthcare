@@ -1,10 +1,10 @@
 package com.S_Health.GenderHealthCare.api;
 
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+
 import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
 import com.S_Health.GenderHealthCare.dto.PatientMedicalHistoryDTO;
 import com.S_Health.GenderHealthCare.dto.request.MedicalInfoUpdateRequest;
-import com.S_Health.GenderHealthCare.entity.MedicalProfile;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

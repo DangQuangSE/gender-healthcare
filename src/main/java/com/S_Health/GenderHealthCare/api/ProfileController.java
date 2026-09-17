@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.api;
 
 import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.service.UserProfileService;
+import com.S_Health.GenderHealthCare.modules.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;

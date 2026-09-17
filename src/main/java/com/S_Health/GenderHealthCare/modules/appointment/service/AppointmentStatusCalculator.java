@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
-import com.S_Health.GenderHealthCare.entity.AppointmentDetail;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;

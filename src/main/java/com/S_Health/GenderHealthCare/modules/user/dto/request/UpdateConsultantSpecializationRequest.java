@@ -1,4 +1,4 @@
-package com.S_Health.GenderHealthCare.dto.request.authentication;
+package com.S_Health.GenderHealthCare.modules.user.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

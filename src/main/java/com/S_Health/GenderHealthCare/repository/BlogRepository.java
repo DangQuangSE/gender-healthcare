@@ -1,9 +1,10 @@
 package com.S_Health.GenderHealthCare.repository;
 
+import com.S_Health.GenderHealthCare.modules.content.domain.Blog;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
+
 import com.S_Health.GenderHealthCare.dto.response.BlogSummaryDTO;
-import com.S_Health.GenderHealthCare.entity.Blog;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.BlogStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

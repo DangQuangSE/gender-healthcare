@@ -1,15 +1,17 @@
 package com.S_Health.GenderHealthCare.modules.catalog.service;
 
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Room;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.RoomConsultant;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+
+
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.request.room.RoomConsultantRequest;
 import com.S_Health.GenderHealthCare.dto.request.room.RoomRequest;
 import com.S_Health.GenderHealthCare.dto.response.RoomConsultantDTO;
 import com.S_Health.GenderHealthCare.dto.response.RoomDTO;
-import com.S_Health.GenderHealthCare.entity.Room;
-import com.S_Health.GenderHealthCare.entity.RoomConsultant;
-import com.S_Health.GenderHealthCare.entity.Specialization;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.UserRole;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.RoomConsultantRepository;

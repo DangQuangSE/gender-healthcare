@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.Payment;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

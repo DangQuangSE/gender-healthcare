@@ -1,7 +1,6 @@
 package com.S_Health.GenderHealthCare.api;
 
 import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
-import com.S_Health.GenderHealthCare.entity.User;
 import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;

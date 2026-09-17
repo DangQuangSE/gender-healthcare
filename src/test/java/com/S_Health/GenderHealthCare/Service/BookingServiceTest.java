@@ -1,11 +1,15 @@
 package com.S_Health.GenderHealthCare.Service;
 
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
 import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.ServiceType;
-import com.S_Health.GenderHealthCare.enums.SlotStatus;
+
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
@@ -46,7 +50,7 @@ class BookingServiceTest {
     @Mock private RoomConsultantRepository roomConsultantRepository;
 
     private BookingRequest bookingRequest;
-    private com.S_Health.GenderHealthCare.entity.Service service;
+    private com.S_Health.GenderHealthCare.modules.catalog.domain.Service service;
     private ServiceSlotPool slotPool;
     private User customer;
     private ConsultantSlot consultantSlot;
@@ -60,7 +64,7 @@ class BookingServiceTest {
         bookingRequest.setSlot_id(10L);
         bookingRequest.setNote("Test booking");
 
-        service = new com.S_Health.GenderHealthCare.entity.Service();
+        service = new com.S_Health.GenderHealthCare.modules.catalog.domain.Service();
         service.setId(1L);
         service.setName("Test Service");
         service.setIsCombo(false);

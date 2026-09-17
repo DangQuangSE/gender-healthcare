@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.dto.request.service;
 
-import com.S_Health.GenderHealthCare.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+
 import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.Builder;

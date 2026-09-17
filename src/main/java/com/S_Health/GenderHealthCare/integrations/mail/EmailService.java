@@ -1,6 +1,8 @@
 package com.S_Health.GenderHealthCare.integrations.mail;
 
-import com.S_Health.GenderHealthCare.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+
+
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

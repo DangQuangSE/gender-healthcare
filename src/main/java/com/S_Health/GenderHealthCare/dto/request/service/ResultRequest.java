@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.dto.request.service;
 
-import com.S_Health.GenderHealthCare.enums.ResultType;
-import com.S_Health.GenderHealthCare.enums.TestStatus;
+import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
+import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,15 +1,17 @@
 package com.S_Health.GenderHealthCare.modules.feedback.service;
 
+import com.S_Health.GenderHealthCare.modules.feedback.domain.ServiceFeedback;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.feedback.domain.ConsultantFeedback;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+
+
 import com.S_Health.GenderHealthCare.dto.request.ConsultantFeedbackRequest;
 import com.S_Health.GenderHealthCare.dto.request.ServiceFeedbackRequest;
 import com.S_Health.GenderHealthCare.dto.response.feedback.AverageRatingResponse;
 import com.S_Health.GenderHealthCare.dto.response.feedback.ConsultantFeedbackResponse;
 import com.S_Health.GenderHealthCare.dto.response.feedback.ServiceFeedbackResponse;
-import com.S_Health.GenderHealthCare.entity.Appointment;
-import com.S_Health.GenderHealthCare.entity.ConsultantFeedback;
-import com.S_Health.GenderHealthCare.entity.ServiceFeedback;
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.enums.UserRole;
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.feedback.FeedbackMessages;
 import com.S_Health.GenderHealthCare.repository.*;

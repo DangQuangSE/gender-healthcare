@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.dto;
 
-import com.S_Health.GenderHealthCare.enums.ResultType;
-import com.S_Health.GenderHealthCare.enums.TestStatus;
+import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
+import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

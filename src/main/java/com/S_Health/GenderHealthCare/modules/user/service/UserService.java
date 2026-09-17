@@ -1,18 +1,20 @@
 package com.S_Health.GenderHealthCare.modules.user.service;
 
+
+
 import com.S_Health.GenderHealthCare.common.validation.ImageUploadValidator;
 import com.S_Health.GenderHealthCare.dto.UserDTO;
-import com.S_Health.GenderHealthCare.dto.request.authentication.CreateUserRequest;
-import com.S_Health.GenderHealthCare.dto.request.authentication.UpdateConsultantSpecializationRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserAccountResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserSpecializationResponse;
 import com.S_Health.GenderHealthCare.modules.user.mapper.UserMapper;
-import com.S_Health.GenderHealthCare.service.UserProfileService;
-import com.S_Health.GenderHealthCare.service.authentication.ManageUserService;
-import com.S_Health.GenderHealthCare.service.certification.CertificationService;
+import com.S_Health.GenderHealthCare.modules.user.service.UserProfileService;
+import com.S_Health.GenderHealthCare.modules.user.service.ManageUserService;
+import com.S_Health.GenderHealthCare.modules.user.service.CertificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

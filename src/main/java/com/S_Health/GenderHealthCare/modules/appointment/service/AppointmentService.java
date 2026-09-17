@@ -1,5 +1,16 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
+import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+
+
 import com.S_Health.GenderHealthCare.dto.AppointmentDTO;
 import com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO;
 import com.S_Health.GenderHealthCare.dto.BasicMedicalProfileDTO;
@@ -7,9 +18,7 @@ import com.S_Health.GenderHealthCare.dto.PatientHistoryDTO;
 import com.S_Health.GenderHealthCare.dto.ResultDTO;
 import com.S_Health.GenderHealthCare.dto.request.appointment.UpdateAppointmentRequest;
 import com.S_Health.GenderHealthCare.dto.response.MedicalProfileDTO;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.UserRole;
+
 import com.S_Health.GenderHealthCare.exception.exceptions.AppException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.repository.*;
@@ -441,7 +450,7 @@ public class AppointmentService {
     /**
      * Helper method to map Room to SimpleRoomDTO using ModelMapper
      */
-    private com.S_Health.GenderHealthCare.dto.SimpleRoomDTO mapRoomToSimpleDTO(com.S_Health.GenderHealthCare.entity.Room room) {
+    private com.S_Health.GenderHealthCare.dto.SimpleRoomDTO mapRoomToSimpleDTO(com.S_Health.GenderHealthCare.modules.catalog.domain.Room room) {
         if (room == null) return null;
 
         com.S_Health.GenderHealthCare.dto.SimpleRoomDTO roomDTO = modelMapper.map(room, com.S_Health.GenderHealthCare.dto.SimpleRoomDTO.class);

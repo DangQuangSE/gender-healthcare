@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.api;
 
 import com.S_Health.GenderHealthCare.dto.response.certification.CertificationResponse;
-import com.S_Health.GenderHealthCare.service.certification.CertificationService;
+import com.S_Health.GenderHealthCare.modules.user.service.CertificationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

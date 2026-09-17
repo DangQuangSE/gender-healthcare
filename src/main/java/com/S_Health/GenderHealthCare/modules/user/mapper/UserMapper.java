@@ -1,11 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.user.mapper;
 
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+
 import com.S_Health.GenderHealthCare.dto.UserDTO;
 import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
 import com.S_Health.GenderHealthCare.dto.response.CreateUserResponse;
 import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantCertification;
 import com.S_Health.GenderHealthCare.dto.response.consultant.ConsultantDTO;
-import com.S_Health.GenderHealthCare.entity.Specialization;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantCertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;

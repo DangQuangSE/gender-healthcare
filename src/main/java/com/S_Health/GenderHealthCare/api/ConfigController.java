@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.api;
 
-import com.S_Health.GenderHealthCare.entity.ConfigValue;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.ConfigValue;
+
 import com.S_Health.GenderHealthCare.modules.catalog.service.ConfigValueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

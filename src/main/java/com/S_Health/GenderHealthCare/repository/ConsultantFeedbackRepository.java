@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.ConsultantFeedback;
-import com.S_Health.GenderHealthCare.entity.ServiceFeedback;
+import com.S_Health.GenderHealthCare.modules.feedback.domain.ConsultantFeedback;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

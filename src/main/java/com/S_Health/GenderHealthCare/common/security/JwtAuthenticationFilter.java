@@ -1,7 +1,8 @@
 package com.S_Health.GenderHealthCare.common.security;
 
-import com.S_Health.GenderHealthCare.entity.User;
-import com.S_Health.GenderHealthCare.service.authentication.JWTService;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+
+import com.S_Health.GenderHealthCare.modules.identity.service.JWTService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

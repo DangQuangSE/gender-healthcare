@@ -1,8 +1,9 @@
 package com.S_Health.GenderHealthCare.dto.response;
 
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.user.enums.Gender;
+
 import com.S_Health.GenderHealthCare.dto.SpecializationDTO;
-import com.S_Health.GenderHealthCare.enums.Gender;
-import com.S_Health.GenderHealthCare.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

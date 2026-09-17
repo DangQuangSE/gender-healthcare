@@ -1,8 +1,9 @@
 package com.S_Health.GenderHealthCare.dto;
 
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.PaymentStatus;
-import com.S_Health.GenderHealthCare.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

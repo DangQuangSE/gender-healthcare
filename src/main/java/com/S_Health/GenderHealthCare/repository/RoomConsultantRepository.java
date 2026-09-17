@@ -1,9 +1,10 @@
 package com.S_Health.GenderHealthCare.repository;
 
-import com.S_Health.GenderHealthCare.entity.Room;
-import com.S_Health.GenderHealthCare.entity.RoomConsultant;
-import com.S_Health.GenderHealthCare.entity.Specialization;
-import com.S_Health.GenderHealthCare.entity.User;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Room;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.RoomConsultant;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
