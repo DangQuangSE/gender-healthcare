@@ -12,6 +12,7 @@ public final class IntegrationMessages {
     public static final String ZOOM_USER_NOT_IN_MEETING = "You are not a participant in this meeting";
     public static final String ZOOM_MEETING_CREATE_FAILED = "Unable to create the Zoom meeting, please try again later";
     public static final String ZOOM_MEETING_REQUEST_FAILED = "Unable to request a Zoom meeting";
+    public static final String VNPAY_CALLBACK_INVALID = "VNPay callback is invalid";
     public static final String ZOOM_APPOINTMENT_NOT_FOUND = "Appointment not found";
     public static final String ZOOM_APPOINTMENT_DETAIL_NOT_FOUND = "Appointment detail not found";
     public static final String STORAGE_FILE_EMPTY = "File cannot be empty";

@@ -45,6 +45,7 @@ public class AppointmentDetail {
     LocalDateTime slotTime;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
+    @Builder.Default
     AppointmentStatus status = AppointmentStatus.PENDING;
     @Column(columnDefinition = "TEXT")
     String joinUrl;
@@ -53,6 +54,7 @@ public class AppointmentDetail {
 
     @OneToOne(mappedBy = "appointmentDetail")
     MedicalResult medicalResult;
+    @Builder.Default
     Boolean isActive = true;
     LocalDateTime update_at;
     LocalDateTime create_at;

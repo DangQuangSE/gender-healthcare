@@ -37,5 +37,7 @@ public class ConsultationResultRequest {
             example = "Sử dụng thuốc kháng nấm, tái khám sau 1 tuần")
     private String treatmentPlan;
 
+    @NotNull(message = MedicalMessages.TREATMENT_PROTOCOL_ID_REQUIRED)
+    @Positive(message = MedicalMessages.TREATMENT_PROTOCOL_ID_POSITIVE)
     Long treatmentProtocolId;
 }

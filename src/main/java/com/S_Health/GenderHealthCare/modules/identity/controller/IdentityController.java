@@ -85,13 +85,6 @@ public class IdentityController {
         return ResponseEntity.ok(ApiResponse.success(identityService.loginWithGoogle(request), null));
     }
 
-    @PostMapping("/oauth/facebook")
-    @Operation(summary = IdentityMessages.LOGIN_FACEBOOK)
-    public ResponseEntity<ApiResponse<LoginResponse>> loginWithFacebook(
-            @Valid @RequestBody OAuthLoginRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(identityService.loginWithFacebook(request), null));
-    }
-
     private ResponseEntity<ApiResponse<String>> success(String message) {
         return ResponseEntity.ok(ApiResponse.success(message, null));
     }

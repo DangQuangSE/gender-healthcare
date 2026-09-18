@@ -6,12 +6,14 @@ import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UserProfileUpdateRequest;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
 import com.S_Health.GenderHealthCare.integrations.storage.ImageStorage;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -35,19 +37,11 @@ public class UserProfileService {
         this.imageStorage = imageStorage;
     }
 
-    public UserDTO updateUserProfile(UserDTO request) {
+    @Transactional
+    public UserDTO updateUserProfile(UserProfileUpdateRequest request) {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
-
-        if (request.getImg() != null) {
-            try {
-                String imageUrl = imageStorage.uploadImage(request.getImg());
-                request.setImageUrl(imageUrl);
-            } catch (IOException e) {
-                throw new ApiException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
-            }
-        }
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
 
         if (request.getFullname() != null) user.setFullname(request.getFullname());
         if (request.getPhone() != null) user.setPhone(request.getPhone());
@@ -59,17 +53,19 @@ public class UserProfileService {
         return modelMapper.map(updated, UserDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public UserDTO getUserProfile() {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
         return modelMapper.map(user, UserDTO.class);
     }
 
+    @Transactional
     public UserDTO updateAvatar(MultipartFile file) {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
 
         try {
             String imageUrl = imageStorage.uploadImage(file);
@@ -77,7 +73,7 @@ public class UserProfileService {
             User updated = userRepository.save(user);
             return modelMapper.map(updated, UserDTO.class);
         } catch (IOException e) {
-            throw new ApiException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
+            throw new DomainException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
         }
     }
 }

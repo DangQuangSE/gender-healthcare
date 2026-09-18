@@ -1,13 +1,13 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
+import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.NotificationRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.modules.communication.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,9 +31,8 @@ public class NotificationController {
 
     @PostMapping
     @Operation(summary = CommunicationMessages.CREATE_NOTIFICATION)
-    public ResponseEntity<NotificationResponse> create(@RequestBody NotificationRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(notificationService.createNotification(request));
+    public ApiResponse<NotificationResponse> create(@Valid @RequestBody NotificationRequest request) {
+        return ApiResponse.success(notificationService.createNotification(request), null);
     }
 
     @GetMapping
@@ -50,14 +49,16 @@ public class NotificationController {
 
     @PatchMapping("/{id}/read")
     @Operation(summary = CommunicationMessages.MARK_NOTIFICATION_READ)
-    public void markRead(@PathVariable Long id) {
+    public ApiResponse<String> markRead(@PathVariable Long id) {
         notificationService.markAsRead(id);
+        return ApiResponse.success(CommunicationMessages.NOTIFICATIONS_MARKED_READ, null);
     }
 
     @PatchMapping("/read-all")
     @Operation(summary = CommunicationMessages.MARK_ALL_NOTIFICATIONS_READ)
-    public void markAllRead() {
+    public ApiResponse<String> markAllRead() {
         notificationService.markAllAsReadForCurrentUser();
+        return ApiResponse.success(CommunicationMessages.NOTIFICATIONS_MARKED_READ, null);
     }
 
     @GetMapping("/unread-count")
@@ -68,7 +69,8 @@ public class NotificationController {
 
     @DeleteMapping("/{notificationId}")
     @Operation(summary = CommunicationMessages.DELETE_NOTIFICATION)
-    public void delete(@PathVariable Long notificationId) {
+    public ApiResponse<String> delete(@PathVariable Long notificationId) {
         notificationService.deleteNotification(notificationId);
+        return ApiResponse.success(CommunicationMessages.NOTIFICATION_DELETED, null);
     }
 }

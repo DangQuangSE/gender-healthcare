@@ -11,6 +11,7 @@ import com.S_Health.GenderHealthCare.repository.CycleTrackingRepository;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ public class CycleTrackingService {
         this.authUtil = authUtil;
     }
 
+    @Transactional
     public CycleTrackingResponse saveDailyLog(CycleTrackingRequest request) {
 
 
@@ -69,6 +71,7 @@ public class CycleTrackingService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     public List<CycleTrackingRequest> getLogsByUser(Long userId) {
         return cycleTrackingRepository.findAllByUserId(userId).stream().map(log -> {
             CycleTrackingRequest dto = new CycleTrackingRequest();

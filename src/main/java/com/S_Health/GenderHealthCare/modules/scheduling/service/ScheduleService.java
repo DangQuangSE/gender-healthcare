@@ -18,7 +18,7 @@ import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorki
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
@@ -96,18 +96,20 @@ public class ScheduleService {
 
     public ScheduleRegisterResponse registerSchedule(ScheduleRegisterRequest request) {
         User consultant = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.CONSULTANT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, SchedulingMessages.CONSULTANT_NOT_FOUND));
         List<ScheduleRegisterRequest.ScheduleItem> scheduleItems = request.getScheduleItems();
         for (ScheduleRegisterRequest.ScheduleItem item : scheduleItems) {
             if (!item.getWorkDate().isAfter(LocalDate.now())) {
-                throw new IllegalArgumentException(
+                throw new DomainException(
+                        ErrorCode.BAD_REQUEST,
                         SchedulingMessages.WORK_DATE_MUST_BE_FUTURE.formatted(item.getWorkDate()));
             }
         }
         Set<LocalDate> uniqueWorkDate = new HashSet<>();
         for (ScheduleRegisterRequest.ScheduleItem item : scheduleItems) {
             if (!uniqueWorkDate.add(item.getWorkDate())) {
-                throw new IllegalArgumentException(
+                throw new DomainException(
+                        ErrorCode.BAD_REQUEST,
                         SchedulingMessages.DUPLICATE_WORK_DATE.formatted(item.getWorkDate()));
             }
         }
@@ -162,10 +164,14 @@ public class ScheduleService {
     //bác sĩ hủy lịch làm
     public ScheduleCancelResponse cancelSchedule(ScheduleCancelRequest request) {
         if (request.isCancelWholeDay() && request.getSlot() != null) {
-            throw new IllegalArgumentException(SchedulingMessages.FULL_DAY_CANCEL_CANNOT_HAVE_SLOT);
+            throw new DomainException(
+                    ErrorCode.BAD_REQUEST,
+                    SchedulingMessages.FULL_DAY_CANCEL_CANNOT_HAVE_SLOT);
         }
         if (!request.isCancelWholeDay() && request.getSlot() == null) {
-            throw new IllegalArgumentException(SchedulingMessages.PARTIAL_DAY_CANCEL_REQUIRES_SLOT);
+            throw new DomainException(
+                    ErrorCode.BAD_REQUEST,
+                    SchedulingMessages.PARTIAL_DAY_CANCEL_REQUIRES_SLOT);
         }
 
         Long consultantId = authUtil.getCurrentUserId();
@@ -177,7 +183,7 @@ public class ScheduleService {
                     .findByConsultant_idAndSlotDate(consultantId, date);
             List<ConsultantSlot> slots = consultantSlotRepository.findByConsultantIdAndDate(consultantId, date);
             if (slots.isEmpty()) {
-                throw new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.SLOTS_NOT_FOUND);
+                throw new DomainException(ErrorCode.NOT_FOUND, SchedulingMessages.SLOTS_NOT_FOUND);
             }
             for (ConsultantSlot slot : slots) {
                 slot.setIsActive(false);
@@ -196,7 +202,7 @@ public class ScheduleService {
                 slot.setStatus(SlotStatus.DEACTIVE);
                 consultantSlotRepository.save(slot);
             } else {
-                throw new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.SLOT_NOT_FOUND);
+                throw new DomainException(ErrorCode.NOT_FOUND, SchedulingMessages.SLOT_NOT_FOUND);
             }
         }
 

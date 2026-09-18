@@ -44,6 +44,15 @@ public final class CommunicationMessages {
     public static final String MARK_ALL_NOTIFICATIONS_READ = "Mark all notifications as read";
     public static final String GET_UNREAD_NOTIFICATION_COUNT = "Get unread notification count";
     public static final String DELETE_NOTIFICATION = "Delete a notification";
+    public static final String NOTIFICATION_TITLE_REQUIRED = "Notification title is required";
+    public static final String NOTIFICATION_CONTENT_REQUIRED = "Notification content is required";
+    public static final String NOTIFICATION_TYPE_REQUIRED = "Notification type is required";
+    public static final String NOTIFICATION_APPOINTMENT_ID_POSITIVE = "Appointment id must be positive";
+    public static final String NOTIFICATION_CYCLE_ID_POSITIVE = "Cycle tracking id must be positive";
+    public static final String CHAT_ENDED_SUCCESS = "Chat session ended successfully";
+    public static final String CHAT_MESSAGES_MARKED_READ = "Chat messages marked as read";
+    public static final String NOTIFICATIONS_MARKED_READ = "Notifications marked as read";
+    public static final String NOTIFICATION_DELETED = "Notification deleted successfully";
     public static final String READER_NAME_REQUIRED = "Reader name is required";
     public static final String CUSTOMER_NAME_REQUIRED = "Customer name is required";
     public static final String SESSION_ID_REQUIRED = "Session id is required";

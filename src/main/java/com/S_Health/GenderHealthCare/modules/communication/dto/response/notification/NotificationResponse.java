@@ -14,7 +14,9 @@ public class NotificationResponse {
     Long id;
     String title;
     String content;
+    @Builder.Default
     Boolean isRead = false;
+    @Builder.Default
     Boolean isActive = true;
     String type;
     LocalDateTime createdAt;

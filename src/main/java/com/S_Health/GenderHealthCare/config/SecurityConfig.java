@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/error", "/favicon.ico", "/health").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -69,6 +69,46 @@ public class SecurityConfig {
                         .requestMatchers("/ws/chat/**").permitAll()
                         .requestMatchers("/api/auth/**", "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/config/**").permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/medical-profiles/me/**",
+                                "/api/v1/medical-results/**",
+                                "/api/v1/treatment-protocols/**")
+                        .authenticated()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/medical-profiles/patients/**",
+                                "/api/v1/medical-profiles/medical-info")
+                        .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/medical-profiles/medical-info")
+                        .hasAnyRole("STAFF", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/blogs/me/**",
+                                "/api/v1/blogs/admin/**")
+                        .authenticated()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/blogs",
+                                "/api/v1/blogs/*",
+                                "/api/v1/blogs/*/detail",
+                                "/api/v1/blogs/summary",
+                                "/api/v1/blogs/by-tag/**",
+                                "/api/v1/blogs/by-tags/**",
+                                "/api/v1/comments/blogs/**",
+                                "/api/v1/service-feedback/services/**",
+                                "/api/v1/consultant-feedback/service-feedback/**")
+                        .permitAll()
+                        .requestMatchers(
+                                "/api/v1/medical-results/**",
+                                "/api/v1/treatment-protocols/**")
+                        .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(
+                                "/api/result/**",
+                                "/api/treatment/**")
+                        .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/v1/services/**",
@@ -83,9 +123,10 @@ public class SecurityConfig {
                                 "/api/consultants/**",
                                 "/api/comment/blog/**",
                                 "/api/feedback/**",
+                                "/api/v1/service-feedback/services/**",
+                                "/api/v1/consultant-feedback/service-feedback/**",
                                 "/api/schedules/**",
                                 "/api/v1/schedules/**",
-                                "/api/v1/treatment-protocols/**",
                                 "/api/treatment/**")
                         .permitAll()
                         .requestMatchers(
@@ -106,6 +147,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/blog/**").permitAll()
                         .requestMatchers(
                                 HttpMethod.POST,
+                                "/api/v1/chat/sessions",
+                                "/api/v1/chat/messages",
                                 "/api/chat/start",
                                 "/api/chat/send",
                                 "/api/chat/sessions/*/verify",
@@ -115,8 +158,14 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/api/v1/chat/sessions/*/messages",
+                                "/api/v1/chat/sessions/*/unread-count",
                                 "/api/chat/sessions/*/messages",
                                 "/api/chat/sessions/*/unread-count")
+                        .permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/chat/sessions/*/read")
                         .permitAll()
                         .requestMatchers("/api/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/payment/vnpay/vnpay-return").permitAll()

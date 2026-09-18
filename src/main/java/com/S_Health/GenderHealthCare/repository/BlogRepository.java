@@ -8,6 +8,7 @@ import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import java.util.List;
@@ -26,6 +27,9 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
 
     @Query("SELECT DISTINCT b FROM Blog b JOIN b.tags t WHERE b.status = 'PUBLISHED' AND t.id = :tagId ORDER BY b.createdAt DESC")
     Page<Blog> findByTagId(Long tagId, Pageable pageable);
+
+    @Query("SELECT DISTINCT b FROM Blog b JOIN b.tags t WHERE b.status = 'PUBLISHED' AND t.id IN :tagIds ORDER BY b.createdAt DESC")
+    Page<Blog> findByTagIds(@Param("tagIds") List<Long> tagIds, Pageable pageable);
 
     Page<Blog> findByStatusOrderByCreatedAtDesc(BlogStatus status, Pageable pageable);
     

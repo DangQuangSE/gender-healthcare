@@ -1,14 +1,15 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
+import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatSessionQuery;
 import com.S_Health.GenderHealthCare.modules.communication.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -54,9 +54,8 @@ public class ChatController {
     @GetMapping("/sessions")
     @Operation(summary = CommunicationMessages.GET_CHAT_SESSIONS)
     public List<ChatSessionDTO> getSessions(
-            @Parameter(description = CommunicationMessages.CHAT_STATUS_FILTER_DESCRIPTION)
-            @RequestParam(required = false) String status) {
-        return chatService.getChatSessionsForStaff(status);
+            @Valid @ModelAttribute ChatSessionQuery query) {
+        return chatService.getChatSessionsForStaff(query.getStatus());
     }
 
     @GetMapping("/sessions/{sessionId}/messages")
@@ -67,16 +66,18 @@ public class ChatController {
 
     @DeleteMapping("/sessions/{sessionId}")
     @Operation(summary = CommunicationMessages.END_CHAT)
-    public void end(@PathVariable String sessionId) {
+    public ApiResponse<String> end(@PathVariable String sessionId) {
         chatService.endChatSession(sessionId);
+        return ApiResponse.success(CommunicationMessages.CHAT_ENDED_SUCCESS, null);
     }
 
     @PostMapping("/sessions/{sessionId}/read")
     @Operation(summary = CommunicationMessages.MARK_CHAT_READ)
-    public void markRead(
+    public ApiResponse<String> markRead(
             @PathVariable String sessionId,
             @Valid @ModelAttribute ChatReaderRequest request) {
         chatService.markMessagesAsRead(sessionId, request);
+        return ApiResponse.success(CommunicationMessages.CHAT_MESSAGES_MARKED_READ, null);
     }
 
     @GetMapping("/sessions/{sessionId}/unread-count")

@@ -1,13 +1,16 @@
 package com.S_Health.GenderHealthCare.modules.payment.controller;
 
 import com.S_Health.GenderHealthCare.modules.payment.dto.response.VNPayResponse;
+import com.S_Health.GenderHealthCare.modules.payment.dto.request.PaymentRequest;
 import com.S_Health.GenderHealthCare.modules.payment.PaymentMessages;
 import com.S_Health.GenderHealthCare.modules.payment.service.VNPayService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,16 +22,16 @@ public class VNPayController {
         this.vnPayService = vnPayService;
     }
 
-    @GetMapping
+    @PostMapping
     @Operation(summary = PaymentMessages.CREATE_VNPAY_PAYMENT)
-    public VNPayResponse createPayment(@RequestParam long appointmentId) {
-        return vnPayService.createOrder(appointmentId);
+    public VNPayResponse createPayment(@Valid @RequestBody PaymentRequest request) {
+        return vnPayService.createOrder(request.getAppointmentId());
     }
 
-    @GetMapping("/offline")
+    @PostMapping("/offline")
     @Operation(summary = PaymentMessages.CREATE_OFFLINE_PAYMENT)
-    public VNPayResponse createOfflinePayment(@RequestParam long appointmentId) {
-        return vnPayService.createOrderOff(appointmentId);
+    public VNPayResponse createOfflinePayment(@Valid @RequestBody PaymentRequest request) {
+        return vnPayService.createOrderOff(request.getAppointmentId());
     }
 
     @GetMapping("/return")

@@ -36,4 +36,14 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM AppointmentDetail a WHERE a.consultant.id = :consultantId AND a.appointment.customer.id = :customerId AND a.isActive = true")
     boolean existsByConsultantIdAndAppointmentCustomerId(@Param("consultantId") Long consultantId,
                                                         @Param("customerId") Long customerId);
+
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM AppointmentDetail a "
+            + "WHERE a.consultant.id = :consultantId "
+            + "AND a.appointment.customer.id = :customerId "
+            + "AND a.appointment.service.id = :serviceId "
+            + "AND a.isActive = true")
+    boolean existsByConsultantIdAndCustomerIdAndServiceId(
+            @Param("consultantId") Long consultantId,
+            @Param("customerId") Long customerId,
+            @Param("serviceId") Long serviceId);
 }

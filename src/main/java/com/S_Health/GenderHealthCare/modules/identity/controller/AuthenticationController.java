@@ -90,8 +90,4 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.loginWithEmail(request));
     }
 
-    @PostMapping("/auth/facebook")
-    public ResponseEntity<?> loginWithFacebook(@RequestBody OAuthLoginRequest request) {
-        return ResponseEntity.ok(authenticationService.loginWithFacebook(request.getAccessToken()));
-    }
 }

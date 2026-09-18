@@ -12,7 +12,7 @@ import com.S_Health.GenderHealthCare.modules.feedback.dto.request.ServiceFeedbac
 import com.S_Health.GenderHealthCare.modules.feedback.dto.response.AverageRatingResponse;
 import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ConsultantFeedbackResponse;
 import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ServiceFeedbackResponse;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.feedback.FeedbackMessages;
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FeedbackService {
@@ -44,20 +45,21 @@ public class FeedbackService {
         this.authUtil = authUtil;
     }
 
+    @Transactional
     public ServiceFeedbackResponse createFeedback(ServiceFeedbackRequest request){
         Appointment appointment = appointmentRepository.findById(request.getAppointmentId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.APPOINTMENT_NOT_FOUND));
 
         Long userId = authUtil.getCurrentUserId();
 
         // Kiểm tra null safety
         if (appointment.getCustomer() == null) {
-            throw new ApiException(FeedbackMessages.CUSTOMER_INVALID);
+            throw new DomainException(FeedbackMessages.CUSTOMER_INVALID);
         }
         Long customerId = appointment.getCustomer().getId();
 
         if (!customerId.equals(userId)) {
-            throw new ApiException(FeedbackMessages.APPOINTMENT_NOT_OWNED);
+            throw new DomainException(FeedbackMessages.APPOINTMENT_NOT_OWNED);
         }
         ServiceFeedback serviceFeedback = ServiceFeedback.builder()
                 .rating(request.getRating())
@@ -112,9 +114,11 @@ public class FeedbackService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public ServiceFeedbackResponse getById(Long id) {
         ServiceFeedback feedback = serviceFeedbackRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND));
+        ensureFeedbackViewer(feedback.getAppointment());
 
         return ServiceFeedbackResponse.builder()
                 .id(feedback.getId())
@@ -126,12 +130,14 @@ public class FeedbackService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<ServiceFeedbackResponse> getByAppointmentId(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.APPOINTMENT_NOT_FOUND));
+        ensureFeedbackViewer(appointment);
 
         ServiceFeedback  serviceFeedback = serviceFeedbackRepository.findByAppointmentId(appointmentId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND_FOR_APPOINTMENT));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND_FOR_APPOINTMENT));
 
         List<ConsultantFeedbackResponse> consultantFeedbacks = consultantFeedbackRepository.findByServiceFeedbackId(serviceFeedback.getId())
                 .stream()
@@ -154,15 +160,16 @@ public class FeedbackService {
                 .build());
     }
 
+    @Transactional
     public ServiceFeedbackResponse update(Long id, ServiceFeedbackRequest request) {
         ServiceFeedback feedback = serviceFeedbackRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND));
 
         Long userId = authUtil.getCurrentUserId();
 
         Long appointmentUserId = feedback.getAppointment().getCustomer().getId();
         if (!appointmentUserId.equals(userId)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, FeedbackMessages.FEEDBACK_UPDATE_FORBIDDEN);
+            throw new DomainException(ErrorCode.FORBIDDEN, FeedbackMessages.FEEDBACK_UPDATE_FORBIDDEN);
         }
 
         feedback.setRating(request.getRating());
@@ -172,7 +179,7 @@ public class FeedbackService {
 
         List<ConsultantFeedback> consultantFeedbacks = consultantFeedbackRepository.findByServiceFeedbackId(feedback.getId());
         if (consultantFeedbacks.isEmpty()) {
-            throw new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.CONSULTANT_FEEDBACK_NOT_FOUND);
+            throw new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.CONSULTANT_FEEDBACK_NOT_FOUND);
         }
         ConsultantFeedback consultantFeedback = consultantFeedbacks.get(0);
 
@@ -192,28 +199,29 @@ public class FeedbackService {
                 .build();
     }
 
+    @Transactional
     public ConsultantFeedbackResponse createConsultantFeedback(ConsultantFeedbackRequest request){
         ServiceFeedback feedback = serviceFeedbackRepository.findById(request.getServiceFeedbackId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND_FOR_APPOINTMENT));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.FEEDBACK_NOT_FOUND_FOR_APPOINTMENT));
 
         Long userId = authUtil.getCurrentUserId();
 
         Long customerId = feedback.getAppointment().getCustomer().getId();
 
         if (!customerId.equals(userId)) {
-            throw new ApiException(FeedbackMessages.APPOINTMENT_NOT_OWNED);
+            throw new DomainException(FeedbackMessages.APPOINTMENT_NOT_OWNED);
         }
 
         User consultant = userRepository.findByIdAndRole(request.getConsultantId(), UserRole.CONSULTANT)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.CONSULTANT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.CONSULTANT_NOT_FOUND));
 
         // Kiểm tra consultant có thuộc appointment này không (qua appointmentDetails)
         boolean consultantBelongsToAppointment = feedback.getAppointment().getAppointmentDetails().stream()
                 .anyMatch(detail -> detail.getConsultant() != null &&
-                         detail.getConsultant().getId() == request.getConsultantId());
+                         Objects.equals(detail.getConsultant().getId(), request.getConsultantId()));
 
         if (!consultantBelongsToAppointment) {
-            throw new ApiException(FeedbackMessages.CONSULTANT_NOT_IN_APPOINTMENT);
+            throw new DomainException(FeedbackMessages.CONSULTANT_NOT_IN_APPOINTMENT);
         }
 
 
@@ -234,27 +242,28 @@ public class FeedbackService {
                 .build();
     }
 
+    @Transactional
     public ConsultantFeedbackResponse updateConsultantFeedback(Long id, ConsultantFeedbackRequest request) {
         ConsultantFeedback cf = consultantFeedbackRepository.findById(id)
-                .orElseThrow(() -> new ApiException(FeedbackMessages.NO_CONSULTANT_FEEDBACK));
+                .orElseThrow(() -> new DomainException(FeedbackMessages.NO_CONSULTANT_FEEDBACK));
 
         Long userId = authUtil.getCurrentUserId();
 
         Long appointmentUserId = cf.getServiceFeedback().getAppointment().getCustomer().getId();
         if (!appointmentUserId.equals(userId)) {
-            throw new ApiException(ErrorCode.FORBIDDEN, FeedbackMessages.FEEDBACK_UPDATE_FORBIDDEN);
+            throw new DomainException(ErrorCode.FORBIDDEN, FeedbackMessages.FEEDBACK_UPDATE_FORBIDDEN);
         }
 
         User consultant = userRepository.findByIdAndRole(request.getConsultantId(), UserRole.CONSULTANT)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, FeedbackMessages.CONSULTANT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, FeedbackMessages.CONSULTANT_NOT_FOUND));
 
         // Kiểm tra consultant có thuộc appointment này không (qua appointmentDetails)
         boolean consultantBelongsToAppointment = cf.getServiceFeedback().getAppointment().getAppointmentDetails().stream()
                 .anyMatch(detail -> detail.getConsultant() != null &&
-                         detail.getConsultant().getId() == request.getConsultantId());
+                         Objects.equals(detail.getConsultant().getId(), request.getConsultantId()));
 
         if (!consultantBelongsToAppointment) {
-            throw new ApiException(FeedbackMessages.CONSULTANT_NOT_IN_APPOINTMENT);
+            throw new DomainException(FeedbackMessages.CONSULTANT_NOT_IN_APPOINTMENT);
         }
 
         cf.setComment(request.getComment());
@@ -271,6 +280,7 @@ public class FeedbackService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<ConsultantFeedbackResponse> getByServiceFeedbackId(Long feedbackId) {
         return consultantFeedbackRepository.findByServiceFeedbackId(feedbackId)
                 .stream()
@@ -284,8 +294,13 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ConsultantFeedbackResponse> getByConsultantId() {
         Long consultantId = authUtil.getCurrentUserId();
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.CONSULTANT) {
+            throw new DomainException(ErrorCode.FORBIDDEN, FeedbackMessages.CONSULTANT_ROLE_REQUIRED);
+        }
         return consultantFeedbackRepository.findByConsultantId(consultantId)
                 .stream()
                 .map(cf -> ConsultantFeedbackResponse.builder()
@@ -299,6 +314,7 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public AverageRatingResponse getAverageRatingByServiceId(Long serviceId) {
         List<Appointment> appointment = appointmentRepository.findByServiceIdAndIsRatedTrue(serviceId);
 
@@ -339,6 +355,7 @@ public class FeedbackService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<ServiceFeedbackResponse> getByServiceId(Long serviceId) {
         List<Appointment> appointment = appointmentRepository.findByServiceIdAndIsRatedTrue(serviceId);
         // liệt kê tất cả id appointment của 1 service
@@ -386,7 +403,14 @@ public class FeedbackService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ServiceFeedbackResponse> getAllServiceRating() {
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() != UserRole.STAFF
+                && currentUser.getRole() != UserRole.ADMIN
+                && currentUser.getRole() != UserRole.SUPER_ADMIN) {
+            throw new DomainException(ErrorCode.FORBIDDEN, FeedbackMessages.STAFF_ROLE_REQUIRED);
+        }
         return serviceFeedbackRepository.findAll()
                 .stream()
                 .map(this::mapToResponse)
@@ -410,6 +434,21 @@ public class FeedbackService {
 
 
         return response;
+    }
+
+    private void ensureFeedbackViewer(Appointment appointment) {
+        User currentUser = authUtil.getCurrentUser();
+        if (currentUser.getRole() == UserRole.STAFF
+                || currentUser.getRole() == UserRole.ADMIN
+                || currentUser.getRole() == UserRole.SUPER_ADMIN) {
+            return;
+        }
+
+        if (appointment == null
+                || appointment.getCustomer() == null
+                || !Objects.equals(appointment.getCustomer().getId(), currentUser.getId())) {
+            throw new DomainException(ErrorCode.FORBIDDEN, FeedbackMessages.FEEDBACK_ACCESS_FORBIDDEN);
+        }
     }
 
 }

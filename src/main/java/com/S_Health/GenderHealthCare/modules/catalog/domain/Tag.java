@@ -29,5 +29,6 @@ public class Tag {
     @ManyToMany(mappedBy = "tags")
     @JsonIgnore
     List<Blog> blogs;
+    @Builder.Default
     Boolean isActive = true;
 }

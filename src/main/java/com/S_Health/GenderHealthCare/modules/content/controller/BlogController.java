@@ -1,9 +1,12 @@
 package com.S_Health.GenderHealthCare.modules.content.controller;
 
-import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
+import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogCreateRequest;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogPageQuery;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogStatusQuery;
+import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogTagQuery;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
@@ -13,7 +16,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,9 +40,8 @@ public class BlogController {
     @GetMapping
     @Operation(summary = ContentMessages.GET_PUBLISHED_BLOGS)
     public Page<BlogResponse> getAllBlogs(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return blogService.getAllBlogs(page, size);
+            @Valid @ModelAttribute BlogPageQuery request) {
+        return blogService.getAllBlogs(request.getPage(), request.getSize());
     }
 
     @GetMapping("/summary")
@@ -64,18 +64,24 @@ public class BlogController {
 
     @PostMapping("/{id}/like")
     @Operation(summary = ContentMessages.LIKE_BLOG)
-    public ResponseEntity<String> likeBlog(@PathVariable Long id) {
+    public ApiResponse<String> likeBlog(@PathVariable Long id) {
         blogService.likeBlog(id);
-        return ResponseEntity.ok(ContentMessages.LIKE_BLOG_SUCCESS);
+        return ApiResponse.success(ContentMessages.LIKE_BLOG_SUCCESS, null);
     }
 
     @GetMapping("/by-tag/{tagId}")
     @Operation(summary = ContentMessages.GET_BLOGS_BY_TAG)
     public Page<BlogResponse> getBlogsByTag(
             @PathVariable Long tagId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return blogService.getBlogsByTag(tagId, page, size);
+            @Valid @ModelAttribute BlogPageQuery request) {
+        return blogService.getBlogsByTag(tagId, request.getPage(), request.getSize());
+    }
+
+    @GetMapping("/by-tags")
+    @Operation(summary = ContentMessages.GET_BLOGS_BY_TAG)
+    public Page<BlogResponse> getBlogsByTags(
+            @Valid @ModelAttribute BlogTagQuery request) {
+        return blogService.getBlogsByTags(request.getTags(), request.getPage(), request.getSize());
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -87,9 +93,8 @@ public class BlogController {
     @GetMapping("/me")
     @Operation(summary = ContentMessages.GET_MY_BLOGS)
     public Page<BlogResponse> getMyBlogs(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return blogService.getMyBlogs(page, size);
+            @Valid @ModelAttribute BlogPageQuery request) {
+        return blogService.getMyBlogs(request.getPage(), request.getSize());
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -102,26 +107,23 @@ public class BlogController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = ContentMessages.DELETE_BLOG)
-    public ResponseEntity<String> deleteBlog(@PathVariable Long id) {
+    public ApiResponse<String> deleteBlog(@PathVariable Long id) {
         blogService.deleteBlog(id);
-        return ResponseEntity.ok(ContentMessages.DELETE_BLOG_SUCCESS);
+        return ApiResponse.success(ContentMessages.DELETE_BLOG_SUCCESS, null);
     }
 
     @GetMapping("/admin/all")
     @Operation(summary = ContentMessages.GET_BLOGS_FOR_MANAGEMENT)
     public Page<BlogResponse> getAllBlogsForManagement(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return blogService.getAllBlogsForManagement(page, size);
+            @Valid @ModelAttribute BlogPageQuery request) {
+        return blogService.getAllBlogsForManagement(request.getPage(), request.getSize());
     }
 
     @GetMapping("/admin/by-status")
     @Operation(summary = ContentMessages.GET_BLOGS_BY_STATUS)
     public Page<BlogResponse> getBlogsByStatus(
-            @RequestParam BlogStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return blogService.getBlogsByStatus(status, page, size);
+            @Valid @ModelAttribute BlogStatusQuery request) {
+        return blogService.getBlogsByStatus(request.getStatus(), request.getPage(), request.getSize());
     }
 
     @PostMapping("/admin/{id}/approve")
@@ -150,9 +152,7 @@ public class BlogController {
 
     @GetMapping("/me/by-status")
     public Page<BlogResponse> getMyBlogsByStatus(
-            @RequestParam BlogStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return blogService.getMyBlogsByStatus(status, page, size);
+            @Valid @ModelAttribute BlogStatusQuery request) {
+        return blogService.getMyBlogsByStatus(request.getStatus(), request.getPage(), request.getSize());
     }
 }

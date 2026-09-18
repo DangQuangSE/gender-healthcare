@@ -5,7 +5,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Tag;
 
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.TagRepository;
 import org.modelmapper.ModelMapper;
@@ -29,7 +29,7 @@ public class TagService {
 
     public TagDTO createTag(TagRequest request) {
         if (tagRepository.existsByName(request.getName())) {
-            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.TAG_EXISTS);
+            throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.TAG_EXISTS);
         }
 
         Tag tag = new Tag();
@@ -47,18 +47,18 @@ public class TagService {
 
     public TagDTO getTagById(Long id) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
         return modelMapper.map(tag, TagDTO.class);
     }
 
     public TagDTO updateTag(Long id, TagRequest request) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
 
         // Check if new name conflicts with existing tag
         if (!tag.getName().equals(request.getName()) && 
             tagRepository.existsByName(request.getName())) {
-            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.TAG_EXISTS);
+            throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.TAG_EXISTS);
         }
 
         tag.setName(request.getName().trim().toLowerCase());
@@ -69,7 +69,7 @@ public class TagService {
 
     public void deleteTag(Long id) {
         Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
         tag.setIsActive(false);
         tagRepository.save(tag);
     }

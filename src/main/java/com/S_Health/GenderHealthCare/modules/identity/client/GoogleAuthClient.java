@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.identity.client;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -33,7 +33,7 @@ public class GoogleAuthClient {
 
             GoogleIdToken idToken = verifier.verify(token);
             if (idToken == null || idToken.getPayload().getEmail() == null) {
-                throw new ApiException(ErrorCode.BAD_REQUEST, IdentityMessages.GOOGLE_TOKEN_INVALID);
+                throw new DomainException(ErrorCode.BAD_REQUEST, IdentityMessages.GOOGLE_TOKEN_INVALID);
             }
 
             GoogleIdToken.Payload payload = idToken.getPayload();
@@ -41,10 +41,10 @@ public class GoogleAuthClient {
                     payload.getEmail(),
                     (String) payload.get("name"),
                     (String) payload.get("picture"));
-        } catch (ApiException exception) {
+        } catch (DomainException exception) {
             throw exception;
         } catch (Exception exception) {
-            throw new ApiException(
+            throw new DomainException(
                     ErrorCode.INTEGRATION_ERROR,
                     IdentityMessages.GOOGLE_LOGIN_FAILED,
                     exception);

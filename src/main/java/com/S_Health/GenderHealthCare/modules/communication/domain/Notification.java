@@ -48,6 +48,7 @@ public class Notification {
     private String content;
 
     @Column(name = "is_read")
+    @Builder.Default
     private Boolean isRead = false;
 
     @Column(name = "created_at")
@@ -56,5 +57,6 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     NotificationType type;
 
+    @Builder.Default
     Boolean isActive = true;
 }

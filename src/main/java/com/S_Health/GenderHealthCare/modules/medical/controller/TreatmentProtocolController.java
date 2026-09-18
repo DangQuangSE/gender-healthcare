@@ -52,7 +52,8 @@ public class TreatmentProtocolController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ApiResponse<String> delete(@PathVariable Long id) {
         treatmentProtocolService.delete(id);
+        return ApiResponse.success(MedicalMessages.PROTOCOL_DELETED, null);
     }
 }

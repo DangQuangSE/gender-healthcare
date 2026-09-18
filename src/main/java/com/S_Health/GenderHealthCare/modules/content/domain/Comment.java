@@ -32,5 +32,6 @@ public class Comment {
     @CreationTimestamp
     LocalDateTime createAt;
 
+    @Builder.Default
     Boolean isDeleted = false;
 }

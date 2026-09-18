@@ -9,7 +9,7 @@ import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 
 
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.repository.CertificationRepository;
 import com.S_Health.GenderHealthCare.integrations.storage.ImageStorage;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
@@ -40,7 +40,7 @@ public class CertificationService {
 
         // Kiểm tra user có phải là consultant không
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
-            throw new ApiException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
+            throw new DomainException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
         }
 
         String imageUrl = null;
@@ -48,7 +48,7 @@ public class CertificationService {
             try {
                 imageUrl = imageStorage.uploadCertificationImage(request.getImage());
             } catch (IOException e) {
-                throw new ApiException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
+                throw new DomainException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
             }
         }
 
@@ -68,7 +68,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
 
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
 
         // Upload hình ảnh mới nếu có
         if (request.getImage() != null && !request.getImage().isEmpty()) {
@@ -76,7 +76,7 @@ public class CertificationService {
                 String imageUrl = imageStorage.uploadCertificationImage(request.getImage());
                 certification.setImage(imageUrl);
             } catch (IOException e) {
-                throw new ApiException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
+                throw new DomainException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
             }
         }
 
@@ -91,7 +91,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
         
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
-            throw new ApiException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
+            throw new DomainException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
         }
         
         List<Certification> certifications = certificationRepository.findByConsultantAndIsActiveTrue(currentUser);
@@ -107,7 +107,7 @@ public class CertificationService {
         User currentUser = authUtil.getCurrentUser();
         
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
         
         certification.setActive(false);
         certificationRepository.save(certification);

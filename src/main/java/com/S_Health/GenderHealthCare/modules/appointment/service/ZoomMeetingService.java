@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
@@ -43,30 +43,30 @@ public class ZoomMeetingService {
 
     public Map<String, String> createMeeting(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new ApiException(
+                .orElseThrow(() -> new DomainException(
                         ErrorCode.NOT_FOUND,
                         IntegrationMessages.ZOOM_APPOINTMENT_NOT_FOUND));
 
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findByAppointmentId(appointmentId)
-                .orElseThrow(() -> new ApiException(
+                .orElseThrow(() -> new DomainException(
                         ErrorCode.NOT_FOUND,
                         IntegrationMessages.ZOOM_APPOINTMENT_DETAIL_NOT_FOUND));
 
         if (appointmentDetail.getStartUrl() != null || appointmentDetail.getJoinUrl() != null) {
-            throw new ApiException(
+            throw new DomainException(
                     ErrorCode.CONFLICT,
                     IntegrationMessages.ZOOM_MEETING_ALREADY_EXISTS);
         }
 
         if (appointment.getStatus() != AppointmentStatus.CONFIRMED
                 || appointment.getService().getType() != ServiceType.CONSULTING_ON) {
-            throw new ApiException(
+            throw new DomainException(
                     ErrorCode.BAD_REQUEST,
                     IntegrationMessages.ZOOM_APPOINTMENT_INVALID);
         }
 
         if (!Objects.equals(authUtil.getCurrentUserId(), appointment.getCustomer().getId())) {
-            throw new ApiException(
+            throw new DomainException(
                     ErrorCode.FORBIDDEN,
                     IntegrationMessages.ZOOM_USER_NOT_IN_MEETING);
         }

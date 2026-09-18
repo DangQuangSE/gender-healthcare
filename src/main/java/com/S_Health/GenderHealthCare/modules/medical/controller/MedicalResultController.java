@@ -63,7 +63,8 @@ public class MedicalResultController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteResult(@PathVariable Long id) {
+    public ApiResponse<String> deleteResult(@PathVariable Long id) {
         medicalResultService.deleteResult(id);
+        return ApiResponse.success(MedicalMessages.RESULT_DELETED, null);
     }
 }

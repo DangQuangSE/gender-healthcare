@@ -31,6 +31,7 @@ public final class ContentMessages {
     public static final String GET_MY_BLOGS = "Get my blog posts";
     public static final String GET_BLOG_DETAIL = "Get blog detail without increasing the view count";
     public static final String GET_BLOGS_BY_TAG = "Get blogs by tag";
+    public static final String BLOG_TAGS_REQUIRED = "At least one blog tag is required";
     public static final String GET_BLOGS_FOR_MANAGEMENT = "Get blogs for management";
     public static final String GET_BLOGS_BY_STATUS = "Get blogs by status";
     public static final String APPROVE_BLOG = "Approve a blog post";
@@ -51,6 +52,11 @@ public final class ContentMessages {
     public static final String BLOG_IMAGE_REQUIRED = "Image file is required";
     public static final String BLOG_TITLE_REQUIRED = "Title is required";
     public static final String BLOG_CONTENT_REQUIRED = "Content is required";
+    public static final String BLOG_PAGE_INVALID = "Page must not be negative";
+    public static final String BLOG_SIZE_INVALID = "Page size must be between 1 and 100";
+    public static final String BLOG_STATUS_REQUIRED = "Blog status is required";
+    public static final String BLOG_TAGS_REQUIRED_QUERY = "At least one blog tag is required";
+    public static final String BLOG_TAG_ID_INVALID = "Blog tag id must be positive";
     public static final String BLOG_PUBLISHED_LOG = "Blog {} was published by admin {}";
     public static final String BLOG_SUBMITTED_LOG = "Blog {} was submitted for review by author {}";
 

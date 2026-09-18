@@ -7,7 +7,7 @@ import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 import com.S_Health.GenderHealthCare.modules.content.dto.request.CommentRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.CommentResponse;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.repository.BlogRepository;
@@ -38,11 +38,11 @@ public class CommentService {
 
     public CommentResponse createComment(CommentRequest request) {
         Blog blog = blogRepository.findById(request.getBlogId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.COMMENT_BLOG_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, ContentMessages.COMMENT_BLOG_NOT_FOUND));
 
         Long userId = authUtil.getCurrentUserId();
         User commenter = authenticationRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.USER_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, ContentMessages.USER_NOT_FOUND));
 
         Comment comment = Comment.builder()
                 .blog(blog)
@@ -81,9 +81,9 @@ public class CommentService {
     public void deleteComment(Long commentID) {
         User user = authUtil.getCurrentUser();
         Comment comment = commentRepository.findById(commentID)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, ContentMessages.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, ContentMessages.COMMENT_NOT_FOUND));
         if (comment.getCommenter().getId() != user.getId()) {
-            throw new ApiException(ErrorCode.FORBIDDEN, ContentMessages.DELETE_COMMENT_FORBIDDEN);
+            throw new DomainException(ErrorCode.FORBIDDEN, ContentMessages.DELETE_COMMENT_FORBIDDEN);
         }
         commentRepository.delete(comment);
     }

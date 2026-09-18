@@ -31,7 +31,9 @@ public class Blog {
     @Column(columnDefinition = "LONGTEXT")
     String content;
     String imgUrl;
+    @Builder.Default
     int viewCount = 0;
+    @Builder.Default
     int likeCount = 0;
     @Enumerated(EnumType.STRING)
     BlogStatus status;

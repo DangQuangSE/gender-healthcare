@@ -45,9 +45,15 @@ public final class AppointmentMessages {
     public static final String UPDATE_DETAIL_STATUS = "Update an appointment detail status";
     public static final String DETAIL_STATUS_UPDATED = "Appointment detail status updated";
     public static final String RATE_APPOINTMENT = "Mark an appointment as rated";
+    public static final String APPOINTMENT_DELETED = "Appointment deleted successfully";
+    public static final String APPOINTMENT_CANCELED = "Appointment canceled successfully";
+    public static final String APPOINTMENT_CHECKED_IN = "Appointment checked in successfully";
+    public static final String APPOINTMENT_RATED = "Appointment rated successfully";
     public static final String CREATE_BOOKING = "Create an appointment booking";
     public static final String CREATE_MEETING = "Create an online consultation meeting";
     public static final String APPOINTMENT_DATE_REQUIRED = "Appointment date is required";
+    public static final String APPOINTMENT_STATUS_REQUIRED = "Appointment status is required";
+    public static final String DETAIL_STATUS_REQUIRED = "Appointment detail status is required";
 
     private AppointmentMessages() {
     }

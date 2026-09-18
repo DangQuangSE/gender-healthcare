@@ -2,7 +2,7 @@ package com.S_Health.GenderHealthCare.common.security;
 
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +14,7 @@ public class CurrentUserProvider {
     public User requireUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
-            throw new ApiException(ErrorCode.UNAUTHENTICATED);
+            throw new DomainException(ErrorCode.UNAUTHENTICATED);
         }
         return user;
     }

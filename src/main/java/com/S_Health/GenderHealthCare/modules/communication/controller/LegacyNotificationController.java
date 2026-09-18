@@ -4,6 +4,7 @@ import com.S_Health.GenderHealthCare.modules.communication.dto.request.Notificat
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
 import com.S_Health.GenderHealthCare.modules.communication.service.NotificationService;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class LegacyNotificationController {
 
     @PostMapping
     @Operation(summary = CommunicationMessages.CREATE_NOTIFICATION)
-    public ResponseEntity<NotificationResponse> create(@RequestBody NotificationRequest request) {
+    public ResponseEntity<NotificationResponse> create(@Valid @RequestBody NotificationRequest request) {
         return ResponseEntity.status(201).body(notificationService.createNotification(request));
     }
 

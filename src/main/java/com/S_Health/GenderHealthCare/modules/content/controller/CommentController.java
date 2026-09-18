@@ -2,12 +2,12 @@ package com.S_Health.GenderHealthCare.modules.content.controller;
 
 import com.S_Health.GenderHealthCare.modules.content.dto.request.CommentRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.CommentResponse;
+import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.modules.content.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +42,8 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     @Operation(summary = ContentMessages.DELETE_COMMENT)
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+    public ApiResponse<String> deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
-        return ResponseEntity.ok(ContentMessages.DELETE_COMMENT_SUCCESS);
+        return ApiResponse.success(ContentMessages.DELETE_COMMENT_SUCCESS, null);
     }
 }

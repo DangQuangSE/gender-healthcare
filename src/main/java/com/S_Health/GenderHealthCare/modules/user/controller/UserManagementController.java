@@ -3,6 +3,7 @@ package com.S_Health.GenderHealthCare.modules.user.controller;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UserRoleQuery;
 import com.S_Health.GenderHealthCare.modules.user.service.UserService;
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
@@ -55,8 +56,9 @@ public class UserManagementController {
 
     @GetMapping
     @Operation(summary = UserMessages.GET_USERS_BY_ROLE)
-    public ApiResponse<List<ConsultantResponse>> getUsersByRole(@RequestParam String role) {
-        return ApiResponse.success(userService.getUsersByRole(role), null);
+    public ApiResponse<List<ConsultantResponse>> getUsersByRole(
+            @Valid @ModelAttribute UserRoleQuery request) {
+        return ApiResponse.success(userService.getUsersByRole(request.getRole()), null);
     }
 
     @DeleteMapping("/{userId}")

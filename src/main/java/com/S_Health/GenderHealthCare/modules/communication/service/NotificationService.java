@@ -2,7 +2,6 @@ package com.S_Health.GenderHealthCare.modules.communication.service;
 
 import com.S_Health.GenderHealthCare.modules.healthtracking.domain.CycleTracking;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
-import com.S_Health.GenderHealthCare.modules.communication.enums.NotificationType;
 import com.S_Health.GenderHealthCare.modules.communication.domain.Notification;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
@@ -11,7 +10,7 @@ import com.S_Health.GenderHealthCare.modules.communication.dto.request.Notificat
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationAppointmentResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationCycleTrackingResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
 import com.S_Health.GenderHealthCare.repository.CycleTrackingRepository;
@@ -19,7 +18,7 @@ import com.S_Health.GenderHealthCare.repository.NotificationRepository;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -62,25 +61,25 @@ public class NotificationService {
         Long userId = authUtil.getCurrentUserId();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.USER_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.USER_NOT_FOUND));
 
         Appointment appointment = null;
         if (request.getAppointmentId() != null) {
             appointment = appointmentRepository.findById(request.getAppointmentId())
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.APPOINTMENT_NOT_FOUND));
+                    .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.APPOINTMENT_NOT_FOUND));
         }
 
         CycleTracking cycleTracking = null;
         if (request.getCycleTrackingId() != null) {
             cycleTracking = cycleTrackingRepository.findById(request.getCycleTrackingId())
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CYCLE_NOT_FOUND));
+                    .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CYCLE_NOT_FOUND));
         }
 
         Notification notification = Notification.builder()
                 .user(user)
                 .title(request.getTitle())
                 .content(request.getContent())
-                .type(NotificationType.valueOf(request.getType()))
+                .type(request.getType())
                 .appointment(appointment)
                 .cycleTracking(cycleTracking)
                 .isActive(true)
@@ -108,7 +107,7 @@ public class NotificationService {
     public NotificationResponse getNotificationById(Long notificationId) {
         Long userId = authUtil.getCurrentUserId();
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
         return mapToResponse(notification);
     }
 
@@ -117,7 +116,7 @@ public class NotificationService {
     public void markAsRead(Long notificationId) {
         Long userId = authUtil.getCurrentUserId();
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
         if (!notification.getIsRead()) {
             notification.setIsRead(true);
             notificationRepository.save(notification);
@@ -126,8 +125,10 @@ public class NotificationService {
 
 
     @Transactional
-    public void markAllAsRead(Long userId) {
-        List<Notification> notifications = notificationRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+    public void markAllAsRead(Long ignoredUserId) {
+        Long currentUserId = authUtil.getCurrentUserId();
+        List<Notification> notifications = notificationRepository
+                .findAllByUserIdOrderByCreatedAtDesc(currentUserId);
         for (Notification notification : notifications) {
             if (!notification.getIsRead()) {
                 notification.setIsRead(true);
@@ -142,8 +143,8 @@ public class NotificationService {
     }
 
 
-    public Long countUnread(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadFalse(userId);
+    public Long countUnread(Long ignoredUserId) {
+        return notificationRepository.countByUserIdAndIsReadFalse(authUtil.getCurrentUserId());
     }
 
     public Long countUnreadForCurrentUser() {
@@ -155,7 +156,7 @@ public class NotificationService {
     public void deleteNotification(Long notificationId) {
         Long userId = authUtil.getCurrentUserId();
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.NOTIFICATION_NOT_FOUND));
         notification.setIsActive(false);
         notificationRepository.save(notification);
     }

@@ -69,5 +69,7 @@ public class LabTestResultRequest {
     @Schema(description = "Ghi chú từ phòng lab", example = "Mẫu đạt chất lượng, kết quả tin cậy")
     private String labNotes;
 
+    @NotNull(message = MedicalMessages.TREATMENT_PROTOCOL_ID_REQUIRED)
+    @Positive(message = MedicalMessages.TREATMENT_PROTOCOL_ID_POSITIVE)
     Long treatmentProtocolId;
 }

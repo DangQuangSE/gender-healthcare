@@ -6,7 +6,7 @@ import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.LoginResponse;
 import com.S_Health.GenderHealthCare.modules.identity.mapper.IdentityMapper;
@@ -37,14 +37,14 @@ public class IdentityService {
 
     public void requestRegistrationOtp(String email) {
         if (authenticationService.checkExistEmail(email)) {
-            throw new ApiException(ErrorCode.CONFLICT, IdentityMessages.REGISTRATION_EMAIL_EXISTS);
+            throw new DomainException(ErrorCode.CONFLICT, IdentityMessages.REGISTRATION_EMAIL_EXISTS);
         }
         otpService.generateOTP(email);
     }
 
     public void verifyOtpOrThrow(String email, String otp) {
         if (!otpService.verifyOtp(email, otp)) {
-            throw new ApiException(ErrorCode.VALIDATION_ERROR, IdentityMessages.OTP_INVALID);
+            throw new DomainException(ErrorCode.VALIDATION_ERROR, IdentityMessages.OTP_INVALID);
         }
     }
 
@@ -54,7 +54,7 @@ public class IdentityService {
 
     public void requestForgotPasswordOtp(String email) {
         if (!authenticationService.checkExistEmail(email)) {
-            throw new ApiException(
+            throw new DomainException(
                     ErrorCode.NOT_FOUND,
                     IdentityMessages.FORGOT_PASSWORD_EMAIL_NOT_FOUND);
         }
@@ -74,8 +74,4 @@ public class IdentityService {
                 authenticationService.loginWithGoogleToken(request.getAccessToken()));
     }
 
-    public LoginResponse loginWithFacebook(OAuthLoginRequest request) {
-        return identityMapper.toLoginResponse(
-                authenticationService.loginWithFacebook(request.getAccessToken()));
-    }
 }

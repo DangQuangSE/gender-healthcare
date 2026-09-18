@@ -15,6 +15,9 @@ public final class FeedbackMessages {
     public static final String CONSULTANT_NOT_IN_APPOINTMENT = "Bác sĩ không thuộc cuộc hẹn này";
     public static final String NO_CONSULTANT_FEEDBACK = "Không có đánh giá bác sĩ nào";
 
+    public static final String FEEDBACK_ACCESS_FORBIDDEN = "You do not have permission to view this feedback";
+    public static final String CONSULTANT_ROLE_REQUIRED = "Only consultants can view their consultant feedback";
+    public static final String STAFF_ROLE_REQUIRED = "Only staff or admin users can view all feedback";
     public static final String CREATE_SERVICE_FEEDBACK = "Create service feedback";
     public static final String GET_SERVICE_FEEDBACK = "Get service feedback";
     public static final String UPDATE_SERVICE_FEEDBACK = "Update service feedback";

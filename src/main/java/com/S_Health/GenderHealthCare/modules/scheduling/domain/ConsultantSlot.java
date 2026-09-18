@@ -35,7 +35,8 @@ public class ConsultantSlot {
      int maxBooking;
      int currentBooking;
      int availableBooking;
-     Boolean isActive = true;
+    @Builder.Default
+    Boolean isActive = true;
     @Enumerated(EnumType.STRING)
      SlotStatus status;
 

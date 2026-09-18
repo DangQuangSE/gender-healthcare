@@ -1,5 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.payment;
 
+import java.math.BigDecimal;
+
 /**
  * Messages and fixed provider values used by payment use cases.
  */
@@ -27,10 +29,14 @@ public final class PaymentMessages {
     public static final String VNPAY_TIME_ZONE = "Etc/GMT+7";
     public static final int VNPAY_TIMEOUT_MINUTES = 5;
     public static final int OFFLINE_PAYMENT_TIMEOUT_MINUTES = 1;
+    public static final BigDecimal OFFLINE_PAYMENT_RATE = BigDecimal.valueOf(20, 2);
 
     public static final String CREATE_VNPAY_PAYMENT = "Create a VNPay payment";
     public static final String CREATE_OFFLINE_PAYMENT = "Create an offline payment order";
     public static final String HANDLE_VNPAY_RETURN = "Handle a VNPay return callback";
+    public static final String APPOINTMENT_ID_REQUIRED = "Appointment id is required";
+    public static final String APPOINTMENT_ID_POSITIVE = "Appointment id must be positive";
+    public static final String PAYMENT_APPOINTMENT_FORBIDDEN = "You do not have permission to pay for this appointment";
 
     private PaymentMessages() {
     }

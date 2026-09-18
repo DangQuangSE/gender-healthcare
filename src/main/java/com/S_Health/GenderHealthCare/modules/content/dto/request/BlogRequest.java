@@ -24,13 +24,4 @@ public class BlogRequest {
     String imgUrl;
     List<String> tagNames;
 
-    public void validate() {
-        if (title == null || title.trim().length() < 10) {
-            throw new IllegalArgumentException(ContentMessages.BLOG_TITLE_TOO_SHORT);
-        }
-
-        if (content == null || content.trim().length() < 50) {
-            throw new IllegalArgumentException(ContentMessages.BLOG_CONTENT_TOO_SHORT);
-        }
-    }
 }

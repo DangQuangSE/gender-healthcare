@@ -1,6 +1,8 @@
 package com.S_Health.GenderHealthCare.integrations.storage;
 
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.integrations.IntegrationMessages;
 
 import com.cloudinary.Cloudinary;
@@ -27,7 +29,7 @@ public class CloudinaryService implements ImageStorage {
     public String uploadImage(MultipartFile file, String folder) throws IOException {
         try {
             if (file.isEmpty()) {
-                throw new IllegalArgumentException(CommonMessages.FILE_EMPTY);
+                throw new DomainException(ErrorCode.BAD_REQUEST, CommonMessages.FILE_EMPTY);
             }
 
             Map<?, ?> uploadResult = cloudinary.uploader().upload(

@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.common.validation;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class ImageUploadValidator {
 
     public void validateRequired(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_REQUIRED);
+            throw new DomainException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_REQUIRED);
         }
         validate(file);
     }
@@ -28,19 +28,19 @@ public class ImageUploadValidator {
 
     private void validate(MultipartFile file) {
         if (file.getSize() > MAX_IMAGE_SIZE) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_TOO_LARGE);
+            throw new DomainException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_TOO_LARGE);
         }
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_ONLY);
+            throw new DomainException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_ONLY);
         }
 
         String filename = file.getOriginalFilename();
         if (filename != null && (filename.contains("..")
                 || filename.contains("/")
                 || filename.contains("\\"))) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_NAME_INVALID);
+            throw new DomainException(ErrorCode.BAD_REQUEST, CommonMessages.IMAGE_NAME_INVALID);
         }
     }
 }

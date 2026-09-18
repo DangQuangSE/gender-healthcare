@@ -44,6 +44,7 @@ public final class UserMessages {
     public static final String GET_PROFILE = "Get current user profile";
     public static final String UPDATE_PROFILE = "Update current user profile";
     public static final String UPDATE_AVATAR = "Update current user avatar";
+    public static final String AVATAR_REQUIRED = "Avatar file is required";
     public static final String PROFILE_UPDATE_LEGACY = "Update personal information";
     public static final String PROFILE_GET_LEGACY = "Get personal information";
 

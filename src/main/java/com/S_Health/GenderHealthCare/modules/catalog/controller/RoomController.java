@@ -4,6 +4,7 @@ import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.service.CatalogService;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomQuery;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomResponse;
@@ -26,8 +27,8 @@ public class RoomController {
     @GetMapping
     @Operation(summary = CatalogConstants.GET_ROOMS)
     public ApiResponse<List<RoomResponse>> getRooms(
-            @RequestParam(required = false) Long specializationId) {
-        return ApiResponse.success(catalogService.getRooms(specializationId), null);
+            @Valid @ModelAttribute RoomQuery request) {
+        return ApiResponse.success(catalogService.getRooms(request.getSpecializationId()), null);
     }
 
     @GetMapping("/{id}")

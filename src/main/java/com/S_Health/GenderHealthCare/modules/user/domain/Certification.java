@@ -20,5 +20,6 @@ public class Certification {
     @JoinColumn(name = "consultant_id")
     User consultant;
 
+    @Builder.Default
     boolean isActive = true;
 }

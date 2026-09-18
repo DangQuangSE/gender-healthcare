@@ -6,7 +6,7 @@ import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalPr
 import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryDTO;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
@@ -23,6 +23,7 @@ import com.S_Health.GenderHealthCare.repository.MedicalResultRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
+@Transactional(readOnly = true)
 public class AppointmentQueryService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentDetailRepository appointmentDetailRepository;
@@ -57,7 +59,7 @@ public class AppointmentQueryService {
 
     public AppointmentDTO getAppointmentById(long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         List<AppointmentDetail> appointmentDetails = appointmentDetailRepository
                 .findByAppointmentAndIsActiveTrue(appointment);
@@ -65,7 +67,7 @@ public class AppointmentQueryService {
 
         for (AppointmentDetail appointmentDetail : appointmentDetails) {
             MedicalResult medicalResult = medicalResultRepository.findByAppointmentDetail(appointmentDetail)
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.RESULT_NOT_FOUND));
+                    .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.RESULT_NOT_FOUND));
 
             AppointmentDetailDTO detailDto = modelMapper.map(appointmentDetail, AppointmentDetailDTO.class);
             detailDto.setConsultantName(appointmentDetail.getConsultant().getFullname());
@@ -86,11 +88,11 @@ public class AppointmentQueryService {
 
     public PatientHistoryDTO getPatientHistoryFromAppointment(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         MedicalProfile medicalProfile = appointment.getMedicalProfile();
         if (medicalProfile == null) {
-            throw new ApiException(ErrorCode.NOT_FOUND, AppointmentMessages.MEDICAL_PROFILE_NOT_FOUND);
+            throw new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.MEDICAL_PROFILE_NOT_FOUND);
         }
 
         List<Appointment> pastAppointments = appointmentRepository

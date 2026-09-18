@@ -13,9 +13,8 @@ import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMess
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.repository.ChatMessageRepository;
 import com.S_Health.GenderHealthCare.repository.ChatSessionRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
@@ -35,19 +34,16 @@ import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 public class ChatService {
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final AuthenticationRepository authenticationRepository;
     private final AuthUtil authUtil;
     private final SimpMessagingTemplate messagingTemplate;
 
     public ChatService(
             ChatSessionRepository chatSessionRepository,
             ChatMessageRepository chatMessageRepository,
-            AuthenticationRepository authenticationRepository,
             AuthUtil authUtil,
             SimpMessagingTemplate messagingTemplate) {
         this.chatSessionRepository = chatSessionRepository;
         this.chatMessageRepository = chatMessageRepository;
-        this.authenticationRepository = authenticationRepository;
         this.authUtil = authUtil;
         this.messagingTemplate = messagingTemplate;
     }
@@ -81,7 +77,7 @@ public class ChatService {
      */
     public ChatMessageDTO sendMessage(SendMessageRequest request) {
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(request.getSessionId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
         // Xác định sender type
         SenderType senderType = determineSenderType(request.getSenderName(), session);
@@ -118,11 +114,11 @@ public class ChatService {
     public ChatSessionDTO joinChatSession(String sessionId) {
         User currentStaff = authUtil.getCurrentUser();
         if (currentStaff.getRole() != UserRole.STAFF) {
-            throw new ApiException(CommunicationMessages.STAFF_ONLY_CHAT_ACTION);
+            throw new DomainException(CommunicationMessages.STAFF_ONLY_CHAT_ACTION);
         }
 
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
         session.setStaff(currentStaff);
         session.setStatus(ChatStatus.ACTIVE);
@@ -136,26 +132,21 @@ public class ChatService {
     /**
      * Lấy danh sách chat sessions cho staff theo status
      */
-    public List<ChatSessionDTO> getChatSessionsForStaff(String statusParam) {
+    public List<ChatSessionDTO> getChatSessionsForStaff(ChatStatus requestedStatus) {
         User currentStaff = authUtil.getCurrentUser();
         if (currentStaff.getRole() != UserRole.STAFF) {
-            throw new ApiException(CommunicationMessages.STAFF_ONLY_VIEW_CHAT);
+            throw new DomainException(CommunicationMessages.STAFF_ONLY_VIEW_CHAT);
         }
 
         List<ChatSession> sessions;
 
-        if (statusParam == null || statusParam.trim().isEmpty()) {
+        if (requestedStatus == null) {
             // Nếu không có status parameter, lấy WAITING và ACTIVE (mặc định)
             List<ChatStatus> activeStatuses = List.of(ChatStatus.WAITING, ChatStatus.ACTIVE);
             sessions = chatSessionRepository.findByStatusInAndIsActiveTrueOrderByUpdatedAtDesc(activeStatuses);
         } else {
-            try {
-                // Parse status parameter
-                ChatStatus requestedStatus = ChatStatus.valueOf(statusParam.toUpperCase());
-                sessions = chatSessionRepository.findByStatusAndIsActiveTrueOrderByUpdatedAtDesc(requestedStatus);
-            } catch (IllegalArgumentException e) {
-                throw new ApiException(CommunicationMessages.INVALID_CHAT_STATUS.formatted(statusParam));
-            }
+            sessions = chatSessionRepository
+                    .findByStatusAndIsActiveTrueOrderByUpdatedAtDesc(requestedStatus);
         }
 
         return sessions.stream()
@@ -167,7 +158,22 @@ public class ChatService {
      * Overload method for backward compatibility
      */
     public List<ChatSessionDTO> getChatSessionsForStaff() {
-        return getChatSessionsForStaff(null);
+        return getChatSessionsForStaff((ChatStatus) null);
+    }
+
+    /**
+     * Keeps the old string-based service call working for the legacy controller.
+     */
+    @Deprecated(since = "1.0", forRemoval = false)
+    public List<ChatSessionDTO> getChatSessionsForStaff(String statusParam) {
+        if (statusParam == null || statusParam.isBlank()) {
+            return getChatSessionsForStaff((ChatStatus) null);
+        }
+        try {
+            return getChatSessionsForStaff(ChatStatus.valueOf(statusParam.toUpperCase()));
+        } catch (IllegalArgumentException exception) {
+            throw new DomainException(CommunicationMessages.INVALID_CHAT_STATUS.formatted(statusParam));
+        }
     }
 
     /**
@@ -175,7 +181,7 @@ public class ChatService {
      */
     public List<ChatMessageDTO> getSessionMessages(String sessionId) {
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
         List<ChatMessage> messages = chatMessageRepository.findByChatSessionOrderBySentAtAsc(session);
         return messages.stream()
@@ -188,7 +194,7 @@ public class ChatService {
      */
     public void endChatSession(String sessionId) {
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
         // Xóa tất cả messages của session này trước
         chatMessageRepository.deleteByChatSession(session);
@@ -216,7 +222,7 @@ public class ChatService {
     public void markMessagesAsRead(String sessionId, ChatReaderRequest request) {
         String readerName = request.getReaderName();
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
         // Lấy tất cả tin nhắn chưa đọc trong session này
         List<ChatMessage> unreadMessages = chatMessageRepository
@@ -248,7 +254,7 @@ public class ChatService {
     public Integer getUnreadCount(String sessionId, ChatReaderRequest request) {
         String readerName = request.getReaderName();
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
         return chatMessageRepository.countUnreadMessagesForReader(session, readerName);
     }

@@ -41,9 +41,12 @@ public class Service {
     ServiceType type;
 
     Double price;
+    @Builder.Default
     Double discountPercent = 0.0;
 
+    @Builder.Default
     Boolean isActive = true;
+    @Builder.Default
     Boolean isCombo = false;
 
     @CreationTimestamp
@@ -59,18 +62,22 @@ public class Service {
         joinColumns = @JoinColumn(name = "service_id"),
         inverseJoinColumns = @JoinColumn(name = "specialization_id")
     )
+    @Builder.Default
     List<Specialization> specializations = new ArrayList<>();
 
     @OneToMany(mappedBy = "service")
     @JsonIgnore
+    @Builder.Default
     List<ServiceSlotPool> serviceSlotPools = new ArrayList<>();
 
     @OneToMany(mappedBy = "service")
     @JsonIgnore
+    @Builder.Default
     List<MedicalProfile> medicalProfiles = new ArrayList<>();
 
     @OneToMany(mappedBy = "service")
     @JsonIgnore
+    @Builder.Default
     List<Appointment> appointments = new ArrayList<>();
 
 
@@ -84,5 +91,6 @@ public class Service {
 
     @OneToMany(mappedBy = "service")
     @JsonIgnore
+    @Builder.Default
     List<AppointmentDetail> appointmentDetails = new ArrayList<>();
 }

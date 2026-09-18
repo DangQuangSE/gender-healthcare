@@ -14,7 +14,7 @@ import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlo
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
 
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.repository.*;
 import org.modelmapper.ModelMapper;
@@ -54,7 +54,7 @@ public class ServiceSlotPoolService {
 
     public ScheduleServiceResponse getSlotFreeService(ScheduleServiceRequest request) {
         Service service = serviceRepository.findById(request.getService_id())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, SchedulingMessages.SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, SchedulingMessages.SERVICE_NOT_FOUND));
         //lấy ra các consultant liên quan tới chuyên môm đó
         List<User> consultants = getConsultantInSpecialization(request.getService_id());
         //lấy ra ConsultantSlot của tất cả consultant

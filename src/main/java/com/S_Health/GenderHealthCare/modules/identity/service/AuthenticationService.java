@@ -1,10 +1,9 @@
 package com.S_Health.GenderHealthCare.modules.identity.service;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
-import com.S_Health.GenderHealthCare.modules.identity.client.FacebookAuthClient;
 import com.S_Health.GenderHealthCare.modules.identity.client.GoogleAuthClient;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
@@ -35,7 +34,6 @@ public class AuthenticationService implements UserDetailsService {
     private final ModelMapper modelMapper;
     private final EmailService emailService;
     private final GoogleAuthClient googleAuthClient;
-    private final FacebookAuthClient facebookAuthClient;
 
     public AuthenticationService(
             AuthenticationRepository authenticationRepository,
@@ -45,8 +43,7 @@ public class AuthenticationService implements UserDetailsService {
             JWTService jwtService,
             ModelMapper modelMapper,
             EmailService emailService,
-            GoogleAuthClient googleAuthClient,
-            FacebookAuthClient facebookAuthClient) {
+            GoogleAuthClient googleAuthClient) {
         this.authenticationRepository = authenticationRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -55,7 +52,6 @@ public class AuthenticationService implements UserDetailsService {
         this.modelMapper = modelMapper;
         this.emailService = emailService;
         this.googleAuthClient = googleAuthClient;
-        this.facebookAuthClient = facebookAuthClient;
     }
 
     public boolean checkExistEmail(String email) {
@@ -81,7 +77,7 @@ public class AuthenticationService implements UserDetailsService {
         validatePasswordConfirmation(request);
 
         User user = authenticationRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ApiException(
+                .orElseThrow(() -> new DomainException(
                         ErrorCode.NOT_FOUND,
                         IdentityMessages.USER_NOT_FOUND.formatted(request.getEmail())));
 
@@ -96,7 +92,7 @@ public class AuthenticationService implements UserDetailsService {
                     request.getEmail(),
                     request.getPassword()));
         } catch (Exception exception) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, IdentityMessages.LOGIN_INVALID);
+            throw new DomainException(ErrorCode.BAD_REQUEST, IdentityMessages.LOGIN_INVALID);
         }
 
         User user = authenticationRepository.findUserByEmail(request.getEmail());
@@ -111,15 +107,6 @@ public class AuthenticationService implements UserDetailsService {
                 googleUser.name(),
                 googleUser.imageUrl(),
                 "google");
-    }
-
-    public JwtResponse loginWithFacebook(String accessToken) {
-        FacebookAuthClient.FacebookUser facebookUser = facebookAuthClient.getUser(accessToken);
-        return loginWithSocialAccount(
-                facebookUser.email(),
-                facebookUser.name(),
-                facebookUser.imageUrl(),
-                "facebook");
     }
 
     @Override
@@ -161,7 +148,7 @@ public class AuthenticationService implements UserDetailsService {
 
     private void validatePasswordConfirmation(PasswordRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new ApiException(
+            throw new DomainException(
                     ErrorCode.BAD_REQUEST,
                     IdentityMessages.PASSWORD_CONFIRMATION_MISMATCH);
         }
@@ -169,7 +156,7 @@ public class AuthenticationService implements UserDetailsService {
 
     private void ensureActive(User user) {
         if (user == null || !user.isActive()) {
-            throw new ApiException(ErrorCode.UNAUTHENTICATED, IdentityMessages.ACCOUNT_INACTIVE);
+            throw new DomainException(ErrorCode.UNAUTHENTICATED, IdentityMessages.ACCOUNT_INACTIVE);
         }
     }
 }

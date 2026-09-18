@@ -1,18 +1,19 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
+import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReadRequest;
 import com.S_Health.GenderHealthCare.modules.communication.service.ChatService;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.util.Map;
 
 @Controller
 public class ChatWebSocketController {
@@ -29,17 +30,9 @@ public class ChatWebSocketController {
     }
 
     @MessageMapping(CommunicationMessages.CHAT_SEND_MAPPING)
-    public void sendMessage(@Payload SendMessageRequest request) {
+    public void sendMessage(@Valid @Payload SendMessageRequest request) {
         try {
-            ChatMessageDTO message = chatService.sendMessage(request);
-            
-            // Send to specific session
-            messagingTemplate.convertAndSend(
-                    CommunicationMessages.CHAT_TOPIC.formatted(request.getSessionId()), message);
-            
-            // Send to staff dashboard
-            messagingTemplate.convertAndSend(CommunicationMessages.STAFF_MESSAGES_TOPIC, message);
-            
+            chatService.sendMessage(request);
         } catch (Exception e) {
             log.error(CommonMessages.LOG_UNEXPECTED_ERROR, CommunicationMessages.CHAT_SEND_MAPPING, e);
             // Send error message
@@ -53,11 +46,12 @@ public class ChatWebSocketController {
     @MessageMapping(CommunicationMessages.CHAT_JOIN_MAPPING)
     public void joinSession(@Payload String sessionId) {
         try {
+            ChatSessionDTO session = chatService.joinChatSession(sessionId);
             // Notify others that someone joined
             messagingTemplate.convertAndSend(
                     CommunicationMessages.CHAT_TOPIC.formatted(sessionId)
                             + CommunicationMessages.JOINED_TOPIC_SUFFIX,
-                    CommunicationMessages.CHAT_SOMEONE_JOINED);
+                    session);
         } catch (Exception e) {
             log.error(CommonMessages.LOG_UNEXPECTED_ERROR, CommunicationMessages.CHAT_JOIN_MAPPING, e);
             messagingTemplate.convertAndSend(
@@ -68,17 +62,15 @@ public class ChatWebSocketController {
     }
 
     @MessageMapping(CommunicationMessages.CHAT_MARK_READ_MAPPING)
-    public void markAsRead(@Payload Map<String, String> payload) {
+    public void markAsRead(@Valid @Payload ChatReadRequest request) {
         try {
-            String sessionId = payload.get("sessionId");
-            String readerName = payload.get("readerName");
-
-            chatService.markMessagesAsRead(sessionId, readerName);
+            ChatReaderRequest readerRequest = new ChatReaderRequest();
+            readerRequest.setReaderName(request.getReaderName());
+            chatService.markMessagesAsRead(request.getSessionId(), readerRequest);
         } catch (Exception e) {
             log.error(CommonMessages.LOG_UNEXPECTED_ERROR, CommunicationMessages.CHAT_MARK_READ_MAPPING, e);
-            String sessionId = payload.get("sessionId");
             messagingTemplate.convertAndSend(
-                    CommunicationMessages.CHAT_TOPIC.formatted(sessionId)
+                    CommunicationMessages.CHAT_TOPIC.formatted(request.getSessionId())
                             + CommunicationMessages.ERROR_TOPIC_SUFFIX,
                     CommunicationMessages.CHAT_MARK_READ_ERROR);
         }

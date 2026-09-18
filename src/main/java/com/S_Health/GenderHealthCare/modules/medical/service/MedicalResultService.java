@@ -5,6 +5,7 @@ import com.S_Health.GenderHealthCare.modules.medical.enums.ResultType;
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 import com.S_Health.GenderHealthCare.modules.medical.domain.TreatmentProtocol;
 import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
@@ -15,16 +16,18 @@ import com.S_Health.GenderHealthCare.modules.medical.dto.request.ConsultationRes
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.LabTestResultRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.ResultRequest;
 
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.repository.*;
 import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentStatusCalculator;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
@@ -66,13 +69,15 @@ public class MedicalResultService {
     /**
      * Lưu kết quả tư vấn khám bệnh
      */
+    @Transactional
     public ResultDTO saveConsultationResult(ConsultationResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(request.getAppointmentDetailId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+        ensureConsultationWriter(writer, appointmentDetail);
         TreatmentProtocol protocol = treatmentProtocolRepository.findById(request.getTreatmentProtocolId())
-                .orElseThrow(()-> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
+                .orElseThrow(()-> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
 
 
         MedicalResult medicalResult = MedicalResult.builder()
@@ -99,13 +104,15 @@ public class MedicalResultService {
     /**
      * Lưu kết quả xét nghiệm
      */
+    @Transactional
     public ResultDTO saveLabTestResult(LabTestResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(request.getAppointmentDetailId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+        ensureLabWriter(writer);
         TreatmentProtocol protocol = treatmentProtocolRepository.findById(request.getTreatmentProtocolId())
-                .orElseThrow(()-> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
+                .orElseThrow(()-> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.TREATMENT_PROTOCOL_NOT_FOUND));
 
         MedicalResult medicalResult = MedicalResult.builder()
                 .appointmentDetail(appointmentDetail)
@@ -168,12 +175,17 @@ public class MedicalResultService {
 
     public ResultDTO getResultById(Long id) {
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_NOT_FOUND_OR_DELETED));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_NOT_FOUND_OR_DELETED));
+        ensureCanView(result);
 
         return mapToFullResultDTO(result);
     }
 
     public List<ResultDTO> getAllResultsByAppointmentDetail(Long appointmentDetailId) {
+        AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(appointmentDetailId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
+        ensureCanView(appointmentDetail);
+
         List<MedicalResult> results = medicalResultRepository
                 .findAllByAppointmentDetailIdAndIsActiveTrue(appointmentDetailId);
 
@@ -182,11 +194,13 @@ public class MedicalResultService {
                 .toList();
     }
 
+    @Transactional
     public ResultDTO updateResult(Long id, ResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_UPDATE_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_UPDATE_NOT_FOUND));
+        ensureCanModify(result, writer);
         result.setConsultant(writer);
         result.setDescription(request.getDescription());
         result.setDiagnosis(request.getDiagnosis());
@@ -196,12 +210,73 @@ public class MedicalResultService {
         return modelMapper.map(result, ResultDTO.class);
     }
 
+    @Transactional
     public void deleteResult(Long id) {
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_DELETE_NOT_FOUND));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_DELETE_NOT_FOUND));
+        User currentUser = authUtil.getCurrentUser();
+        ensureCanModify(result, currentUser);
 
         result.setIsActive(false);
         medicalResultRepository.save(result);
+    }
+
+    private void ensureConsultationWriter(User writer, AppointmentDetail appointmentDetail) {
+        if (writer.getRole() != UserRole.CONSULTANT
+                || appointmentDetail.getConsultant() == null
+                || !Objects.equals(appointmentDetail.getConsultant().getId(), writer.getId())) {
+            throw new DomainException(ErrorCode.FORBIDDEN, MedicalMessages.RESULT_WRITE_FORBIDDEN);
+        }
+    }
+
+    private void ensureLabWriter(User writer) {
+        if (writer.getRole() != UserRole.STAFF
+                && writer.getRole() != UserRole.ADMIN
+                && writer.getRole() != UserRole.SUPER_ADMIN) {
+            throw new DomainException(ErrorCode.FORBIDDEN, MedicalMessages.RESULT_WRITE_FORBIDDEN);
+        }
+    }
+
+    private void ensureCanView(MedicalResult result) {
+        ensureCanView(result.getAppointmentDetail());
+    }
+
+    private void ensureCanView(AppointmentDetail appointmentDetail) {
+        User currentUser = authUtil.getCurrentUser();
+        if (appointmentDetail == null) {
+            throw new DomainException(ErrorCode.FORBIDDEN, MedicalMessages.RESULT_ACCESS_FORBIDDEN);
+        }
+
+        if (currentUser.getRole() == UserRole.ADMIN
+                || currentUser.getRole() == UserRole.SUPER_ADMIN
+                || currentUser.getRole() == UserRole.STAFF) {
+            return;
+        }
+
+        Long currentUserId = currentUser.getId();
+        boolean isCustomer = appointmentDetail.getAppointment() != null
+                && appointmentDetail.getAppointment().getCustomer() != null
+                && Objects.equals(appointmentDetail.getAppointment().getCustomer().getId(), currentUserId);
+        boolean isAssignedConsultant = appointmentDetail.getConsultant() != null
+                && Objects.equals(appointmentDetail.getConsultant().getId(), currentUserId);
+
+        if (!isCustomer && !isAssignedConsultant) {
+            throw new DomainException(ErrorCode.FORBIDDEN, MedicalMessages.RESULT_ACCESS_FORBIDDEN);
+        }
+    }
+
+    private void ensureCanModify(MedicalResult result, User currentUser) {
+        if (currentUser.getRole() == UserRole.ADMIN
+                || currentUser.getRole() == UserRole.SUPER_ADMIN
+                || currentUser.getRole() == UserRole.STAFF) {
+            return;
+        }
+
+        if (currentUser.getRole() != UserRole.CONSULTANT
+                || result.getConsultant() == null
+                || !Objects.equals(result.getConsultant().getId(), currentUser.getId())) {
+            throw new DomainException(ErrorCode.FORBIDDEN, MedicalMessages.RESULT_WRITE_FORBIDDEN);
+        }
     }
 
     private void updateMedicalProfileFromTestResult(MedicalResult result, AppointmentDetail appointmentDetail) {
@@ -225,7 +300,7 @@ public class MedicalResultService {
             medicalProfileRepository.save(profile);
         } catch (Exception e) {
             // Log error nhưng không throw để không ảnh hưởng đến việc lưu kết quả
-            throw new ApiException(ErrorCode.INTERNAL_ERROR, MedicalMessages.PROFILE_UPDATE_FAILED, e);
+            throw new DomainException(ErrorCode.INTERNAL_ERROR, MedicalMessages.PROFILE_UPDATE_FAILED, e);
         }
     }
     private void updateAppointmentStatus(AppointmentDetail appointmentDetail) {

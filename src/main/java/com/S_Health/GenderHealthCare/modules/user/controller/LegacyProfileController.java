@@ -1,6 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.user.controller;
 
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UserProfileUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class LegacyProfileController {
     @PutMapping("/profile")
     @Operation(summary = UserMessages.PROFILE_UPDATE_LEGACY)
     public ResponseEntity<UserDTO> updateProfile(
-            @Valid @RequestBody UserDTO request) {
+            @Valid @RequestBody UserProfileUpdateRequest request) {
         UserDTO updatedUser = userProfileService.updateUserProfile(request);
         return ResponseEntity.ok(updatedUser);
     }

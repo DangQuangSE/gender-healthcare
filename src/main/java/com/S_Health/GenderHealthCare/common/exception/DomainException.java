@@ -2,6 +2,7 @@ package com.S_Health.GenderHealthCare.common.exception;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Base exception for errors that can be safely returned to the client.
@@ -9,6 +10,10 @@ import java.util.Map;
 public class DomainException extends RuntimeException {
     private final ErrorCode errorCode;
     private final Map<String, String> errors;
+
+    public DomainException(String message) {
+        this(ErrorCode.BAD_REQUEST, message);
+    }
 
     public DomainException(ErrorCode errorCode) {
         this(errorCode, errorCode.getDefaultMessage(), Collections.emptyMap());
@@ -20,13 +25,13 @@ public class DomainException extends RuntimeException {
 
     public DomainException(ErrorCode errorCode, String message, Map<String, String> errors) {
         super(message);
-        this.errorCode = errorCode;
+        this.errorCode = Objects.requireNonNull(errorCode, "errorCode must not be null");
         this.errors = errors == null ? Collections.emptyMap() : Map.copyOf(errors);
     }
 
     public DomainException(ErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
-        this.errorCode = errorCode;
+        this.errorCode = Objects.requireNonNull(errorCode, "errorCode must not be null");
         this.errors = Collections.emptyMap();
     }
 
@@ -36,7 +41,7 @@ public class DomainException extends RuntimeException {
             Map<String, String> errors,
             Throwable cause) {
         super(message, cause);
-        this.errorCode = errorCode;
+        this.errorCode = Objects.requireNonNull(errorCode, "errorCode must not be null");
         this.errors = errors == null ? Collections.emptyMap() : Map.copyOf(errors);
     }
 

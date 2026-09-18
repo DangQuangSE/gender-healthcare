@@ -54,6 +54,12 @@ public final class MedicalMessages {
     public static final String MEDICAL_RESULT_TAG = "Medical Result API";
     public static final String MEDICAL_RESULT_TAG_DESCRIPTION = "API for managing consultation and lab results";
 
+    public static final String RESULT_ACCESS_FORBIDDEN = "You do not have permission to view this medical result";
+    public static final String RESULT_WRITE_FORBIDDEN = "You do not have permission to write this medical result";
+    public static final String RESULT_DELETED = "Medical result deleted successfully";
+    public static final String TREATMENT_PROTOCOL_ID_REQUIRED = "Treatment protocol id is required";
+    public static final String TREATMENT_PROTOCOL_ID_POSITIVE = "Treatment protocol id must be positive";
+
     private MedicalMessages() {
     }
 }

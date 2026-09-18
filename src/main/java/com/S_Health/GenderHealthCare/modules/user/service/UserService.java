@@ -3,10 +3,10 @@ package com.S_Health.GenderHealthCare.modules.user.service;
 
 
 import com.S_Health.GenderHealthCare.common.validation.ImageUploadValidator;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CertificationRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.UpdateConsultantSpecializationRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.UserProfileUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserAccountResponse;
@@ -49,7 +49,7 @@ public class UserService {
         return userMapper.toResponse(userProfileService.getUserProfile());
     }
 
-    public UserResponse updateProfile(UserDTO request) {
+    public UserResponse updateProfile(UserProfileUpdateRequest request) {
         return userMapper.toResponse(userProfileService.updateUserProfile(request));
     }
 

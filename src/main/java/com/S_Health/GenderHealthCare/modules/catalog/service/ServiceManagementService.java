@@ -8,7 +8,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDTO;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboResponse;
-import com.S_Health.GenderHealthCare.common.exception.ApiException;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.ComboItemRepository;
 import com.S_Health.GenderHealthCare.repository.ServiceRepository;
@@ -46,10 +46,10 @@ public class ServiceManagementService {
 
     public ServiceDTO getServiceById(Long id) {
         Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
         if (!service.getIsActive()) {
-            throw new ApiException(CatalogConstants.SERVICE_INACTIVE);
+            throw new DomainException(CatalogConstants.SERVICE_INACTIVE);
         }
 
         return convertToDTO(service);
@@ -63,10 +63,10 @@ public class ServiceManagementService {
 
     public List<ServiceDTO> getServicesBySpecialization(Long specializationId) {
         Specialization specialization = specializationRepository.findById(specializationId)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
         if (!specialization.getIsActive()) {
-            throw new ApiException(CatalogConstants.SPECIALIZATION_INACTIVE);
+            throw new DomainException(CatalogConstants.SPECIALIZATION_INACTIVE);
         }
 
         return serviceRepository.findBySpecializationsContainingAndIsActiveTrue(specialization).stream()
@@ -78,7 +78,7 @@ public class ServiceManagementService {
     public ServiceDTO createService(ServiceDTO serviceDTO) {
         // Kiểm tra tên dịch vụ có bị trùng không
         if (serviceRepository.existsByNameAndIsActiveTrue(serviceDTO.getName().trim())) {
-            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.SERVICE_NAME_EXISTS);
+            throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.SERVICE_NAME_EXISTS);
         }
 
         // Tạo dịch vụ
@@ -98,10 +98,10 @@ public class ServiceManagementService {
 
             for (Long specializationId : serviceDTO.getSpecializationIds()) {
                 Specialization specialization = specializationRepository.findById(specializationId)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
+                        .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
                 if (!specialization.getIsActive()) {
-                    throw new ApiException(CatalogConstants.SPECIALIZATION_INACTIVE_ID.formatted(specializationId));
+                    throw new DomainException(CatalogConstants.SPECIALIZATION_INACTIVE_ID.formatted(specializationId));
                 }
 
                 specializations.add(specialization);
@@ -117,16 +117,16 @@ public class ServiceManagementService {
     @Transactional
     public ServiceDTO updateService(Long id, ServiceDTO serviceDTO) {
         Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
         if (!service.getIsActive()) {
-            throw new ApiException(CatalogConstants.SERVICE_INACTIVE_UPDATE);
+            throw new DomainException(CatalogConstants.SERVICE_INACTIVE_UPDATE);
         }
 
         // Kiểm tra tên dịch vụ có bị trùng không (nếu tên thay đổi)
         if (serviceDTO.getName() != null && !service.getName().equals(serviceDTO.getName().trim()) &&
                 serviceRepository.existsByNameAndIsActiveTrue(serviceDTO.getName().trim())) {
-            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.SERVICE_NAME_EXISTS);
+            throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.SERVICE_NAME_EXISTS);
         }
 
         // Cập nhật thông tin cơ bản
@@ -160,10 +160,10 @@ public class ServiceManagementService {
 
             for (Long specializationId : serviceDTO.getSpecializationIds()) {
                 Specialization specialization = specializationRepository.findById(specializationId)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
+                        .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
                 if (!specialization.getIsActive()) {
-                    throw new ApiException(CatalogConstants.SPECIALIZATION_INACTIVE_ID.formatted(specializationId));
+                    throw new DomainException(CatalogConstants.SPECIALIZATION_INACTIVE_ID.formatted(specializationId));
                 }
 
                 specializations.add(specialization);
@@ -179,7 +179,7 @@ public class ServiceManagementService {
     @Transactional
     public ServiceDTO activateService(Long id) {
         Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
         service.setIsActive(true);
         Service updatedService = serviceRepository.save(service);
@@ -189,7 +189,7 @@ public class ServiceManagementService {
     @Transactional
     public ServiceDTO deactivateService(Long id) {
         Service service = serviceRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
         service.setIsActive(false);
         Service updatedService = serviceRepository.save(service);
@@ -200,12 +200,12 @@ public class ServiceManagementService {
     public ComboResponse createComboService(ServiceDTO serviceDTO) {
         // Kiểm tra tên dịch vụ combo có bị trùng không
         if (serviceRepository.existsByNameAndIsActiveTrue(serviceDTO.getName().trim())) {
-            throw new ApiException(ErrorCode.CONFLICT, CatalogConstants.COMBO_NAME_EXISTS);
+            throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.COMBO_NAME_EXISTS);
         }
 
         // Kiểm tra danh sách dịch vụ thành phần
         if (serviceDTO.getSubServiceIds() == null || serviceDTO.getSubServiceIds().isEmpty()) {
-            throw new ApiException(CatalogConstants.COMBO_REQUIRES_ITEMS);
+            throw new DomainException(CatalogConstants.COMBO_REQUIRES_ITEMS);
         }
 
         // Tạo dịch vụ combo
@@ -224,10 +224,10 @@ public class ServiceManagementService {
 
             for (Long specializationId : serviceDTO.getSpecializationIds()) {
                 Specialization specialization = specializationRepository.findById(specializationId)
-                        .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
+                        .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
                 if (!specialization.getIsActive()) {
-                    throw new ApiException(CatalogConstants.SPECIALIZATION_INACTIVE_ID.formatted(specializationId));
+                    throw new DomainException(CatalogConstants.SPECIALIZATION_INACTIVE_ID.formatted(specializationId));
                 }
 
                 specializations.add(specialization);
@@ -246,10 +246,10 @@ public class ServiceManagementService {
 
         for (Long subServiceId : serviceDTO.getSubServiceIds()) {
             Service subService = serviceRepository.findById(subServiceId)
-                    .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, CatalogConstants.SUB_SERVICE_NOT_FOUND.formatted(subServiceId)));
+                    .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SUB_SERVICE_NOT_FOUND.formatted(subServiceId)));
 
             if (!subService.getIsActive()) {
-                throw new ApiException(CatalogConstants.SUB_SERVICE_INACTIVE.formatted(subServiceId));
+                throw new DomainException(CatalogConstants.SUB_SERVICE_INACTIVE.formatted(subServiceId));
             }
 
             ComboItem comboItem = new ComboItem();

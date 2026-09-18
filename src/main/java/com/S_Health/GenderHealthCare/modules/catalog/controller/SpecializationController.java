@@ -3,6 +3,7 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.service.CatalogService;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationQuery;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,8 +24,8 @@ public class SpecializationController {
     @GetMapping
     @Operation(summary = CatalogConstants.GET_SPECIALIZATIONS)
     public ApiResponse<List<SpecializationResponse>> getSpecializations(
-            @RequestParam(required = false) String name) {
-        return ApiResponse.success(catalogService.getSpecializations(name), null);
+            @Valid @ModelAttribute SpecializationQuery request) {
+        return ApiResponse.success(catalogService.getSpecializations(request.getName()), null);
     }
 
     @GetMapping("/{id}")

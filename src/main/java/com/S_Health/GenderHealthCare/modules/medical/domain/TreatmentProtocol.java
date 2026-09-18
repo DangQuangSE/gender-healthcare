@@ -35,6 +35,7 @@ public class TreatmentProtocol {
     @Lob
     private String notes;          // Lưu ý đặc biệt
 
+    @Builder.Default
     private boolean active = true;
 
     @CreatedDate
