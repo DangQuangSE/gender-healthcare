@@ -1,5 +1,7 @@
-package com.S_Health.GenderHealthCare.common.health;
+package com.S_Health.GenderHealthCare.modules.health.controller;
 
+import com.S_Health.GenderHealthCare.modules.health.HealthMessages;
+import com.S_Health.GenderHealthCare.modules.health.dto.response.HealthResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

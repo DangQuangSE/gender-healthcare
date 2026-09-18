@@ -1,4 +1,4 @@
-package com.S_Health.GenderHealthCare.common.health;
+package com.S_Health.GenderHealthCare.modules.health.dto.response;
 
 import java.time.Instant;
 

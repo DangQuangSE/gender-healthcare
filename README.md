@@ -8,7 +8,7 @@ The backend is one deployable application. Business ownership is grouped by modu
 
 ```text
 src/main/java/com/S_Health/GenderHealthCare/
-├── common/          # response, validation, security, filters, exceptions, health
+├── common/          # shared response, validation, security, filters and exceptions
 ├── config/           # application-wide Spring configuration
 ├── modules/
 │   ├── identity/     # login, registration, JWT and OAuth clients
@@ -17,6 +17,7 @@ src/main/java/com/S_Health/GenderHealthCare/
 │   ├── scheduling/   # consultant schedules and slots
 │   ├── appointment/  # booking, appointment status and check-in
 │   ├── medical/      # profiles, medical results and treatment protocols
+│   ├── health/       # application liveness endpoint and response DTO
 │   ├── healthtracking/
 │   ├── content/      # blogs, comments and tags
 │   ├── communication/# chat and notifications

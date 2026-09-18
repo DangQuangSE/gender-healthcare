@@ -1,4 +1,4 @@
-package com.S_Health.GenderHealthCare.common.health;
+package com.S_Health.GenderHealthCare.modules.health;
 
 /**
  * Constants used by the unauthenticated liveness endpoint.
