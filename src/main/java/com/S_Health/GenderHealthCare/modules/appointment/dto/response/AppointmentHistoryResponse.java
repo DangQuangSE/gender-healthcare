@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Lịch sử khám bệnh")
-public class AppointmentHistoryDTO {
+public class AppointmentHistoryResponse {
     @Schema(description = "Ngày khám")
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate date;

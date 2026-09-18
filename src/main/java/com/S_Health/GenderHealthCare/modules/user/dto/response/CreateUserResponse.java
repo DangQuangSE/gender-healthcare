@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.user.dto.response;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 import com.S_Health.GenderHealthCare.modules.user.enums.Gender;
 
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +29,6 @@ public class CreateUserResponse {
     private boolean isVerified;
     private LocalDate createdAt;
     // Chỉ có với CONSULTANT
-    private List<SpecializationDTO> specializations;
+    private List<SpecializationDetailResponse> specializations;
 
 }

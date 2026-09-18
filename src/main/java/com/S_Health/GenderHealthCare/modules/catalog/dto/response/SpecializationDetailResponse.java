@@ -5,7 +5,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 
 @Data
-public class SpecializationDTO {
+public class SpecializationDetailResponse {
     private Long id;
     private String name;
     private String description;

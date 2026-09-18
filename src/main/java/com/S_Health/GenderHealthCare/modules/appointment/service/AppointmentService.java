@@ -9,7 +9,7 @@ import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.UpdateAppointmentRequest;
 import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
@@ -55,7 +55,7 @@ public class AppointmentService {
     }
 
     @Transactional
-    public AppointmentDTO updateAppointment(Long appointmentId, UpdateAppointmentRequest request) {
+    public AppointmentResponse updateAppointment(Long appointmentId, UpdateAppointmentRequest request) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 

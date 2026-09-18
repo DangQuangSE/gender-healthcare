@@ -1,11 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.appointment.service;
 
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileDTO;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalResultResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
@@ -57,27 +57,27 @@ public class AppointmentQueryService {
         this.authUtil = authUtil;
     }
 
-    public AppointmentDTO getAppointmentById(long id) {
+    public AppointmentResponse getAppointmentById(long id) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
         List<AppointmentDetail> appointmentDetails = appointmentDetailRepository
                 .findByAppointmentAndIsActiveTrue(appointment);
-        List<AppointmentDetailDTO> detailDtos = new ArrayList<>();
+        List<AppointmentDetailResponse> detailDtos = new ArrayList<>();
 
         for (AppointmentDetail appointmentDetail : appointmentDetails) {
             MedicalResult medicalResult = medicalResultRepository.findByAppointmentDetail(appointmentDetail)
                     .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.RESULT_NOT_FOUND));
 
-            AppointmentDetailDTO detailDto = modelMapper.map(appointmentDetail, AppointmentDetailDTO.class);
+            AppointmentDetailResponse detailDto = modelMapper.map(appointmentDetail, AppointmentDetailResponse.class);
             detailDto.setConsultantName(appointmentDetail.getConsultant().getFullname());
             detailDto.setServiceName(appointmentDetail.getService().getName());
-            detailDto.setMedicalResult(modelMapper.map(medicalResult, ResultDTO.class));
+            detailDto.setMedicalResult(modelMapper.map(medicalResult, MedicalResultResponse.class));
             detailDto.setRoom(mapRoomToSimpleDto(appointmentDetail.getRoom()));
             detailDtos.add(detailDto);
         }
 
-        AppointmentDTO appointmentDto = modelMapper.map(appointment, AppointmentDTO.class);
+        AppointmentResponse appointmentDto = modelMapper.map(appointment, AppointmentResponse.class);
         appointmentDto.setCustomerId(appointment.getCustomer().getId());
         appointmentDto.setCustomerName(appointment.getCustomer().getFullname());
         appointmentDto.setServiceName(appointment.getService().getName());
@@ -86,7 +86,7 @@ public class AppointmentQueryService {
         return appointmentDto;
     }
 
-    public PatientHistoryDTO getPatientHistoryFromAppointment(Long appointmentId) {
+    public PatientHistoryResponse getPatientHistoryFromAppointment(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
 
@@ -97,17 +97,17 @@ public class AppointmentQueryService {
 
         List<Appointment> pastAppointments = appointmentRepository
                 .findByMedicalProfileAndStatusAndIsActiveTrue(medicalProfile, AppointmentStatus.COMPLETED);
-        List<AppointmentDTO> pastAppointmentDtos = pastAppointments.stream()
+        List<AppointmentResponse> pastAppointmentDtos = pastAppointments.stream()
                 .map(pastAppointment -> getAppointmentById(pastAppointment.getId()))
                 .collect(Collectors.toList());
 
-        PatientHistoryDTO historyDto = new PatientHistoryDTO();
-        historyDto.setMedicalProfile(modelMapper.map(medicalProfile, MedicalProfileDTO.class));
+        PatientHistoryResponse historyDto = new PatientHistoryResponse();
+        historyDto.setMedicalProfile(modelMapper.map(medicalProfile, MedicalProfileResponse.class));
         historyDto.setPastAppointments(pastAppointmentDtos);
         return historyDto;
     }
 
-    public List<AppointmentDTO> getAppointmentsByStatus(AppointmentStatus status) {
+    public List<AppointmentResponse> getAppointmentsByStatus(AppointmentStatus status) {
         User currentUser = authUtil.getCurrentUser();
         List<Appointment> appointments;
 
@@ -121,7 +121,7 @@ public class AppointmentQueryService {
         return convertToDto(appointments);
     }
 
-    public List<AppointmentDTO> getAppointmentsForConsultantOnDateByDetailStatus(
+    public List<AppointmentResponse> getAppointmentsForConsultantOnDateByDetailStatus(
             AppointmentScheduleQuery request) {
         LocalDate date = request.getDate();
         AppointmentStatus detailStatus = request.getStatus();
@@ -145,7 +145,7 @@ public class AppointmentQueryService {
                 .collect(Collectors.toList());
     }
 
-    private List<AppointmentDTO> convertToDto(List<Appointment> appointments) {
+    private List<AppointmentResponse> convertToDto(List<Appointment> appointments) {
         return appointments.stream()
                 .map(appointment -> {
                     List<AppointmentDetail> details = appointmentDetailRepository
@@ -155,15 +155,15 @@ public class AppointmentQueryService {
                 .collect(Collectors.toList());
     }
 
-    private AppointmentDTO mapAppointmentWithDetails(
+    private AppointmentResponse mapAppointmentWithDetails(
             Appointment appointment,
             List<AppointmentDetail> details) {
-        AppointmentDTO appointmentDto = modelMapper.map(appointment, AppointmentDTO.class);
+        AppointmentResponse appointmentDto = modelMapper.map(appointment, AppointmentResponse.class);
         appointmentDto.setCustomerId(appointment.getCustomer().getId());
         appointmentDto.setCustomerName(appointment.getCustomer().getFullname());
         appointmentDto.setServiceName(appointment.getService().getName());
 
-        List<AppointmentDetailDTO> detailDtos = details.stream()
+        List<AppointmentDetailResponse> detailDtos = details.stream()
                 .map(this::mapDetail)
                 .collect(Collectors.toList());
         appointmentDto.setAppointmentDetails(detailDtos);
@@ -171,31 +171,31 @@ public class AppointmentQueryService {
         return appointmentDto;
     }
 
-    private AppointmentDetailDTO mapDetail(AppointmentDetail detail) {
-        AppointmentDetailDTO detailDto = modelMapper.map(detail, AppointmentDetailDTO.class);
+    private AppointmentDetailResponse mapDetail(AppointmentDetail detail) {
+        AppointmentDetailResponse detailDto = modelMapper.map(detail, AppointmentDetailResponse.class);
         detailDto.setConsultantName(detail.getConsultant().getFullname());
         detailDto.setServiceName(detail.getService().getName());
         detailDto.setRoom(mapRoomToSimpleDto(detail.getRoom()));
         medicalResultRepository.findByAppointmentDetail(detail)
-                .ifPresent(result -> detailDto.setMedicalResult(modelMapper.map(result, ResultDTO.class)));
+                .ifPresent(result -> detailDto.setMedicalResult(modelMapper.map(result, MedicalResultResponse.class)));
         return detailDto;
     }
 
-    private com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO mapRoomToSimpleDto(
+    private com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomResponse mapRoomToSimpleDto(
             com.S_Health.GenderHealthCare.modules.catalog.domain.Room room) {
         if (room == null) {
             return null;
         }
 
-        com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO roomDto =
-                modelMapper.map(room, com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO.class);
+        com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomResponse roomDto =
+                modelMapper.map(room, com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomResponse.class);
         if (room.getSpecialization() != null) {
             roomDto.setSpecializationName(room.getSpecialization().getName());
         }
         return roomDto;
     }
 
-    private BasicMedicalProfileDTO getBasicMedicalProfile(Long customerId) {
+    private BasicMedicalProfileResponse getBasicMedicalProfile(Long customerId) {
         List<MedicalProfile> profiles = medicalProfileRepository
                 .findByCustomerIdAndIsActiveTrue(customerId);
 
@@ -211,6 +211,6 @@ public class AppointmentQueryService {
                 .max((first, second) -> first.getUpdatedAt().compareTo(second.getUpdatedAt()))
                 .orElse(profiles.get(0));
 
-        return modelMapper.map(latestProfile, BasicMedicalProfileDTO.class);
+        return modelMapper.map(latestProfile, BasicMedicalProfileResponse.class);
     }
 }

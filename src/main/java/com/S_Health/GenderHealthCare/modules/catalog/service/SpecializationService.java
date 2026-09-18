@@ -4,7 +4,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
 import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.repository.SpecializationRepository;
@@ -24,13 +24,13 @@ public class SpecializationService {
         this.modelMapper = modelMapper;
     }
 
-    public List<SpecializationDTO> getAllSpecializations() {
+    public List<SpecializationDetailResponse> getAllSpecializations() {
         return specializationRepository.findByIsActiveTrue().stream()
-                .map(specialization -> modelMapper.map(specialization, SpecializationDTO.class))
+                .map(specialization -> modelMapper.map(specialization, SpecializationDetailResponse.class))
                 .collect(Collectors.toList());
     }
 
-    public SpecializationDTO getSpecializationById(Long id) {
+    public SpecializationDetailResponse getSpecializationById(Long id) {
         Specialization specialization = specializationRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(id)));
 
@@ -38,17 +38,17 @@ public class SpecializationService {
             throw new DomainException(CatalogConstants.SPECIALIZATION_INACTIVE);
         }
 
-        return modelMapper.map(specialization, SpecializationDTO.class);
+        return modelMapper.map(specialization, SpecializationDetailResponse.class);
     }
 
-    public List<SpecializationDTO> searchSpecializationsByName(String name) {
+    public List<SpecializationDetailResponse> searchSpecializationsByName(String name) {
         return specializationRepository.findByNameContainingIgnoreCaseAndIsActiveTrue(name).stream()
-                .map(specialization -> modelMapper.map(specialization, SpecializationDTO.class))
+                .map(specialization -> modelMapper.map(specialization, SpecializationDetailResponse.class))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public SpecializationDTO createSpecialization(SpecializationRequest request) {
+    public SpecializationDetailResponse createSpecialization(SpecializationRequest request) {
         // Kiểm tra tên chuyên môn có bị trùng không
         if (specializationRepository.existsByNameAndIsActiveTrue(request.getName().trim())) {
             throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.SPECIALIZATION_NAME_EXISTS);
@@ -60,11 +60,11 @@ public class SpecializationService {
         specialization.setIsActive(true);
 
         Specialization savedSpecialization = specializationRepository.save(specialization);
-        return modelMapper.map(savedSpecialization, SpecializationDTO.class);
+        return modelMapper.map(savedSpecialization, SpecializationDetailResponse.class);
     }
 
     @Transactional
-    public SpecializationDTO updateSpecialization(Long id, SpecializationRequest request) {
+    public SpecializationDetailResponse updateSpecialization(Long id, SpecializationRequest request) {
         Specialization specialization = specializationRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(id)));
 
@@ -82,7 +82,7 @@ public class SpecializationService {
         specialization.setDescription(request.getDescription());
 
         Specialization updatedSpecialization = specializationRepository.save(specialization);
-        return modelMapper.map(updatedSpecialization, SpecializationDTO.class);
+        return modelMapper.map(updatedSpecialization, SpecializationDetailResponse.class);
     }
 
     @Transactional

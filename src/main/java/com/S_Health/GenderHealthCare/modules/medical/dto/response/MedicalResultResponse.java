@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ResultDTO {
+public class MedicalResultResponse {
     // === METADATA ===
     Long id;
     ResultType resultType;

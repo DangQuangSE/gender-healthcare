@@ -2,11 +2,11 @@ package com.S_Health.GenderHealthCare.modules.user.mapper;
 
 import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
 
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CreateUserResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantCertification;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantCertificationResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.ConsultantResponse;
@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 public class UserMapper {
 
-    public UserResponse toResponse(UserDTO source) {
+    public UserResponse toResponse(UserDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -42,7 +42,7 @@ public class UserMapper {
                 .build();
     }
 
-    public UserSpecializationResponse toSpecializationResponse(SpecializationDTO source) {
+    public UserSpecializationResponse toSpecializationResponse(SpecializationDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -120,7 +120,7 @@ public class UserMapper {
         return sources.stream().map(this::toCertificationResponse).toList();
     }
 
-    public ConsultantResponse toConsultantResponse(ConsultantDTO source) {
+    public ConsultantResponse toConsultantResponse(ConsultantDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -140,7 +140,7 @@ public class UserMapper {
                 .build();
     }
 
-    public List<ConsultantResponse> toConsultantResponses(List<ConsultantDTO> sources) {
+    public List<ConsultantResponse> toConsultantResponses(List<ConsultantDetailResponse> sources) {
         return sources.stream().map(this::toConsultantResponse).toList();
     }
 

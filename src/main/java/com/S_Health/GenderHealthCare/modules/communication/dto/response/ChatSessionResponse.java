@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Chat Session DTO")
-public class ChatSessionDTO {
+public class ChatSessionResponse {
     
     @Schema(description = "Session ID")
     Long id;
@@ -45,5 +45,5 @@ public class ChatSessionDTO {
     Integer unreadCount;
     
     @Schema(description = "Chat messages")
-    List<ChatMessageDTO> messages;
+    List<ChatMessageResponse> messages;
 }

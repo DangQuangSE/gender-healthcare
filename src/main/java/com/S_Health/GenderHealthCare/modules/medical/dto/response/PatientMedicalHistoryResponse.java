@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.medical.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentHistoryResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,16 +16,16 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Lịch sử khám bệnh cần thiết cho bác sĩ")
-public class PatientMedicalHistoryDTO {
+public class PatientMedicalHistoryResponse {
 
     @Schema(description = "Thông tin cơ bản bệnh nhân")
-    PatientBasicInfoDTO patientInfo;
+    PatientBasicInfoResponse patientInfo;
 
     @Schema(description = "Lịch sử khám bệnh")
-    Page<AppointmentHistoryDTO> appointments;
+    Page<AppointmentHistoryResponse> appointments;
 
     @Schema(description = "Kết quả xét nghiệm gần nhất")
-    List<RecentTestResultDTO> recentTests;
+    List<RecentTestResultResponse> recentTests;
 
     @Schema(description = "Tổng số lượt khám")
     Integer totalVisits;

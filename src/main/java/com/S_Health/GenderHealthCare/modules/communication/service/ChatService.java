@@ -9,8 +9,8 @@ import com.S_Health.GenderHealthCare.modules.communication.domain.ChatSession;
 import com.S_Health.GenderHealthCare.modules.communication.enums.SenderType;
 
 
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
@@ -51,7 +51,7 @@ public class ChatService {
     /**
      * Customer bắt đầu chat session mới
      */
-    public ChatSessionDTO startChatSession(StartChatRequest request) {
+    public ChatSessionResponse startChatSession(StartChatRequest request) {
         // Tạo unique session ID
         String sessionId = "chat_" + UUID.randomUUID().toString().substring(0, 8);
 
@@ -75,7 +75,7 @@ public class ChatService {
     /**
      * Gửi tin nhắn trong chat session
      */
-    public ChatMessageDTO sendMessage(SendMessageRequest request) {
+    public ChatMessageResponse sendMessage(SendMessageRequest request) {
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(request.getSessionId())
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
@@ -100,7 +100,7 @@ public class ChatService {
         }
         chatSessionRepository.save(session);
 
-        ChatMessageDTO messageDTO = convertToMessageDTO(message);
+        ChatMessageResponse messageDTO = convertToMessageDTO(message);
 
         // Send realtime message
         sendRealtimeMessage(messageDTO);
@@ -111,7 +111,7 @@ public class ChatService {
     /**
      * Staff join vào chat session
      */
-    public ChatSessionDTO joinChatSession(String sessionId) {
+    public ChatSessionResponse joinChatSession(String sessionId) {
         User currentStaff = authUtil.getCurrentUser();
         if (currentStaff.getRole() != UserRole.STAFF) {
             throw new DomainException(CommunicationMessages.STAFF_ONLY_CHAT_ACTION);
@@ -132,7 +132,7 @@ public class ChatService {
     /**
      * Lấy danh sách chat sessions cho staff theo status
      */
-    public List<ChatSessionDTO> getChatSessionsForStaff(ChatStatus requestedStatus) {
+    public List<ChatSessionResponse> getChatSessionsForStaff(ChatStatus requestedStatus) {
         User currentStaff = authUtil.getCurrentUser();
         if (currentStaff.getRole() != UserRole.STAFF) {
             throw new DomainException(CommunicationMessages.STAFF_ONLY_VIEW_CHAT);
@@ -157,7 +157,7 @@ public class ChatService {
     /**
      * Overload method for backward compatibility
      */
-    public List<ChatSessionDTO> getChatSessionsForStaff() {
+    public List<ChatSessionResponse> getChatSessionsForStaff() {
         return getChatSessionsForStaff((ChatStatus) null);
     }
 
@@ -165,7 +165,7 @@ public class ChatService {
      * Keeps the old string-based service call working for the legacy controller.
      */
     @Deprecated(since = "1.0", forRemoval = false)
-    public List<ChatSessionDTO> getChatSessionsForStaff(String statusParam) {
+    public List<ChatSessionResponse> getChatSessionsForStaff(String statusParam) {
         if (statusParam == null || statusParam.isBlank()) {
             return getChatSessionsForStaff((ChatStatus) null);
         }
@@ -179,7 +179,7 @@ public class ChatService {
     /**
      * Lấy tin nhắn của một session
      */
-    public List<ChatMessageDTO> getSessionMessages(String sessionId) {
+    public List<ChatMessageResponse> getSessionMessages(String sessionId) {
         ChatSession session = chatSessionRepository.findBySessionIdAndIsActiveTrue(sessionId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CommunicationMessages.CHAT_SESSION_NOT_FOUND));
 
@@ -267,7 +267,7 @@ public class ChatService {
         return SenderType.STAFF;
     }
 
-    private void sendRealtimeMessage(ChatMessageDTO messageDTO) {
+    private void sendRealtimeMessage(ChatMessageResponse messageDTO) {
         // Send to specific session topic
         messagingTemplate.convertAndSend(
                 CommunicationMessages.CHAT_TOPIC.formatted(messageDTO.getSessionId()), messageDTO);
@@ -277,11 +277,11 @@ public class ChatService {
     }
 
     private void notifyStaffNewSession(ChatSession session) {
-        ChatSessionDTO sessionDTO = convertToSessionDTO(session);
+        ChatSessionResponse sessionDTO = convertToSessionDTO(session);
         messagingTemplate.convertAndSend(CommunicationMessages.STAFF_NEW_SESSION_TOPIC, sessionDTO);
     }
 
-    private ChatSessionDTO convertToSessionDTO(ChatSession session) {
+    private ChatSessionResponse convertToSessionDTO(ChatSession session) {
         // Tính unread count cho staff (không đếm tin nhắn của chính staff)
         Integer unreadCount = 0;
         try {
@@ -301,7 +301,7 @@ public class ChatService {
                 .map(ChatMessage::getMessage)
                 .orElse(null);
 
-        return ChatSessionDTO.builder()
+        return ChatSessionResponse.builder()
                 .id(session.getId())
                 .sessionId(session.getSessionId())
                 .customerName(session.getCustomerName())
@@ -314,8 +314,8 @@ public class ChatService {
                 .build();
     }
 
-    private ChatMessageDTO convertToMessageDTO(ChatMessage message) {
-        return ChatMessageDTO.builder()
+    private ChatMessageResponse convertToMessageDTO(ChatMessage message) {
+        return ChatMessageResponse.builder()
                 .id(message.getId())
                 .sessionId(message.getChatSession().getSessionId())
                 .senderName(message.getSenderName())

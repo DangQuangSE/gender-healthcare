@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.scheduling.dto.request;
 
-import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.TimeSlotDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.TimeSlotRequest;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +15,6 @@ public class ScheduleRegisterRequest {
    @Data
    public static class ScheduleItem {
       private LocalDate workDate;
-      TimeSlotDTO timeSlotDTO;
+      TimeSlotRequest timeSlot;
    }
 }

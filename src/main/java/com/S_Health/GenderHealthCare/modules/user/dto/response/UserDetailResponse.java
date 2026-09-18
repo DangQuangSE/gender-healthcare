@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserDetailResponse {
     @NotBlank(message = UserMessages.FULLNAME_REQUIRED)
     @Size(max = 50, message = UserMessages.FULLNAME_TOO_LONG)
     @Pattern(regexp = "^[\\p{L} .'-]+$", message = UserMessages.FULLNAME_INVALID)

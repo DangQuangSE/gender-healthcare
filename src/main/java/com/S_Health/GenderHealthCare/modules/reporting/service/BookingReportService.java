@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.reporting.service;
 
 
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
-import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
 import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class BookingReportService {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public List<ServiceBookingReportDTO> getServiceBookingStats(BookingReportQuery request) {
+    public List<ServiceBookingReportResponse> getServiceBookingStats(BookingReportQuery request) {
         return appointmentRepository.getServiceBookingReport(
                 request.getStartDate(),
                 request.getEndDate(),

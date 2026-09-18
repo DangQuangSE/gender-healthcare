@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.appointment.dto.response;
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
 import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
 import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileResponse;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AppointmentDTO {
+public class AppointmentResponse {
     long id;
     Double price;
     String note;
@@ -31,6 +31,6 @@ public class AppointmentDTO {
     Boolean isPaid;
     Boolean isRated;
     PaymentStatus paymentStatus;
-    List<AppointmentDetailDTO> appointmentDetails;
-    BasicMedicalProfileDTO customerMedicalProfile;
+    List<AppointmentDetailResponse> appointmentDetails;
+    BasicMedicalProfileResponse customerMedicalProfile;
 }

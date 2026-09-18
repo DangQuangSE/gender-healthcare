@@ -14,12 +14,12 @@ import com.S_Health.GenderHealthCare.modules.medical.enums.TestStatus;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentHistoryResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoUpdateRequest;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientBasicInfoDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.RecentTestResultDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientBasicInfoResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.RecentTestResultResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileResponse;
 
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
@@ -95,20 +95,20 @@ public class MedicalProfileService {
     }
 
     @Transactional(readOnly = true)
-    public MedicalProfileDTO getMyProfile(MyMedicalProfileQuery request) {
+    public MedicalProfileResponse getMyProfile(MyMedicalProfileQuery request) {
         Long serviceId = request.getServiceId();
         User user = authUtil.getCurrentUser();
         com.S_Health.GenderHealthCare.modules.catalog.domain.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.SERVICE_NOT_FOUND));
         MedicalProfile medicalProfile = medicalProfileRepository.findByCustomerAndServiceAndIsActiveTrue(user, service)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.MEDICAL_PROFILE_NOT_FOUND));
-        return modelMapper.map(medicalProfile, MedicalProfileDTO.class);
+        return modelMapper.map(medicalProfile, MedicalProfileResponse.class);
     }
     /**
      * Xem lịch sử khám bệnh cần thiết của bệnh nhân (cho bác sĩ)
      */
     @Transactional(readOnly = true)
-    public PatientMedicalHistoryDTO getPatientHistory(
+    public PatientMedicalHistoryResponse getPatientHistory(
             Long patientId,
             PatientHistoryQuery request) {
         int page = request.getPage();
@@ -146,9 +146,9 @@ public class MedicalProfileService {
                 recentAppointments, pageable, () -> recentAppointments.size());
 
         // Lấy medical results từ các appointment details của 5 appointments này
-        List<RecentTestResultDTO> recentTests = buildRecentTestsFromAppointments(recentAppointments);
+        List<RecentTestResultResponse> recentTests = buildRecentTestsFromAppointments(recentAppointments);
 
-        return PatientMedicalHistoryDTO.builder()
+        return PatientMedicalHistoryResponse.builder()
                 .patientInfo(buildPatientInfo(patient))
                 .appointments(buildAppointmentHistory(appointmentPage))
                 .recentTests(recentTests)
@@ -159,7 +159,7 @@ public class MedicalProfileService {
 
 
     // Helper methods theo approach mới - đơn giản và hiệu quả
-    private PatientBasicInfoDTO buildPatientInfo(User patient) {
+    private PatientBasicInfoResponse buildPatientInfo(User patient) {
         int age = patient.getDateOfBirth() != null ?
                 Period.between(patient.getDateOfBirth(), LocalDate.now()).getYears() : 0;
 
@@ -173,7 +173,7 @@ public class MedicalProfileService {
                 .max((p1, p2) -> p1.getUpdatedAt().compareTo(p2.getUpdatedAt()))
                 .orElse(null);
 
-        return PatientBasicInfoDTO.builder()
+        return PatientBasicInfoResponse.builder()
                 .fullname(patient.getFullname())
                 .age(age)
                 .gender(patient.getGender() != null ? patient.getGender().toString() : null)
@@ -189,7 +189,7 @@ public class MedicalProfileService {
 
 
 
-    private Page<AppointmentHistoryDTO> buildAppointmentHistory(Page<Appointment> appointmentPage) {
+    private Page<AppointmentHistoryResponse> buildAppointmentHistory(Page<Appointment> appointmentPage) {
         return appointmentPage.map(appointment -> {
             // Lấy AppointmentDetail đầu tiên để lấy thông tin
             AppointmentDetail firstDetail = appointment.getAppointmentDetails().stream()
@@ -213,7 +213,7 @@ public class MedicalProfileService {
                     .findFirst()
                     .orElse(MedicalMessages.DIAGNOSIS_UNAVAILABLE);
 
-            return AppointmentHistoryDTO.builder()
+            return AppointmentHistoryResponse.builder()
                     .date(appointment.getPreferredDate())
                     .service(appointment.getService().getName())
                     .doctor(doctorName)
@@ -227,9 +227,9 @@ public class MedicalProfileService {
     /**
      * Approach mới: Lấy medical results từ 5 appointments gần nhất
      */
-    private List<RecentTestResultDTO> buildRecentTestsFromAppointments(List<Appointment> recentAppointments) {
+    private List<RecentTestResultResponse> buildRecentTestsFromAppointments(List<Appointment> recentAppointments) {
         try {
-            List<RecentTestResultDTO> results = new ArrayList<>();
+            List<RecentTestResultResponse> results = new ArrayList<>();
 
             for (Appointment appointment : recentAppointments) {
                 // Lấy tất cả appointment details của appointment này
@@ -247,7 +247,7 @@ public class MedicalProfileService {
                         if (result.getResultType() == ResultType.LAB_TEST &&
                             result.getTestName() != null && !result.getTestName().trim().isEmpty()) {
 
-                            results.add(RecentTestResultDTO.builder()
+                            results.add(RecentTestResultResponse.builder()
                                     .testName(result.getTestName())
                                     .result(result.getTestResult())
                                     .testDate(result.getCreatedAt().toLocalDate())

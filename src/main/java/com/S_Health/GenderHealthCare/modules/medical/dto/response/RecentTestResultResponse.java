@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Kết quả xét nghiệm gần đây")
-public class RecentTestResultDTO {
+public class RecentTestResultResponse {
     @Schema(description = "Tên xét nghiệm")
     String testName;
     

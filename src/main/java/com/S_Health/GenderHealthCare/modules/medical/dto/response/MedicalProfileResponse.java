@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MedicalProfileDTO {
+public class MedicalProfileResponse {
     long id;
     long customer_id;
     long service_id;

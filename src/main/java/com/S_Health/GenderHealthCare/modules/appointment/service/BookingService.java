@@ -15,9 +15,9 @@ import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
 
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.BookingRequest;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.BasicMedicalProfileResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomResponse;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingResponse;
 
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
@@ -96,7 +96,7 @@ public class BookingService {
         appointment.setPreferredDate(request.getPreferredDate());
         appointmentRepository.save(appointment);
         // 3. Lặp các service con (nếu combo)
-        List<AppointmentDetailDTO> appointmentDetails = new ArrayList<>();
+        List<AppointmentDetailResponse> appointmentDetails = new ArrayList<>();
         List<ConsultantSlot> updatedSlots = new ArrayList<>();
         for (com.S_Health.GenderHealthCare.modules.catalog.domain.Service sub : context.services()) {
             AppointmentDetailData result = createAppointmentDetail(request, appointment, sub);
@@ -204,7 +204,7 @@ public class BookingService {
         detail.setSlotTime(LocalDateTime.of(request.getPreferredDate(), request.getSlot()));
         appointmentDetailRepository.save(detail);
 
-        AppointmentDetailDTO dto = modelMapper.map(detail, AppointmentDetailDTO.class);
+        AppointmentDetailResponse dto = modelMapper.map(detail, AppointmentDetailResponse.class);
         dto.setConsultantName(consultant.getFullname());
         dto.setServiceName(subService.getName());
 
@@ -214,7 +214,7 @@ public class BookingService {
         return new AppointmentDetailData(dto, slot);
     }
 
-    public static record AppointmentDetailData(AppointmentDetailDTO dto, ConsultantSlot slot) {
+    public static record AppointmentDetailData(AppointmentDetailResponse dto, ConsultantSlot slot) {
     }
 
     public void updateServiceSlotPool(ServiceSlotPool slotPool, List<ConsultantSlot> slots) {
@@ -333,12 +333,12 @@ public class BookingService {
     }
 
     /**
-     * Helper method to map Room to SimpleRoomDTO using ModelMapper
+     * Helper method to map Room to SimpleRoomResponse using ModelMapper
      */
-    private SimpleRoomDTO mapRoomToSimpleDTO(Room room) {
+    private SimpleRoomResponse mapRoomToSimpleDTO(Room room) {
         if (room == null) return null;
 
-        SimpleRoomDTO roomDTO = modelMapper.map(room, SimpleRoomDTO.class);
+        SimpleRoomResponse roomDTO = modelMapper.map(room, SimpleRoomResponse.class);
         // Set specialization name manually since it's nested
         if (room.getSpecialization() != null) {
             roomDTO.setSpecializationName(room.getSpecialization().getName());

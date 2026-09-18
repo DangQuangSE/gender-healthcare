@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.medical.controller;
 
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDetailResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.TreatmentProtocolRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.TreatmentProtocolResponse;

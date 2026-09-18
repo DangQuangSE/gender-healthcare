@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SimpleRoomDTO {
+public class SimpleRoomResponse {
     long id;
     String name;
     String description;

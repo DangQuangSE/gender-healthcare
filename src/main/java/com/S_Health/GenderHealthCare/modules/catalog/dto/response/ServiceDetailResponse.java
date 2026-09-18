@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ServiceDTO {
+public class ServiceDetailResponse {
     private Long id;
     private String name;
     private String description;
@@ -27,7 +27,7 @@ public class ServiceDTO {
     private List<Long> specializationIds;
 
     // Danh sách các chuyên môn đầy đủ
-    private List<SpecializationDTO> specializations;
+    private List<SpecializationDetailResponse> specializations;
 
     // Dùng cho combo service
     private List<Long> subServiceIds;

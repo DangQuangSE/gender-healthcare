@@ -8,7 +8,7 @@ import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogPageQuery;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogStatusQuery;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogTagQuery;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
-import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryResponse;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.modules.content.service.BlogService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +46,7 @@ public class BlogController {
 
     @GetMapping("/summary")
     @Operation(summary = ContentMessages.GET_BLOG_SUMMARY)
-    public List<BlogSummaryDTO> getSummary() {
+    public List<BlogSummaryResponse> getSummary() {
         return blogService.getAllBlogSummaries();
     }
 

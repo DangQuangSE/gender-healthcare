@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Chat Message DTO")
-public class ChatMessageDTO {
+public class ChatMessageResponse {
     
     @Schema(description = "Message ID")
     Long id;

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FinancialReportDTO {
+public class FinancialReportResponse {
     BigDecimal totalRevenue;
     double totalPendingAmount;
     double totalSuccessAmount;

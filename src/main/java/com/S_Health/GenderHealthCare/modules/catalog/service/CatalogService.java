@@ -89,13 +89,13 @@ public class CatalogService {
     @Transactional
     public ServiceResponse createService(ServiceCreateRequest request) {
         return catalogMapper.toServiceResponse(
-                serviceManagementService.createService(catalogMapper.toLegacyServiceDTO(request)));
+                serviceManagementService.createService(catalogMapper.toLegacyServiceDetailResponse(request)));
     }
 
     @Transactional
     public ServiceResponse updateService(Long id, ServiceUpdateRequest request) {
         return catalogMapper.toServiceResponse(
-                serviceManagementService.updateService(id, catalogMapper.toLegacyServiceDTO(request)));
+                serviceManagementService.updateService(id, catalogMapper.toLegacyServiceDetailResponse(request)));
     }
 
     @Transactional
@@ -111,7 +111,7 @@ public class CatalogService {
     @Transactional
     public ComboServiceResponse createComboService(ServiceCreateRequest request) {
         return catalogMapper.toComboServiceResponse(
-                serviceManagementService.createComboService(catalogMapper.toLegacyServiceDTO(request)));
+                serviceManagementService.createComboService(catalogMapper.toLegacyServiceDetailResponse(request)));
     }
 
     public List<SpecializationResponse> getSpecializations() {

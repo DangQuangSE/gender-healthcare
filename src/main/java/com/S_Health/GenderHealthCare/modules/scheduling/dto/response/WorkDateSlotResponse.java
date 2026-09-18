@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.modules.scheduling.dto.response;
 
-import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.SlotDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.SlotResponse;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +16,5 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WorkDateSlotResponse {
      LocalDate workDate;
-     List<SlotDTO> slots;
+     List<SlotResponse> slots;
 }

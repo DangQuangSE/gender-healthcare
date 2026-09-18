@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Thông tin cơ bản bệnh nhân")
-public class PatientBasicInfoDTO {
+public class PatientBasicInfoResponse {
     @Schema(description = "Họ và tên")
     String fullname;
 

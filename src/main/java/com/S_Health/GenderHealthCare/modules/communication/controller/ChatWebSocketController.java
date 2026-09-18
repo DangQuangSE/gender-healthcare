@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReadRequest;
@@ -46,7 +46,7 @@ public class ChatWebSocketController {
     @MessageMapping(CommunicationMessages.CHAT_JOIN_MAPPING)
     public void joinSession(@Payload String sessionId) {
         try {
-            ChatSessionDTO session = chatService.joinChatSession(sessionId);
+            ChatSessionResponse session = chatService.joinChatSession(sessionId);
             // Notify others that someone joined
             messagingTemplate.convertAndSend(
                     CommunicationMessages.CHAT_TOPIC.formatted(sessionId)

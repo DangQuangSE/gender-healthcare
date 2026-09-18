@@ -8,10 +8,10 @@ import com.S_Health.GenderHealthCare.modules.feedback.domain.ConsultantFeedback;
 
 
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantCertification;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CreateUserResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
@@ -164,7 +164,7 @@ public class ManageUserService {
         }
         return consultant.getSpecializations() != null ? consultant.getSpecializations() : new ArrayList<>();
     }
-    public List<ConsultantDTO> getUsersByRole(String role) {
+    public List<ConsultantDetailResponse> getUsersByRole(String role) {
         UserRole userRole;
         userRole = UserRole.valueOf(role.toUpperCase());
 
@@ -173,11 +173,11 @@ public class ManageUserService {
                 .collect(Collectors.toList());
 
         return users.stream()
-                .map(this::convertToConsultantDTO)
+                .map(this::convertToConsultantDetailResponse)
                 .collect(Collectors.toList());
     }
-    private UserDTO convertToUserDTO(User user) {
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+    private UserDetailResponse convertToUserDetailResponse(User user) {
+        UserDetailResponse userDTO = modelMapper.map(user, UserDetailResponse.class);
 
         if (user.getSpecializations() != null && !user.getSpecializations().isEmpty()) {
             List<Long> specializationIds = user.getSpecializations().stream()
@@ -188,8 +188,8 @@ public class ManageUserService {
         return userDTO;
     }
 
-    private ConsultantDTO convertToConsultantDTO(User user) {
-        ConsultantDTO consultantDTO = modelMapper.map(user, ConsultantDTO.class);
+    private ConsultantDetailResponse convertToConsultantDetailResponse(User user) {
+        ConsultantDetailResponse consultantDTO = modelMapper.map(user, ConsultantDetailResponse.class);
 
         if (user.getSpecializations() != null && !user.getSpecializations().isEmpty()) {
             List<String> specialization = user.getSpecializations().stream()
@@ -219,14 +219,14 @@ public class ManageUserService {
         return consultantDTO;
     }
 
-    public List<ConsultantDTO> getConsultantsByService(Long serviceId) {
+    public List<ConsultantDetailResponse> getConsultantsByService(Long serviceId) {
         List<Specialization> specializations = specializationRepository.findByServicesIdAndIsActiveTrue(serviceId);
         List<Long> specializationIds = specializations.stream().map(Specialization::getId).toList();
         List<User> consultants = authenticationRepository.findBySpecializations_IdInAndIsActive(specializationIds, true);
 
         return consultants.stream()
                 .filter(user -> UserRole.CONSULTANT.equals(user.getRole()))
-                .map(this::convertToConsultantDTO)
+                .map(this::convertToConsultantDetailResponse)
                 .collect(Collectors.toList());
     }
 

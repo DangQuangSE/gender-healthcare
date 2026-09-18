@@ -5,7 +5,7 @@ import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.UserProfileUpdateRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.repository.UserRepository;
@@ -38,7 +38,7 @@ public class UserProfileService {
     }
 
     @Transactional
-    public UserDTO updateUserProfile(UserProfileUpdateRequest request) {
+    public UserDetailResponse updateUserProfile(UserProfileUpdateRequest request) {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
@@ -50,19 +50,19 @@ public class UserProfileService {
         if (request.getDateOfBirth() != null) user.setDateOfBirth(request.getDateOfBirth());
 
         User updated = userRepository.save(user);
-        return modelMapper.map(updated, UserDTO.class);
+        return modelMapper.map(updated, UserDetailResponse.class);
     }
 
     @Transactional(readOnly = true)
-    public UserDTO getUserProfile() {
+    public UserDetailResponse getUserProfile() {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
-        return modelMapper.map(user, UserDTO.class);
+        return modelMapper.map(user, UserDetailResponse.class);
     }
 
     @Transactional
-    public UserDTO updateAvatar(MultipartFile file) {
+    public UserDetailResponse updateAvatar(MultipartFile file) {
         Long userId = authUtil.getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.PROFILE_NOT_FOUND));
@@ -71,7 +71,7 @@ public class UserProfileService {
             String imageUrl = imageStorage.uploadImage(file);
             user.setImageUrl(imageUrl);
             User updated = userRepository.save(user);
-            return modelMapper.map(updated, UserDTO.class);
+            return modelMapper.map(updated, UserDetailResponse.class);
         } catch (IOException e) {
             throw new DomainException(ErrorCode.INTERNAL_ERROR, CommonMessages.IMAGE_UPLOAD_FAILED, e);
         }

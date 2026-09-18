@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.scheduling.controller;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCancelRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleConsultantRequest;
-import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
@@ -63,9 +63,9 @@ public class LegacyScheduleController {
 
     @GetMapping("/doctors-working")
     @Operation(summary = SchedulingMessages.GET_WORKING_DOCTORS)
-    public ResponseEntity<List<DoctorWorkingScheduleDTO>> getDoctorsWorkingOnDate(
+    public ResponseEntity<List<DoctorWorkingScheduleResponse>> getDoctorsWorkingOnDate(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<DoctorWorkingScheduleDTO> result = scheduleService.getDoctorsWorkingOnDate(date);
+        List<DoctorWorkingScheduleResponse> result = scheduleService.getDoctorsWorkingOnDate(date);
         return ResponseEntity.ok(result);
     }
 }

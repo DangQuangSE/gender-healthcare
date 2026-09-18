@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.appointment.dto.response;
 
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SimpleRoomResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalResultResponse;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level =  AccessLevel.PRIVATE)
-public class AppointmentDetailDTO {
+public class AppointmentDetailResponse {
     long id;
     long serviceId;
     String serviceName;
@@ -24,6 +24,6 @@ public class AppointmentDetailDTO {
     String joinUrl;
     String startUrl;
     AppointmentStatus status;
-    ResultDTO medicalResult;
-    SimpleRoomDTO room;
+    MedicalResultResponse medicalResult;
+    SimpleRoomResponse room;
 }

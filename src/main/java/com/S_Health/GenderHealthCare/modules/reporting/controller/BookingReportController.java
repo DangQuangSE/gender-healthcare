@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.reporting.controller;
 
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
-import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.reporting.ReportMessages;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
 import com.S_Health.GenderHealthCare.modules.reporting.service.BookingReportService;
@@ -27,7 +27,7 @@ public class BookingReportController {
 
     @GetMapping("/stats")
     @Operation(summary = ReportMessages.GET_BOOKING_STATS)
-    public List<ServiceBookingReportDTO> getStats(
+    public List<ServiceBookingReportResponse> getStats(
             @Valid @ModelAttribute BookingReportQuery request) {
         return bookingReportService.getServiceBookingStats(request);
     }

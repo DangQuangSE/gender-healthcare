@@ -2,7 +2,7 @@ package com.S_Health.GenderHealthCare.modules.user.controller;
 
 import com.S_Health.GenderHealthCare.modules.user.UserMessages;
 import com.S_Health.GenderHealthCare.modules.user.dto.request.UserProfileUpdateRequest;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,22 +27,22 @@ public class LegacyProfileController {
 
     @PutMapping("/profile")
     @Operation(summary = UserMessages.PROFILE_UPDATE_LEGACY)
-    public ResponseEntity<UserDTO> updateProfile(
+    public ResponseEntity<UserDetailResponse> updateProfile(
             @Valid @RequestBody UserProfileUpdateRequest request) {
-        UserDTO updatedUser = userProfileService.updateUserProfile(request);
+        UserDetailResponse updatedUser = userProfileService.updateUserProfile(request);
         return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping
     @Operation(summary = UserMessages.PROFILE_GET_LEGACY)
-    public ResponseEntity<UserDTO> getProfile() {
-        UserDTO user = userProfileService.getUserProfile();
+    public ResponseEntity<UserDetailResponse> getProfile() {
+        UserDetailResponse user = userProfileService.getUserProfile();
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/avatar")
-    public ResponseEntity<UserDTO> updateAvatar(@RequestParam("file") MultipartFile file) {
-        UserDTO updatedUser = userProfileService.updateAvatar(file);
+    public ResponseEntity<UserDetailResponse> updateAvatar(@RequestParam("file") MultipartFile file) {
+        UserDetailResponse updatedUser = userProfileService.updateAvatar(file);
         return ResponseEntity.ok(updatedUser);
     }
 }

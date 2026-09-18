@@ -11,7 +11,7 @@ import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalResult;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalResultResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.ConsultationResultRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.LabTestResultRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.ResultRequest;
@@ -70,7 +70,7 @@ public class MedicalResultService {
      * Lưu kết quả tư vấn khám bệnh
      */
     @Transactional
-    public ResultDTO saveConsultationResult(ConsultationResultRequest request) {
+    public MedicalResultResponse saveConsultationResult(ConsultationResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(request.getAppointmentDetailId())
@@ -98,14 +98,14 @@ public class MedicalResultService {
         // Cập nhật trạng thái appointment
         updateAppointmentStatus(appointmentDetail);
 
-        return mapToFullResultDTO(medicalResult);
+        return mapToFullMedicalResultResponse(medicalResult);
     }
 
     /**
      * Lưu kết quả xét nghiệm
      */
     @Transactional
-    public ResultDTO saveLabTestResult(LabTestResultRequest request) {
+    public MedicalResultResponse saveLabTestResult(LabTestResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(request.getAppointmentDetailId())
@@ -143,16 +143,16 @@ public class MedicalResultService {
         // Cập nhật trạng thái appointment
         updateAppointmentStatus(appointmentDetail);
 
-        return mapToFullResultDTO(medicalResult);
+        return mapToFullMedicalResultResponse(medicalResult);
     }
 
     // === API CŨ - GIỮ LẠI ĐỂ BACKWARD COMPATIBILITY ===
 
     /**
-     * Helper method để map MedicalResult sang ResultDTO với đầy đủ thông tin
+     * Helper method để map MedicalResult sang MedicalResultResponse với đầy đủ thông tin
      */
-    private ResultDTO mapToFullResultDTO(MedicalResult result) {
-        ResultDTO dto = modelMapper.map(result, ResultDTO.class);
+    private MedicalResultResponse mapToFullMedicalResultResponse(MedicalResult result) {
+        MedicalResultResponse dto = modelMapper.map(result, MedicalResultResponse.class);
 
         // Thêm thông tin liên quan
         AppointmentDetail appointmentDetail = result.getAppointmentDetail();
@@ -173,15 +173,15 @@ public class MedicalResultService {
         return dto;
     }
 
-    public ResultDTO getResultById(Long id) {
+    public MedicalResultResponse getResultById(Long id) {
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.RESULT_NOT_FOUND_OR_DELETED));
         ensureCanView(result);
 
-        return mapToFullResultDTO(result);
+        return mapToFullMedicalResultResponse(result);
     }
 
-    public List<ResultDTO> getAllResultsByAppointmentDetail(Long appointmentDetailId) {
+    public List<MedicalResultResponse> getAllResultsByAppointmentDetail(Long appointmentDetailId) {
         AppointmentDetail appointmentDetail = appointmentDetailRepository.findById(appointmentDetailId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.APPOINTMENT_DETAIL_NOT_FOUND));
         ensureCanView(appointmentDetail);
@@ -190,12 +190,12 @@ public class MedicalResultService {
                 .findAllByAppointmentDetailIdAndIsActiveTrue(appointmentDetailId);
 
         return results.stream()
-                .map(this::mapToFullResultDTO)
+                .map(this::mapToFullMedicalResultResponse)
                 .toList();
     }
 
     @Transactional
-    public ResultDTO updateResult(Long id, ResultRequest request) {
+    public MedicalResultResponse updateResult(Long id, ResultRequest request) {
         User writer = authenticationRepository.findById(authUtil.getCurrentUserId())
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.WRITER_NOT_FOUND));
         MedicalResult result = medicalResultRepository.findByIdAndIsActiveTrue(id)
@@ -207,7 +207,7 @@ public class MedicalResultService {
         result.setTreatmentPlan(request.getTreatmentPlan());
 
         medicalResultRepository.save(result);
-        return modelMapper.map(result, ResultDTO.class);
+        return modelMapper.map(result, MedicalResultResponse.class);
     }
 
     @Transactional

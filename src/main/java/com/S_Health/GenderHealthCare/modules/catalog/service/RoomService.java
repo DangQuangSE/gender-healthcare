@@ -7,11 +7,11 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 
 
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDetailResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDetailResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.repository.RoomConsultantRepository;
@@ -49,7 +49,7 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomDTO createRoom(RoomRequest request) {
+    public RoomDetailResponse createRoom(RoomRequest request) {
         // Validate request
         if (roomRepository.existsByNameAndIsActiveTrue(request.getName())) {
             throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.ROOM_NAME_EXISTS);
@@ -68,13 +68,13 @@ public class RoomService {
         return convertToDTO(savedRoom);
     }
 
-    public List<RoomDTO> getAllRooms() {
+    public List<RoomDetailResponse> getAllRooms() {
         return roomRepository.findByIsActiveTrue().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<RoomDTO> getRoomsBySpecialization(Long specializationId) {
+    public List<RoomDetailResponse> getRoomsBySpecialization(Long specializationId) {
         Specialization specialization = specializationRepository.findById(specializationId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
@@ -83,7 +83,7 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    public RoomDTO getRoomById(Long roomId) {
+    public RoomDetailResponse getRoomById(Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
@@ -95,7 +95,7 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomDTO updateRoom(Long roomId, RoomRequest request) {
+    public RoomDetailResponse updateRoom(Long roomId, RoomRequest request) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
@@ -146,7 +146,7 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomConsultantDTO addConsultantToRoom(Long roomId, RoomConsultantRequest request) {
+    public RoomConsultantDetailResponse addConsultantToRoom(Long roomId, RoomConsultantRequest request) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
@@ -183,7 +183,7 @@ public class RoomService {
 
         RoomConsultant savedAssignment = roomConsultantRepository.save(roomConsultant);
 
-        return convertToConsultantDTO(savedAssignment);
+        return convertToConsultantDetailResponse(savedAssignment);
     }
 
     @Transactional
@@ -204,30 +204,30 @@ public class RoomService {
         roomConsultantRepository.save(assignment);
     }
 
-    public List<RoomConsultantDTO> getConsultantsInRoom(Long roomId) {
+    public List<RoomConsultantDetailResponse> getConsultantsInRoom(Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.ROOM_NOT_FOUND));
 
         return roomConsultantRepository.findByRoomAndIsActiveTrue(room).stream()
-                .map(this::convertToConsultantDTO)
+                .map(this::convertToConsultantDetailResponse)
                 .collect(Collectors.toList());
     }
 
-    private RoomDTO convertToDTO(Room room) {
-        RoomDTO dto = modelMapper.map(room, RoomDTO.class);
+    private RoomDetailResponse convertToDTO(Room room) {
+        RoomDetailResponse dto = modelMapper.map(room, RoomDetailResponse.class);
 
         // Get active consultants
-        List<RoomConsultantDTO> consultants = roomConsultantRepository.findByRoomAndIsActiveTrue(room).stream()
-                .map(this::convertToConsultantDTO)
+        List<RoomConsultantDetailResponse> consultants = roomConsultantRepository.findByRoomAndIsActiveTrue(room).stream()
+                .map(this::convertToConsultantDetailResponse)
                 .collect(Collectors.toList());
 
         dto.setConsultants(consultants);
         return dto;
     }
 
-    private RoomConsultantDTO convertToConsultantDTO(RoomConsultant roomConsultant) {
-        RoomConsultantDTO dto = modelMapper.map(roomConsultant, RoomConsultantDTO.class);
-        dto.setConsultant(modelMapper.map(roomConsultant.getConsultant(), UserDTO.class));
+    private RoomConsultantDetailResponse convertToConsultantDetailResponse(RoomConsultant roomConsultant) {
+        RoomConsultantDetailResponse dto = modelMapper.map(roomConsultant, RoomConsultantDetailResponse.class);
+        dto.setConsultant(modelMapper.map(roomConsultant.getConsultant(), UserDetailResponse.class));
         return dto;
     }
 }

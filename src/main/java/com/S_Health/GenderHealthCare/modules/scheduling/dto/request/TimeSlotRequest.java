@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TimeSlotDTO {
+public class TimeSlotRequest {
     LocalTime startTime;
     LocalTime endTime;
 }

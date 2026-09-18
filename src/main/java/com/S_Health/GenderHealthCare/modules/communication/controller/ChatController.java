@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.communication.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
@@ -35,32 +35,32 @@ public class ChatController {
 
     @PostMapping("/sessions")
     @Operation(summary = CommunicationMessages.START_CHAT)
-    public ChatSessionDTO start(@Valid @RequestBody StartChatRequest request) {
+    public ChatSessionResponse start(@Valid @RequestBody StartChatRequest request) {
         return chatService.startChatSession(request);
     }
 
     @PostMapping("/messages")
     @Operation(summary = CommunicationMessages.SEND_CHAT_MESSAGE)
-    public ChatMessageDTO send(@Valid @RequestBody SendMessageRequest request) {
+    public ChatMessageResponse send(@Valid @RequestBody SendMessageRequest request) {
         return chatService.sendMessage(request);
     }
 
     @PostMapping("/sessions/{sessionId}/join")
     @Operation(summary = CommunicationMessages.JOIN_CHAT)
-    public ChatSessionDTO join(@PathVariable String sessionId) {
+    public ChatSessionResponse join(@PathVariable String sessionId) {
         return chatService.joinChatSession(sessionId);
     }
 
     @GetMapping("/sessions")
     @Operation(summary = CommunicationMessages.GET_CHAT_SESSIONS)
-    public List<ChatSessionDTO> getSessions(
+    public List<ChatSessionResponse> getSessions(
             @Valid @ModelAttribute ChatSessionQuery query) {
         return chatService.getChatSessionsForStaff(query.getStatus());
     }
 
     @GetMapping("/sessions/{sessionId}/messages")
     @Operation(summary = CommunicationMessages.GET_CHAT_MESSAGES)
-    public List<ChatMessageDTO> getMessages(@PathVariable String sessionId) {
+    public List<ChatMessageResponse> getMessages(@PathVariable String sessionId) {
         return chatService.getSessionMessages(sessionId);
     }
 

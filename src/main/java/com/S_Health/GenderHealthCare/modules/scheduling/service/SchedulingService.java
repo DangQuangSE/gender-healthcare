@@ -7,7 +7,7 @@ import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCanc
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleConsultantRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleServiceRequest;
-import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
@@ -64,7 +64,7 @@ public class SchedulingService {
         return scheduleService.cancelSchedule(request);
     }
 
-    public List<DoctorWorkingScheduleDTO> getDoctorsWorkingOnDate(WorkingDoctorRequest request) {
+    public List<DoctorWorkingScheduleResponse> getDoctorsWorkingOnDate(WorkingDoctorRequest request) {
         return scheduleService.getDoctorsWorkingOnDate(request.getDate());
     }
 

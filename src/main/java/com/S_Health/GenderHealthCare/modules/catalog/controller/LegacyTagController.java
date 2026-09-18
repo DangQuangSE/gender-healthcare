@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,25 +28,25 @@ public class LegacyTagController {
 
     @PostMapping
     @Operation(summary = CatalogConstants.CREATE_TAG)
-    public ResponseEntity<TagDTO> createTag(@Valid @RequestBody TagRequest request) {
+    public ResponseEntity<TagDetailResponse> createTag(@Valid @RequestBody TagRequest request) {
         return ResponseEntity.ok(tagService.createTag(request));
     }
 
     @GetMapping
     @Operation(summary = CatalogConstants.GET_TAGS)
-    public ResponseEntity<List<TagDTO>> getAllTags() {
+    public ResponseEntity<List<TagDetailResponse>> getAllTags() {
         return ResponseEntity.ok(tagService.getAllTags());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = CatalogConstants.GET_TAG)
-    public ResponseEntity<TagDTO> getTagById(@PathVariable Long id) {
+    public ResponseEntity<TagDetailResponse> getTagById(@PathVariable Long id) {
         return ResponseEntity.ok(tagService.getTagById(id));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = CatalogConstants.UPDATE_TAG)
-    public ResponseEntity<TagDTO> updateTag(
+    public ResponseEntity<TagDetailResponse> updateTag(
             @PathVariable Long id,
             @Valid @RequestBody TagRequest request) {
         return ResponseEntity.ok(tagService.updateTag(id, request));

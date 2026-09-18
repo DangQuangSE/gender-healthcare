@@ -2,7 +2,7 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.service.SpecializationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,31 +29,31 @@ public class LegacySpecializationController {
 
     @GetMapping
     @Operation(summary = CatalogConstants.GET_SPECIALIZATIONS)
-    public ResponseEntity<List<SpecializationDTO>> getAllSpecializations() {
+    public ResponseEntity<List<SpecializationDetailResponse>> getAllSpecializations() {
         return ResponseEntity.ok(specializationService.getAllSpecializations());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = CatalogConstants.GET_SPECIALIZATION)
-    public ResponseEntity<SpecializationDTO> getSpecializationById(@PathVariable Long id) {
+    public ResponseEntity<SpecializationDetailResponse> getSpecializationById(@PathVariable Long id) {
         return ResponseEntity.ok(specializationService.getSpecializationById(id));
     }
 
     @GetMapping("/search")
     @Operation(summary = CatalogConstants.GET_SPECIALIZATIONS)
-    public ResponseEntity<List<SpecializationDTO>> searchSpecializationsByName(@RequestParam String name) {
+    public ResponseEntity<List<SpecializationDetailResponse>> searchSpecializationsByName(@RequestParam String name) {
         return ResponseEntity.ok(specializationService.searchSpecializationsByName(name));
     }
 
     @PostMapping
     @Operation(summary = CatalogConstants.CREATE_SPECIALIZATION)
-    public ResponseEntity<SpecializationDTO> createSpecialization(@Valid @RequestBody SpecializationRequest request) {
+    public ResponseEntity<SpecializationDetailResponse> createSpecialization(@Valid @RequestBody SpecializationRequest request) {
         return ResponseEntity.ok(specializationService.createSpecialization(request));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = CatalogConstants.UPDATE_SPECIALIZATION)
-    public ResponseEntity<SpecializationDTO> updateSpecialization(
+    public ResponseEntity<SpecializationDetailResponse> updateSpecialization(
             @PathVariable Long id,
             @Valid @RequestBody SpecializationRequest request) {
         return ResponseEntity.ok(specializationService.updateSpecialization(id, request));

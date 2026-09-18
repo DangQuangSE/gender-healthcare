@@ -1,11 +1,11 @@
 package com.S_Health.GenderHealthCare.modules.catalog.mapper;
 
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDetailResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboResponse;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultantDetailResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomConsultantRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.RoomRequest;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
@@ -37,7 +37,7 @@ public class CatalogMapper {
         this.userMapper = userMapper;
     }
 
-    public ServiceResponse toServiceResponse(ServiceDTO source) {
+    public ServiceResponse toServiceResponse(ServiceDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -60,12 +60,12 @@ public class CatalogMapper {
                 .build();
     }
 
-    public ServiceDTO toLegacyServiceDTO(ServiceCreateRequest source) {
+    public ServiceDetailResponse toLegacyServiceDetailResponse(ServiceCreateRequest source) {
         if (source == null) {
             return null;
         }
 
-        ServiceDTO target = new ServiceDTO();
+        ServiceDetailResponse target = new ServiceDetailResponse();
         target.setName(source.getName());
         target.setDescription(source.getDescription());
         target.setDuration(source.getDuration());
@@ -78,12 +78,12 @@ public class CatalogMapper {
         return target;
     }
 
-    public ServiceDTO toLegacyServiceDTO(ServiceUpdateRequest source) {
+    public ServiceDetailResponse toLegacyServiceDetailResponse(ServiceUpdateRequest source) {
         if (source == null) {
             return null;
         }
 
-        ServiceDTO target = new ServiceDTO();
+        ServiceDetailResponse target = new ServiceDetailResponse();
         target.setName(source.getName());
         target.setDescription(source.getDescription());
         target.setDuration(source.getDuration());
@@ -149,7 +149,7 @@ public class CatalogMapper {
         return target;
     }
 
-    public List<ServiceResponse> toServiceResponses(List<ServiceDTO> sources) {
+    public List<ServiceResponse> toServiceResponses(List<ServiceDetailResponse> sources) {
         return sources.stream().map(this::toServiceResponse).toList();
     }
 
@@ -163,7 +163,7 @@ public class CatalogMapper {
                 toServiceResponses(source.getSubServices()));
     }
 
-    public SpecializationResponse toSpecializationResponse(SpecializationDTO source) {
+    public SpecializationResponse toSpecializationResponse(SpecializationDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -178,14 +178,14 @@ public class CatalogMapper {
                 .build();
     }
 
-    public List<SpecializationResponse> toSpecializationResponses(List<SpecializationDTO> sources) {
+    public List<SpecializationResponse> toSpecializationResponses(List<SpecializationDetailResponse> sources) {
         if (sources == null) {
             return null;
         }
         return sources.stream().map(this::toSpecializationResponse).toList();
     }
 
-    public RoomResponse toRoomResponse(RoomDTO source) {
+    public RoomResponse toRoomResponse(RoomDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -202,11 +202,11 @@ public class CatalogMapper {
                 .build();
     }
 
-    public List<RoomResponse> toRoomResponses(List<RoomDTO> sources) {
+    public List<RoomResponse> toRoomResponses(List<RoomDetailResponse> sources) {
         return sources.stream().map(this::toRoomResponse).toList();
     }
 
-    public RoomConsultantResponse toRoomConsultantResponse(RoomConsultantDTO source) {
+    public RoomConsultantResponse toRoomConsultantResponse(RoomConsultantDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -222,14 +222,14 @@ public class CatalogMapper {
                 .build();
     }
 
-    public List<RoomConsultantResponse> toRoomConsultantResponses(List<RoomConsultantDTO> sources) {
+    public List<RoomConsultantResponse> toRoomConsultantResponses(List<RoomConsultantDetailResponse> sources) {
         if (sources == null) {
             return null;
         }
         return sources.stream().map(this::toRoomConsultantResponse).toList();
     }
 
-    public TagResponse toTagResponse(TagDTO source) {
+    public TagResponse toTagResponse(TagDetailResponse source) {
         if (source == null) {
             return null;
         }
@@ -241,7 +241,7 @@ public class CatalogMapper {
                 .build();
     }
 
-    public List<TagResponse> toTagResponses(List<TagDTO> sources) {
+    public List<TagResponse> toTagResponses(List<TagDetailResponse> sources) {
         return sources.stream().map(this::toTagResponse).toList();
     }
 

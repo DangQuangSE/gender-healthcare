@@ -5,8 +5,8 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
 import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
 
 
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDTO;
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDetailResponse;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
@@ -38,13 +38,13 @@ public class ServiceManagementService {
         this.modelMapper = modelMapper;
     }
 
-    public List<ServiceDTO> getAllServices() {
+    public List<ServiceDetailResponse> getAllServices() {
         return serviceRepository.findByIsActiveTrue().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public ServiceDTO getServiceById(Long id) {
+    public ServiceDetailResponse getServiceById(Long id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
@@ -55,13 +55,13 @@ public class ServiceManagementService {
         return convertToDTO(service);
     }
 
-    public List<ServiceDTO> searchServicesByName(String name) {
+    public List<ServiceDetailResponse> searchServicesByName(String name) {
         return serviceRepository.findByNameContainingIgnoreCaseAndIsActiveTrue(name).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ServiceDTO> getServicesBySpecialization(Long specializationId) {
+    public List<ServiceDetailResponse> getServicesBySpecialization(Long specializationId) {
         Specialization specialization = specializationRepository.findById(specializationId)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SPECIALIZATION_NOT_FOUND.formatted(specializationId)));
 
@@ -75,7 +75,7 @@ public class ServiceManagementService {
     }
 
     @Transactional
-    public ServiceDTO createService(ServiceDTO serviceDTO) {
+    public ServiceDetailResponse createService(ServiceDetailResponse serviceDTO) {
         // Kiểm tra tên dịch vụ có bị trùng không
         if (serviceRepository.existsByNameAndIsActiveTrue(serviceDTO.getName().trim())) {
             throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.SERVICE_NAME_EXISTS);
@@ -115,7 +115,7 @@ public class ServiceManagementService {
     }
 
     @Transactional
-    public ServiceDTO updateService(Long id, ServiceDTO serviceDTO) {
+    public ServiceDetailResponse updateService(Long id, ServiceDetailResponse serviceDTO) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
@@ -177,7 +177,7 @@ public class ServiceManagementService {
     }
 
     @Transactional
-    public ServiceDTO activateService(Long id) {
+    public ServiceDetailResponse activateService(Long id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
@@ -187,7 +187,7 @@ public class ServiceManagementService {
     }
 
     @Transactional
-    public ServiceDTO deactivateService(Long id) {
+    public ServiceDetailResponse deactivateService(Long id) {
         Service service = serviceRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.SERVICE_NOT_FOUND.formatted(id)));
 
@@ -197,7 +197,7 @@ public class ServiceManagementService {
     }
 
     @Transactional
-    public ComboResponse createComboService(ServiceDTO serviceDTO) {
+    public ComboResponse createComboService(ServiceDetailResponse serviceDTO) {
         // Kiểm tra tên dịch vụ combo có bị trùng không
         if (serviceRepository.existsByNameAndIsActiveTrue(serviceDTO.getName().trim())) {
             throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.COMBO_NAME_EXISTS);
@@ -241,7 +241,7 @@ public class ServiceManagementService {
 
         // Tính tổng giá và tạo các ComboItem
         List<ComboItem> comboItems = new ArrayList<>();
-        List<ServiceDTO> subServiceDTOs = new ArrayList<>();
+        List<ServiceDetailResponse> subServiceDetailResponses = new ArrayList<>();
         double totalPrice = 0.0;
 
         for (Long subServiceId : serviceDTO.getSubServiceIds()) {
@@ -259,7 +259,7 @@ public class ServiceManagementService {
             comboItems.add(comboItem);
 
             totalPrice += subService.getPrice();
-            subServiceDTOs.add(convertToDTO(subService));
+            subServiceDetailResponses.add(convertToDTO(subService));
         }
 
         // Lưu các ComboItem
@@ -270,16 +270,16 @@ public class ServiceManagementService {
         savedComboService.setPrice(finalPrice);
         savedComboService = serviceRepository.save(savedComboService);
 
-        return new ComboResponse(convertToDTO(savedComboService), subServiceDTOs);
+        return new ComboResponse(convertToDTO(savedComboService), subServiceDetailResponses);
     }
 
-    private ServiceDTO convertToDTO(Service service) {
-        ServiceDTO dto = modelMapper.map(service, ServiceDTO.class);
+    private ServiceDetailResponse convertToDTO(Service service) {
+        ServiceDetailResponse dto = modelMapper.map(service, ServiceDetailResponse.class);
 
         // Map danh sách chuyên môn
         if (service.getSpecializations() != null && !service.getSpecializations().isEmpty()) {
-            List<SpecializationDTO> specializationDTOs = service.getSpecializations().stream()
-                    .map(specialization -> modelMapper.map(specialization, SpecializationDTO.class))
+            List<SpecializationDetailResponse> specializationDTOs = service.getSpecializations().stream()
+                    .map(specialization -> modelMapper.map(specialization, SpecializationDetailResponse.class))
                     .collect(Collectors.toList());
 
             dto.setSpecializations(specializationDTOs);

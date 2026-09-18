@@ -7,8 +7,8 @@ import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 import com.S_Health.GenderHealthCare.modules.catalog.domain.Service;
 import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
 
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDTO;
-import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.SlotDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ServiceDetailResponse;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.SlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleServiceRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlotResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
@@ -63,7 +63,7 @@ public class ServiceSlotPoolService {
         //gom nhóm theo data và startTime
         Map<LocalDateTime, List<ConsultantSlot>> slotMap = consultantSlots.stream()
                 .collect(Collectors.groupingBy(slot -> LocalDateTime.of(slot.getDate(), slot.getStartTime())));
-        Map<LocalDate, List<SlotDTO>> dailySlotMap = new HashMap<>();
+        Map<LocalDate, List<SlotResponse>> dailySlotMap = new HashMap<>();
         for (Map.Entry<LocalDateTime, List<ConsultantSlot>> entry : slotMap.entrySet()) {
             LocalDateTime dt = entry.getKey();
             LocalDate date = dt.toLocalDate();
@@ -92,7 +92,7 @@ public class ServiceSlotPoolService {
             serviceSlotPool.setIsActive(available > 0);
             serviceSlotPoolRepository.save(serviceSlotPool);
             // 7. Build DTO trả ra
-            SlotDTO slotDTO = new SlotDTO(
+            SlotResponse slotDTO = new SlotResponse(
                     serviceSlotPool.getId(),
                     date,
                     start,
@@ -108,7 +108,7 @@ public class ServiceSlotPoolService {
                 .map(e -> new WorkDateSlotResponse(e.getKey(), e.getValue()))
                 .sorted(Comparator.comparing(WorkDateSlotResponse::getWorkDate))
                 .toList();
-        ServiceDTO serviceDTO = modelMapper.map(service, ServiceDTO.class);
+        ServiceDetailResponse serviceDTO = modelMapper.map(service, ServiceDetailResponse.class);
         return new ScheduleServiceResponse(serviceDTO, schedule);
     }
 

@@ -3,8 +3,8 @@ package com.S_Health.GenderHealthCare.modules.medical.controller;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
 
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoQuery;
@@ -42,11 +42,11 @@ public class LegacyMedicalProfileController {
     // API cho bác sĩ xem lịch sử bệnh nhân (simplified)
     @GetMapping("/patient/{patientId}/history")
     @Operation(summary = MedicalMessages.GET_PATIENT_HISTORY)
-    public ResponseEntity<PatientMedicalHistoryDTO> getPatientHistory(
+    public ResponseEntity<PatientMedicalHistoryResponse> getPatientHistory(
             @PathVariable Long patientId,
             @Valid @ModelAttribute PatientHistoryQuery request) {
 
-        PatientMedicalHistoryDTO history = medicalProfileService
+        PatientMedicalHistoryResponse history = medicalProfileService
                 .getPatientHistory(patientId, request);
         return ResponseEntity.ok(history);
     }

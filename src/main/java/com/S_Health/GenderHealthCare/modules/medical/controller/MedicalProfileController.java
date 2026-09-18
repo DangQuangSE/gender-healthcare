@@ -1,14 +1,14 @@
 package com.S_Health.GenderHealthCare.modules.medical.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.PatientMedicalHistoryResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoUpdateRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalInfoResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MedicalInfoQuery;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.MyMedicalProfileQuery;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.PatientHistoryQuery;
 import com.S_Health.GenderHealthCare.modules.medical.mapper.MedicalMapper;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalProfileResponse;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,14 +36,14 @@ public class MedicalProfileController {
 
     @GetMapping("/me")
     @Operation(summary = MedicalMessages.GET_MY_PROFILE)
-    public ApiResponse<MedicalProfileDTO> getMyProfile(
+    public ApiResponse<MedicalProfileResponse> getMyProfile(
             @Valid @ModelAttribute MyMedicalProfileQuery request) {
         return ApiResponse.success(medicalProfileService.getMyProfile(request), null);
     }
 
     @GetMapping("/patients/{patientId}/history")
     @Operation(summary = MedicalMessages.GET_PATIENT_HISTORY)
-    public ApiResponse<PatientMedicalHistoryDTO> getPatientHistory(
+    public ApiResponse<PatientMedicalHistoryResponse> getPatientHistory(
             @PathVariable Long patientId,
             @Valid @ModelAttribute PatientHistoryQuery request) {
         return ApiResponse.success(

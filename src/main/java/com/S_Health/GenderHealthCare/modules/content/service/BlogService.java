@@ -7,10 +7,10 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.Tag;
 import com.S_Health.GenderHealthCare.modules.content.enums.BlogStatus;
 
 
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.content.dto.request.BlogRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
-import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryDTO;
+import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
 import com.S_Health.GenderHealthCare.repository.BlogRepository;
@@ -71,7 +71,7 @@ public class BlogService {
         blogRepository.save(blog);
     }
 
-    public List<BlogSummaryDTO> getAllBlogSummaries() {
+    public List<BlogSummaryResponse> getAllBlogSummaries() {
         return blogRepository.findAllBlogSummaries();
     }
 
@@ -125,7 +125,7 @@ public class BlogService {
         blogRepository.save(blog);
         // 4. Lưu vào DB
         BlogResponse blogResponse = modelMapper.map(blog, BlogResponse.class);
-        blogResponse.setAuthor(modelMapper.map(author, UserDTO.class));
+        blogResponse.setAuthor(modelMapper.map(author, UserDetailResponse.class));
         return blogResponse;
     }
 
@@ -135,7 +135,7 @@ public class BlogService {
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
             if (blog.getAuthor() != null) {
-                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             }
             return response;
         });
@@ -155,7 +155,7 @@ public class BlogService {
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
             if (blog.getAuthor() != null) {
-                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             }
             return response;
         });
@@ -171,7 +171,7 @@ public class BlogService {
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
             if (blog.getAuthor() != null) {
-                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             }
             return response;
         });
@@ -188,7 +188,7 @@ public class BlogService {
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
             if (blog.getAuthor() != null) {
-                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             }
             return response;
         });
@@ -241,7 +241,7 @@ public class BlogService {
         blogRepository.save(blog);
 
         BlogResponse blogResponse = modelMapper.map(blog, BlogResponse.class);
-        blogResponse.setAuthor(modelMapper.map(currentUser, UserDTO.class));
+        blogResponse.setAuthor(modelMapper.map(currentUser, UserDetailResponse.class));
         return blogResponse;
     }
 
@@ -285,7 +285,7 @@ public class BlogService {
 
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
-            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             return response;
         });
     }
@@ -296,7 +296,7 @@ public class BlogService {
 
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         if (blog.getAuthor() != null) {
-            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
         }
         return response;
     }
@@ -310,7 +310,7 @@ public class BlogService {
 
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
-            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             return response;
         });
     }
@@ -328,7 +328,7 @@ public class BlogService {
         return blogs.map(blog -> {
             BlogResponse response = modelMapper.map(blog, BlogResponse.class);
             if (blog.getAuthor() != null) {
-                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+                response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
             }
             return response;
         });
@@ -352,7 +352,7 @@ public class BlogService {
         blogRepository.save(blog);
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         if (blog.getAuthor() != null) {
-            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
         }
         return response;
     }
@@ -375,7 +375,7 @@ public class BlogService {
         blogRepository.save(blog);
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         if (blog.getAuthor() != null) {
-            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
         }
         return response;
     }
@@ -398,7 +398,7 @@ public class BlogService {
 
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
         if (blog.getAuthor() != null) {
-            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+            response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
         }
         return response;
     }
@@ -420,7 +420,7 @@ public class BlogService {
         log.info(ContentMessages.BLOG_SUBMITTED_LOG, blogId, currentUser.getId());
 
         BlogResponse response = modelMapper.map(blog, BlogResponse.class);
-        response.setAuthor(modelMapper.map(blog.getAuthor(), UserDTO.class));
+        response.setAuthor(modelMapper.map(blog.getAuthor(), UserDetailResponse.class));
         return response;
     }
 

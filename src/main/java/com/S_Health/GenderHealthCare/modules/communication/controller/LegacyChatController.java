@@ -2,8 +2,8 @@ package com.S_Health.GenderHealthCare.modules.communication.controller;
 
 
 
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageDTO;
-import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionDTO;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatMessageResponse;
+import com.S_Health.GenderHealthCare.modules.communication.dto.response.ChatSessionResponse;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessageRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.ChatReaderRequest;
@@ -32,41 +32,41 @@ public class LegacyChatController {
 
     @PostMapping("/start")
     @Operation(summary = CommunicationMessages.START_CHAT)
-    public ResponseEntity<ChatSessionDTO> startChatSession(@Valid @RequestBody StartChatRequest request) {
-        ChatSessionDTO session = chatService.startChatSession(request);
+    public ResponseEntity<ChatSessionResponse> startChatSession(@Valid @RequestBody StartChatRequest request) {
+        ChatSessionResponse session = chatService.startChatSession(request);
         return ResponseEntity.ok(session);
     }
 
     @PostMapping("/send")
     @Operation(summary = CommunicationMessages.SEND_CHAT_MESSAGE)
-    public ResponseEntity<ChatMessageDTO> sendMessage(@Valid @RequestBody SendMessageRequest request) {
-        ChatMessageDTO message = chatService.sendMessage(request);
+    public ResponseEntity<ChatMessageResponse> sendMessage(@Valid @RequestBody SendMessageRequest request) {
+        ChatMessageResponse message = chatService.sendMessage(request);
         return ResponseEntity.ok(message);
     }
 
     @PostMapping("/join/{sessionId}")
     @Operation(summary = CommunicationMessages.JOIN_CHAT)
-    public ResponseEntity<ChatSessionDTO> joinChatSession(@PathVariable String sessionId) {
-        ChatSessionDTO session = chatService.joinChatSession(sessionId);
+    public ResponseEntity<ChatSessionResponse> joinChatSession(@PathVariable String sessionId) {
+        ChatSessionResponse session = chatService.joinChatSession(sessionId);
         return ResponseEntity.ok(session);
     }
 
     @GetMapping("/sessions")
     @Operation(summary = CommunicationMessages.GET_CHAT_SESSIONS)
-    public ResponseEntity<List<ChatSessionDTO>> getChatSessions(
+    public ResponseEntity<List<ChatSessionResponse>> getChatSessions(
             @Parameter(
                 description = CommunicationMessages.CHAT_STATUS_FILTER_DESCRIPTION,
                 example = "WAITING"
             )
             @RequestParam(required = false) String status) {
-        List<ChatSessionDTO> sessions = chatService.getChatSessionsForStaff(status);
+        List<ChatSessionResponse> sessions = chatService.getChatSessionsForStaff(status);
         return ResponseEntity.ok(sessions);
     }
 
     @GetMapping("/sessions/{sessionId}/messages")
     @Operation(summary = CommunicationMessages.GET_CHAT_MESSAGES)
-    public ResponseEntity<List<ChatMessageDTO>> getSessionMessages(@PathVariable String sessionId) {
-        List<ChatMessageDTO> messages = chatService.getSessionMessages(sessionId);
+    public ResponseEntity<List<ChatMessageResponse>> getSessionMessages(@PathVariable String sessionId) {
+        List<ChatMessageResponse> messages = chatService.getSessionMessages(sessionId);
         return ResponseEntity.ok(messages);
     }
 

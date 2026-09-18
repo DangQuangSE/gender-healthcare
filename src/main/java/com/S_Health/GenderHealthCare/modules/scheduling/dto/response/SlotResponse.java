@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SlotDTO {
+public class SlotResponse {
     Long slotId;
     LocalDate date;
     LocalTime startTime;

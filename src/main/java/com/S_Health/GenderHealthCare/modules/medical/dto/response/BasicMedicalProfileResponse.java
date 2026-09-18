@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BasicMedicalProfileDTO {
+public class BasicMedicalProfileResponse {
     String allergies;                    // Dị ứng thuốc/thực phẩm
     String familyHistory;                // Tiền sử gia đình
     String chronicConditions;            // Bệnh mãn tính

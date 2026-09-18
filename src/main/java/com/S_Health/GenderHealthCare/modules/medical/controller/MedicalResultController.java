@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.medical.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.modules.medical.dto.response.ResultDTO;
+import com.S_Health.GenderHealthCare.modules.medical.dto.response.MedicalResultResponse;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.ConsultationResultRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.LabTestResultRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.ResultRequest;
@@ -31,32 +31,32 @@ public class MedicalResultController {
 
     @PostMapping("/consultations")
     @Operation(summary = MedicalMessages.CREATE_CONSULTATION_RESULT)
-    public ApiResponse<ResultDTO> createConsultationResult(
+    public ApiResponse<MedicalResultResponse> createConsultationResult(
             @Valid @RequestBody ConsultationResultRequest request) {
         return ApiResponse.success(medicalResultService.saveConsultationResult(request), null);
     }
 
     @PostMapping("/lab-tests")
     @Operation(summary = MedicalMessages.CREATE_LAB_RESULT)
-    public ApiResponse<ResultDTO> createLabTestResult(
+    public ApiResponse<MedicalResultResponse> createLabTestResult(
             @Valid @RequestBody LabTestResultRequest request) {
         return ApiResponse.success(medicalResultService.saveLabTestResult(request), null);
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<ResultDTO> getResultById(@PathVariable Long id) {
+    public ApiResponse<MedicalResultResponse> getResultById(@PathVariable Long id) {
         return ApiResponse.success(medicalResultService.getResultById(id), null);
     }
 
     @GetMapping("/appointment-details/{id}")
-    public ApiResponse<List<ResultDTO>> getResultsByAppointmentDetail(@PathVariable Long id) {
+    public ApiResponse<List<MedicalResultResponse>> getResultsByAppointmentDetail(@PathVariable Long id) {
         return ApiResponse.success(
                 medicalResultService.getAllResultsByAppointmentDetail(id),
                 null);
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<ResultDTO> updateResult(
+    public ApiResponse<MedicalResultResponse> updateResult(
             @PathVariable Long id,
             @Valid @RequestBody ResultRequest request) {
         return ApiResponse.success(medicalResultService.updateResult(id, request), null);

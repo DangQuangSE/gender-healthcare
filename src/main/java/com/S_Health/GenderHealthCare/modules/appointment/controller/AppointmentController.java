@@ -1,8 +1,8 @@
 package com.S_Health.GenderHealthCare.modules.appointment.controller;
 
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryResponse;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.AppointmentScheduleQuery;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.AppointmentStatusQuery;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.AppointmentDetailStatusRequest;
@@ -40,13 +40,13 @@ public class AppointmentController {
 
     @GetMapping("/{id}")
     @Operation(summary = AppointmentMessages.GET_APPOINTMENT)
-    public ApiResponse<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
+    public ApiResponse<AppointmentResponse> getAppointmentById(@PathVariable Long id) {
         return ApiResponse.success(appointmentQueryService.getAppointmentById(id), null);
     }
 
     @GetMapping("/consultant-schedule")
     @Operation(summary = AppointmentMessages.GET_CONSULTANT_SCHEDULE)
-    public ApiResponse<List<AppointmentDTO>> getMySchedule(
+    public ApiResponse<List<AppointmentResponse>> getMySchedule(
             @Valid @ModelAttribute AppointmentScheduleQuery request) {
         return ApiResponse.success(
                 appointmentQueryService.getAppointmentsForConsultantOnDateByDetailStatus(request),
@@ -55,14 +55,14 @@ public class AppointmentController {
 
     @GetMapping
     @Operation(summary = AppointmentMessages.GET_BY_STATUS)
-    public ApiResponse<List<AppointmentDTO>> getAppointmentsByStatus(
+    public ApiResponse<List<AppointmentResponse>> getAppointmentsByStatus(
             @Valid @ModelAttribute AppointmentStatusQuery request) {
         return ApiResponse.success(appointmentQueryService.getAppointmentsByStatus(request.getStatus()), null);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = AppointmentMessages.UPDATE_APPOINTMENT)
-    public ApiResponse<AppointmentDTO> updateAppointment(
+    public ApiResponse<AppointmentResponse> updateAppointment(
             @PathVariable Long id,
             @Valid @RequestBody UpdateAppointmentRequest request) {
         return ApiResponse.success(appointmentService.updateAppointment(id, request), null);
@@ -91,7 +91,7 @@ public class AppointmentController {
 
     @GetMapping("/{appointmentId}/history")
     @Operation(summary = AppointmentMessages.GET_PATIENT_HISTORY)
-    public ApiResponse<PatientHistoryDTO> getPatientHistory(@PathVariable Long appointmentId) {
+    public ApiResponse<PatientHistoryResponse> getPatientHistory(@PathVariable Long appointmentId) {
         return ApiResponse.success(
                 appointmentQueryService.getPatientHistoryFromAppointment(appointmentId),
                 null);

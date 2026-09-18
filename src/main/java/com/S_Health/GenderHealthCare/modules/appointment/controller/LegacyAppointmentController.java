@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.appointment.controller;
 
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDTO;
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.PatientHistoryResponse;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.UpdateAppointmentRequest;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.AppointmentScheduleQuery;
@@ -42,27 +42,27 @@ public class LegacyAppointmentController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
+    public ResponseEntity<AppointmentResponse> getAppointmentById(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentQueryService.getAppointmentById(id));
     }
 
     @GetMapping("/my-schedule")
     @Operation(summary = AppointmentMessages.GET_CONSULTANT_SCHEDULE)
-    public ResponseEntity<List<AppointmentDTO>> getMySchedule(
+    public ResponseEntity<List<AppointmentResponse>> getMySchedule(
             @Valid @ModelAttribute AppointmentScheduleQuery request) {
-        List<AppointmentDTO> appointments = appointmentQueryService
+        List<AppointmentResponse> appointments = appointmentQueryService
                 .getAppointmentsForConsultantOnDateByDetailStatus(request);
         return ResponseEntity.ok(appointments);
     }
 
     @GetMapping("/by-status")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByStatus(
+    public ResponseEntity<List<AppointmentResponse>> getAppointmentsByStatus(
             @RequestParam AppointmentStatus status) {
         return ResponseEntity.ok(appointmentQueryService.getAppointmentsByStatus(status));
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> updateAppointmentById(
+    public ResponseEntity<AppointmentResponse> updateAppointmentById(
             @PathVariable Long id,
             @Valid @RequestBody UpdateAppointmentRequest request) {
         return ResponseEntity.ok(appointmentService.updateAppointment(id, request));
@@ -87,7 +87,7 @@ public class LegacyAppointmentController {
     }
 
     @GetMapping("/{appointmentId}/patient-history")
-    public ResponseEntity<PatientHistoryDTO> getPatientHistory(@PathVariable Long appointmentId) {
+    public ResponseEntity<PatientHistoryResponse> getPatientHistory(@PathVariable Long appointmentId) {
         return ResponseEntity.ok(appointmentQueryService.getPatientHistoryFromAppointment(appointmentId));
     }
 

@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.catalog.service;
 import com.S_Health.GenderHealthCare.modules.catalog.domain.Tag;
 
 
-import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDTO;
+import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
@@ -27,7 +27,7 @@ public class TagService {
         this.modelMapper = modelMapper;
     }
 
-    public TagDTO createTag(TagRequest request) {
+    public TagDetailResponse createTag(TagRequest request) {
         if (tagRepository.existsByName(request.getName())) {
             throw new DomainException(ErrorCode.CONFLICT, CatalogConstants.TAG_EXISTS);
         }
@@ -36,22 +36,22 @@ public class TagService {
         tag.setName(request.getName().trim().toLowerCase());
         tag.setDescription(request.getDescription());
 
-        return modelMapper.map(tagRepository.save(tag), TagDTO.class);
+        return modelMapper.map(tagRepository.save(tag), TagDetailResponse.class);
     }
 
-    public List<TagDTO> getAllTags() {
+    public List<TagDetailResponse> getAllTags() {
         return tagRepository.findAll().stream()
-                .map(tag -> modelMapper.map(tag, TagDTO.class))
+                .map(tag -> modelMapper.map(tag, TagDetailResponse.class))
                 .collect(Collectors.toList());
     }
 
-    public TagDTO getTagById(Long id) {
+    public TagDetailResponse getTagById(Long id) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
-        return modelMapper.map(tag, TagDTO.class);
+        return modelMapper.map(tag, TagDetailResponse.class);
     }
 
-    public TagDTO updateTag(Long id, TagRequest request) {
+    public TagDetailResponse updateTag(Long id, TagRequest request) {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, CatalogConstants.TAG_NOT_FOUND));
 
@@ -64,7 +64,7 @@ public class TagService {
         tag.setName(request.getName().trim().toLowerCase());
         tag.setDescription(request.getDescription());
 
-        return modelMapper.map(tagRepository.save(tag), TagDTO.class);
+        return modelMapper.map(tagRepository.save(tag), TagDetailResponse.class);
     }
 
     public void deleteTag(Long id) {

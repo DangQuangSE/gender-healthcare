@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BlogSummaryDTO {
+public class BlogSummaryResponse {
      long blog_id;
      String title;
      int viewCount;

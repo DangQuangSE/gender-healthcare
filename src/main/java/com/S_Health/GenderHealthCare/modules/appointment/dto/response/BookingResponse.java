@@ -2,7 +2,7 @@ package com.S_Health.GenderHealthCare.modules.appointment.dto.response;
 
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
 
-import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,5 +19,5 @@ public class BookingResponse {
     LocalTime time;
     String note;
     AppointmentStatus status;
-    List<AppointmentDetailDTO> details;
+    List<AppointmentDetailResponse> details;
 }

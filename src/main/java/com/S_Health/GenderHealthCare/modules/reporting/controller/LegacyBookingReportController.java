@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.modules.reporting.controller;
 
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
-import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
 import com.S_Health.GenderHealthCare.modules.reporting.service.BookingReportService;
 import jakarta.validation.Valid;
@@ -23,10 +23,10 @@ public class LegacyBookingReportController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<List<ServiceBookingReportDTO>> getServiceBookingStats(
+    public ResponseEntity<List<ServiceBookingReportResponse>> getServiceBookingStats(
             @Valid @ModelAttribute BookingReportQuery request
     ) {
-        List<ServiceBookingReportDTO> report = bookingReportService.getServiceBookingStats(request);
+        List<ServiceBookingReportResponse> report = bookingReportService.getServiceBookingStats(request);
         return ResponseEntity.ok(report);
     }
 

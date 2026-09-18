@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.scheduling.controller;
 import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleCancelRequest;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.request.ScheduleRegisterRequest;
-import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleDTO;
+import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.DoctorWorkingScheduleResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleCancelResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleServiceResponse;
@@ -69,7 +69,7 @@ public class SchedulingController {
 
     @GetMapping("/doctors")
     @Operation(summary = SchedulingMessages.GET_WORKING_DOCTORS)
-    public ApiResponse<List<DoctorWorkingScheduleDTO>> getDoctorsWorkingOnDate(
+    public ApiResponse<List<DoctorWorkingScheduleResponse>> getDoctorsWorkingOnDate(
             @Valid @ModelAttribute WorkingDoctorRequest request) {
         return ApiResponse.success(
                 schedulingService.getDoctorsWorkingOnDate(request),

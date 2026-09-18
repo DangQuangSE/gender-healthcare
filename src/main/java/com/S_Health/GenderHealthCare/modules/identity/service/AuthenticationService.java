@@ -9,7 +9,7 @@ import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequ
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.response.JwtResponse;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
 import org.modelmapper.ModelMapper;
@@ -142,7 +142,7 @@ public class AuthenticationService implements UserDetailsService {
 
     private JwtResponse createJwtResponse(User user, String provider) {
         String jwt = jwtService.generateToken(user);
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        UserDetailResponse userDTO = modelMapper.map(user, UserDetailResponse.class);
         return new JwtResponse(jwt, userDTO, provider, true);
     }
 

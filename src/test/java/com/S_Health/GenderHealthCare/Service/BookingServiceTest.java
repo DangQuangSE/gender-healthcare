@@ -98,8 +98,8 @@ class BookingServiceTest {
         when(consultantSlotRepository.findByConsultantAndDateAndStartTimeAndStatus(any(), any(), any(), any()))
                 .thenReturn(Optional.of(consultantSlot));
 
-        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO.class)))
-                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailDTO());
+        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse.class)))
+                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse());
 
         BookingResponse response = bookingService.bookingService(bookingRequest);
 

@@ -3,8 +3,8 @@ package com.S_Health.GenderHealthCare.modules.catalog.controller;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 
 
-import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDTO;
-import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDTO;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.service.ManageUserService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,15 +28,15 @@ public class LegacyConsultantController {
 
     @GetMapping("/by-service/{serviceId}")
     @Operation(summary = CatalogConstants.GET_CONSULTANTS)
-    public ResponseEntity<List<ConsultantDTO>> getConsultantsByService(@PathVariable Long serviceId) {
-        List<ConsultantDTO> consultants = manageUserService.getConsultantsByService(serviceId);
+    public ResponseEntity<List<ConsultantDetailResponse>> getConsultantsByService(@PathVariable Long serviceId) {
+        List<ConsultantDetailResponse> consultants = manageUserService.getConsultantsByService(serviceId);
         return ResponseEntity.ok(consultants);
     }
 
     @GetMapping
     @Operation(summary = CatalogConstants.GET_ALL_CONSULTANTS)
-    public ResponseEntity<List<ConsultantDTO>> getAllConsultants() {
-        List<ConsultantDTO> consultants = manageUserService.getUsersByRole("CONSULTANT");
+    public ResponseEntity<List<ConsultantDetailResponse>> getAllConsultants() {
+        List<ConsultantDetailResponse> consultants = manageUserService.getUsersByRole("CONSULTANT");
         return ResponseEntity.ok(consultants);
     }
 }

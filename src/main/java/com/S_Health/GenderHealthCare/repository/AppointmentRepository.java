@@ -6,7 +6,7 @@ import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
-import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO;
+import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,7 +33,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByStatusAndIsActiveTrue(AppointmentStatus status);
 
     @Query("""
-    SELECT new com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportDTO(
+    SELECT new com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse(
         a.service.id,
         a.service.name,
         SUM(CASE WHEN a.status IN ('PENDING','CONFIRMED','PROCESSING','COMPLETED','CHECKED','ABSENT') THEN 1 ELSE 0 END),
@@ -45,7 +45,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
       AND a.isActive = true
     GROUP BY a.service.id, a.service.name
 """)
-    List<ServiceBookingReportDTO> getServiceBookingReport(
+    List<ServiceBookingReportResponse> getServiceBookingReport(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("serviceId") Long serviceId
