@@ -12,10 +12,10 @@ import com.S_Health.GenderHealthCare.modules.payment.PaymentMessages;
 import com.S_Health.GenderHealthCare.integrations.vnpay.VNPayCallback;
 import com.S_Health.GenderHealthCare.integrations.vnpay.VNPayGateway;
 import com.S_Health.GenderHealthCare.integrations.vnpay.VNPayPaymentLink;
-import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
-import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
-import com.S_Health.GenderHealthCare.repository.PaymentRepository;
-import com.S_Health.GenderHealthCare.repository.TransactionRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.payment.infrastructure.persistence.PaymentRepository;
+import com.S_Health.GenderHealthCare.modules.payment.infrastructure.persistence.TransactionRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -169,6 +169,17 @@ public class VNPayService {
 
         Payment payment = transaction.getPayment();
 
+        if (payment.getStatus() != PaymentStatus.PENDING) {
+            return paymentResponse(payment);
+        }
+
+        BigDecimal expectedAmount = payment.getMethod() == PAY_OFF
+                ? payment.getAmount().multiply(PaymentMessages.OFFLINE_PAYMENT_RATE)
+                : payment.getAmount();
+        if (callback.amount().compareTo(expectedAmount) != 0) {
+            throw new DomainException(ErrorCode.BAD_REQUEST, PaymentMessages.PAYMENT_AMOUNT_MISMATCH);
+        }
+
         if (callback.resultCode() == 0) {
             payment.setStatus(PaymentStatus.SUCCESS);
             payment.setPaidAt(callback.paymentTime());
@@ -226,6 +237,10 @@ public class VNPayService {
         transaction.setResponseTime(LocalDateTime.now());
         transactionRepository.save(transaction);
 
+        return paymentResponse(payment);
+    }
+
+    private VNPayResponse paymentResponse(Payment payment) {
         return VNPayResponse.builder()
                 .amount(payment.getAmount().longValue())
                 .URL(null)

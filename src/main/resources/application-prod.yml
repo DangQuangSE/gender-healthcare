@@ -5,8 +5,10 @@ spring:
 
   jpa:
     hibernate:
-      # Set JPA_DDL_AUTO=validate after a migration tool is introduced.
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+
+  main:
+    allow-circular-references: ${SPRING_ALLOW_CIRCULAR_REFERENCES:false}
 
 logging:
   level:

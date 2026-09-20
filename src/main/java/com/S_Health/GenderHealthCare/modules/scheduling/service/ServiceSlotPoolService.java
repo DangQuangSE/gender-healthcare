@@ -16,7 +16,12 @@ import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleSer
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
-import com.S_Health.GenderHealthCare.repository.*;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ServiceRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.SpecializationRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ScheduleRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ServiceSlotPoolRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;

@@ -15,8 +15,8 @@ import com.S_Health.GenderHealthCare.modules.communication.dto.request.SendMessa
 import com.S_Health.GenderHealthCare.modules.communication.dto.request.StartChatRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
-import com.S_Health.GenderHealthCare.repository.ChatMessageRepository;
-import com.S_Health.GenderHealthCare.repository.ChatSessionRepository;
+import com.S_Health.GenderHealthCare.modules.communication.infrastructure.persistence.ChatMessageRepository;
+import com.S_Health.GenderHealthCare.modules.communication.infrastructure.persistence.ChatSessionRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

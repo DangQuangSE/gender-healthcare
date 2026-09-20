@@ -10,9 +10,9 @@ import com.S_Health.GenderHealthCare.common.message.CommonMessages;
 
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CertificationResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
-import com.S_Health.GenderHealthCare.repository.CertificationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.CertificationRepository;
+import com.S_Health.GenderHealthCare.common.security.CurrentUserProvider;
 import com.S_Health.GenderHealthCare.integrations.storage.ImageStorage;
-import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,19 +24,19 @@ import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 public class CertificationService {
     private final CertificationRepository certificationRepository;
     private final ImageStorage imageStorage;
-    private final AuthUtil authUtil;
+    private final CurrentUserProvider currentUserProvider;
 
     public CertificationService(
             CertificationRepository certificationRepository,
             ImageStorage imageStorage,
-            AuthUtil authUtil) {
+            CurrentUserProvider currentUserProvider) {
         this.certificationRepository = certificationRepository;
         this.imageStorage = imageStorage;
-        this.authUtil = authUtil;
+        this.currentUserProvider = currentUserProvider;
     }
     
     public CertificationResponse createCertification(CertificationRequest request) {
-        User currentUser = authUtil.getCurrentUser();
+        User currentUser = currentUserProvider.requireUser();
 
         // Kiểm tra user có phải là consultant không
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
@@ -65,7 +65,7 @@ public class CertificationService {
     }
     
     public CertificationResponse updateCertification(Long id, CertificationRequest request) {
-        User currentUser = authUtil.getCurrentUser();
+        User currentUser = currentUserProvider.requireUser();
 
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));
@@ -88,7 +88,7 @@ public class CertificationService {
     }
     
     public List<CertificationResponse> getMyCertifications() {
-        User currentUser = authUtil.getCurrentUser();
+        User currentUser = currentUserProvider.requireUser();
         
         if (!UserRole.CONSULTANT.equals(currentUser.getRole())) {
             throw new DomainException(UserMessages.CERTIFICATION_ROLE_REQUIRED);
@@ -104,7 +104,7 @@ public class CertificationService {
 
     
     public void deleteCertification(Long id) {
-        User currentUser = authUtil.getCurrentUser();
+        User currentUser = currentUserProvider.requireUser();
         
         Certification certification = certificationRepository.findByIdAndConsultantAndIsActiveTrue(id, currentUser)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.CERTIFICATION_NOT_FOUND_OR_FORBIDDEN));

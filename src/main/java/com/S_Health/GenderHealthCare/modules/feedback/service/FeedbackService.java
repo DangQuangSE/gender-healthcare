@@ -14,7 +14,10 @@ import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ConsultantFee
 import com.S_Health.GenderHealthCare.modules.feedback.dto.response.ServiceFeedbackResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.feedback.FeedbackMessages;
-import com.S_Health.GenderHealthCare.repository.*;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.feedback.infrastructure.persistence.ConsultantFeedbackRepository;
+import com.S_Health.GenderHealthCare.modules.feedback.infrastructure.persistence.ServiceFeedbackRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.UserRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
 

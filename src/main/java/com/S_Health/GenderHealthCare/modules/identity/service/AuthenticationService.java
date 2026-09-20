@@ -11,13 +11,10 @@ import com.S_Health.GenderHealthCare.modules.identity.dto.response.JwtResponse;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +22,7 @@ import org.springframework.stereotype.Service;
  * Application service for password, OTP and social-login authentication flows.
  */
 @Service
-public class AuthenticationService implements UserDetailsService {
+public class AuthenticationService {
     private final AuthenticationRepository authenticationRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -107,18 +104,6 @@ public class AuthenticationService implements UserDetailsService {
                 googleUser.name(),
                 googleUser.imageUrl(),
                 "google");
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = authenticationRepository.findUserByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException(IdentityMessages.USER_NOT_FOUND.formatted(email));
-        }
-        if (!user.isActive()) {
-            throw new UsernameNotFoundException(IdentityMessages.ACCOUNT_INACTIVE);
-        }
-        return user;
     }
 
     private JwtResponse loginWithSocialAccount(

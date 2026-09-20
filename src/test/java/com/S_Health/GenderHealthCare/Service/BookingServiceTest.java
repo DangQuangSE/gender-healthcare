@@ -6,11 +6,20 @@ import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
 import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
 import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
 
 import com.S_Health.GenderHealthCare.modules.appointment.dto.request.BookingRequest;
 import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingResponse;
 
-import com.S_Health.GenderHealthCare.repository.*;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomConsultantRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ServiceRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ServiceSlotPoolRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalProfileRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
@@ -119,7 +128,7 @@ class BookingServiceTest {
         when(serviceSlotPoolRepository.findById(10L)).thenReturn(Optional.of(slotPool));
         bookingRequest.setSlot(LocalTime.of(15, 0)); // lệch so với slotPool
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        DomainException ex = assertThrows(DomainException.class,
                 () -> bookingService.bookingService(bookingRequest));
 
         assertEquals("Khung giờ không khớp với ngày/giờ yêu cầu!", ex.getMessage());

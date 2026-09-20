@@ -7,8 +7,8 @@ import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 import com.S_Health.GenderHealthCare.modules.healthtracking.dto.request.CycleTrackingRequest;
 import com.S_Health.GenderHealthCare.modules.healthtracking.dto.response.CycleTrackingResponse;
-import com.S_Health.GenderHealthCare.repository.CycleTrackingRepository;
-import com.S_Health.GenderHealthCare.repository.UserRepository;
+import com.S_Health.GenderHealthCare.modules.healthtracking.infrastructure.persistence.CycleTrackingRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.UserRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

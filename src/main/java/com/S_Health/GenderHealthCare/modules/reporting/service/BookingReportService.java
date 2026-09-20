@@ -5,7 +5,7 @@ package com.S_Health.GenderHealthCare.modules.reporting.service;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.BookingReportQuery;
-import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

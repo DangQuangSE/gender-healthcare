@@ -1,0 +1,27 @@
+package com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence;
+
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Room;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.RoomConsultant;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface RoomConsultantRepository extends JpaRepository<RoomConsultant, Long> {
+    List<RoomConsultant> findByRoomAndIsActiveTrue(Room room);
+    List<RoomConsultant> findByConsultantAndIsActiveTrue(User consultant);
+    Optional<RoomConsultant> findByRoomAndConsultantAndIsActiveTrue(Room room, User consultant);
+    boolean existsByRoomAndConsultantAndStartTimeAndEndTimeAndIsActiveTrue(Room room, User consultant, LocalTime startTime, LocalTime endTime);
+
+    @Query("SELECT rc FROM RoomConsultant rc WHERE rc.room.specialization = ?1 AND rc.isActive = true")
+    List<RoomConsultant> findByRoomSpecializationAndIsActiveTrue(Specialization specialization);
+
+    @Query("SELECT rc FROM RoomConsultant rc JOIN rc.consultant c JOIN c.specializations s WHERE s = ?1 AND rc.isActive = true")
+    List<RoomConsultant> findByConsultantSpecializationAndIsActiveTrue(Specialization specialization);
+}

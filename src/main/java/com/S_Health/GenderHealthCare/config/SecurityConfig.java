@@ -3,10 +3,8 @@ package com.S_Health.GenderHealthCare.config;
 import com.S_Health.GenderHealthCare.common.security.JwtAuthenticationFilter;
 import com.S_Health.GenderHealthCare.common.security.RestAccessDeniedHandler;
 import com.S_Health.GenderHealthCare.common.security.RestAuthenticationEntryPoint;
-import com.S_Health.GenderHealthCare.modules.identity.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -22,17 +21,17 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final AuthenticationService authenticationService;
+    private final UserDetailsService userDetailsService;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
 
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
-            @Lazy AuthenticationService authenticationService,
+            UserDetailsService userDetailsService,
             RestAuthenticationEntryPoint authenticationEntryPoint,
             RestAccessDeniedHandler accessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.authenticationService = authenticationService;
+        this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
     }
@@ -71,15 +70,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/config/**").permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/medical-profiles/me/**",
+                                "/api/v1/medical-profiles/patients/**",
+                                "/api/v1/medical-profiles/medical-info",
                                 "/api/v1/medical-results/**",
                                 "/api/v1/treatment-protocols/**")
-                        .authenticated()
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/v1/medical-profiles/patients/**",
-                                "/api/v1/medical-profiles/medical-info")
                         .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/medical-profiles/me/**")
+                        .authenticated()
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/v1/medical-profiles/medical-info")
@@ -101,10 +98,6 @@ public class SecurityConfig {
                                 "/api/v1/service-feedback/services/**",
                                 "/api/v1/consultant-feedback/service-feedback/**")
                         .permitAll()
-                        .requestMatchers(
-                                "/api/v1/medical-results/**",
-                                "/api/v1/treatment-protocols/**")
-                        .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers(
                                 "/api/result/**",
                                 "/api/treatment/**")
@@ -170,7 +163,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/payment/vnpay/vnpay-return").permitAll()
                         .anyRequest().authenticated())
-                .userDetailsService(authenticationService)
+                .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

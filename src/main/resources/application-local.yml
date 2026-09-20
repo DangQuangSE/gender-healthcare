@@ -7,6 +7,9 @@ spring:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
 
+  main:
+    allow-circular-references: ${SPRING_ALLOW_CIRCULAR_REFERENCES:true}
+
 logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}

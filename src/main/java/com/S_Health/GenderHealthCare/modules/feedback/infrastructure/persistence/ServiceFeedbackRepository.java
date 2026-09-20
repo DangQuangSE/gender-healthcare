@@ -1,0 +1,14 @@
+package com.S_Health.GenderHealthCare.modules.feedback.infrastructure.persistence;
+
+import com.S_Health.GenderHealthCare.modules.feedback.domain.ServiceFeedback;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface ServiceFeedbackRepository extends JpaRepository<ServiceFeedback, Long> {
+    Optional<ServiceFeedback> findByAppointmentId(Long appointmentId);
+    List<ServiceFeedback> findByAppointmentIdIn(List<Long> appointmentIds);
+}

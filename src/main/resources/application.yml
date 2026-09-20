@@ -16,12 +16,12 @@ spring:
       hibernate:
         dialect: ${JPA_DIALECT:org.hibernate.dialect.MySQLDialect}
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:validate}
 
   # Kept temporarily for the legacy service wiring. It will be removed as
   # services move to constructor injection in later refactor phases.
   main:
-    allow-circular-references: ${SPRING_ALLOW_CIRCULAR_REFERENCES:true}
+    allow-circular-references: ${SPRING_ALLOW_CIRCULAR_REFERENCES:false}
 
   cache:
     type: ${CACHE_TYPE:caffeine}

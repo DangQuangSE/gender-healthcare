@@ -59,21 +59,22 @@ GET  /api/v1/medical-results/{id}
 POST /api/v1/payments/vnpay
 ```
 
-Old `/api/**` routes remain as explicitly named `Legacy*Controller` adapters while the frontend and provider callbacks are being verified. The migration map is maintained in [`plans/gender-healthcare-refactor/docs/api/endpoint-migration-map.md`](../plans/gender-healthcare-refactor/docs/api/endpoint-migration-map.md).
+Old `/api/**` routes remain as explicitly named `Legacy*Controller` adapters while the frontend and provider callbacks are being verified. The current migration and compatibility map is maintained in [`plans/gender-healthcare-full-refactor/endpoint-security-compatibility.md`](../plans/gender-healthcare-full-refactor/endpoint-security-compatibility.md).
 
 ## Verification
 
-Build without adding or running unit tests:
+Run the backend test suite and package build:
 
 ```powershell
+.\mvnw.cmd test
 .\mvnw.cmd -DskipTests package
 ```
 
-Run the manual flow checklist in [`plans/gender-healthcare-refactor/docs/verification/smoke-checklist.md`](../plans/gender-healthcare-refactor/docs/verification/smoke-checklist.md).
+Use the manual flow and deployment guidance in [`plans/gender-healthcare-full-refactor/runbook.md`](../plans/gender-healthcare-full-refactor/runbook.md).
 
 ## Deployment
 
-The deployment path uses a managed Spring Boot jar and systemd. Configure the server-side values as environment variables, then run:
+The deployment path uses the repository deployment script and a managed Spring Boot jar. Configure the server-side values as environment variables, then run:
 
 ```bash
 export DEPLOY_HOST=your-server.example
@@ -81,7 +82,7 @@ export DEPLOY_USER=deploy
 ./deploy/backend-deploy.sh
 ```
 
-The script builds the jar, uploads a timestamped release, switches the `current` symlink, restarts systemd, checks `/health`, and rolls back the symlink if verification fails. Server preparation and rollback details are in [`plans/gender-healthcare-refactor/docs/deployment/runbook.md`](../plans/gender-healthcare-refactor/docs/deployment/runbook.md).
+The script builds the jar, uploads a timestamped release, switches the `current` symlink, restarts systemd, checks `/health`, and rolls back the symlink if verification fails. Server preparation and rollback details are in [`plans/gender-healthcare-full-refactor/runbook.md`](../plans/gender-healthcare-full-refactor/runbook.md).
 
 ## External services
 

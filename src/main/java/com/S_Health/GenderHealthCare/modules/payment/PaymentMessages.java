@@ -17,6 +17,7 @@ public final class PaymentMessages {
     public static final String PAYMENT_PROCESSING_ERROR = "Lỗi xử lí";
     public static final String PAYMENT_SUCCESS = "Thanh toán thành công";
     public static final String PAYMENT_FAILED = "Thanh toán thất bại";
+    public static final String PAYMENT_AMOUNT_MISMATCH = "Số tiền thanh toán không khớp.";
     public static final String INVALID_VNPAY_SIGNATURE = "Chữ ký không hợp lệ.";
     public static final String ORDER_INFO_FORMAT = "Thanh toan don hang: %s";
     public static final String VNPAY_VERSION = "2.1.0";

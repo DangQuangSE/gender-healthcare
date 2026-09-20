@@ -7,7 +7,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.dto.response.TagDetailRespo
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.TagRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.repository.TagRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.TagRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 

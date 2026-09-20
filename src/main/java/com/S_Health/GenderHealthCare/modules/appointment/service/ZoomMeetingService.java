@@ -9,8 +9,8 @@ import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
 import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
-import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
-import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
 

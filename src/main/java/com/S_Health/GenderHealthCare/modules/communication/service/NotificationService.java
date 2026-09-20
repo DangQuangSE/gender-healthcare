@@ -12,10 +12,10 @@ import com.S_Health.GenderHealthCare.modules.communication.dto.response.notifica
 import com.S_Health.GenderHealthCare.modules.communication.dto.response.notification.NotificationResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.communication.CommunicationMessages;
-import com.S_Health.GenderHealthCare.repository.AppointmentRepository;
-import com.S_Health.GenderHealthCare.repository.CycleTrackingRepository;
-import com.S_Health.GenderHealthCare.repository.NotificationRepository;
-import com.S_Health.GenderHealthCare.repository.UserRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.healthtracking.infrastructure.persistence.CycleTrackingRepository;
+import com.S_Health.GenderHealthCare.modules.communication.infrastructure.persistence.NotificationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.UserRepository;
 import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.transaction.annotation.Transactional;

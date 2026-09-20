@@ -9,9 +9,9 @@ import com.S_Health.GenderHealthCare.modules.content.dto.request.CommentRequest;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.CommentResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
-import com.S_Health.GenderHealthCare.repository.BlogRepository;
-import com.S_Health.GenderHealthCare.repository.CommentRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.content.infrastructure.persistence.BlogRepository;
+import com.S_Health.GenderHealthCare.modules.content.infrastructure.persistence.CommentRepository;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.stereotype.Service;
 

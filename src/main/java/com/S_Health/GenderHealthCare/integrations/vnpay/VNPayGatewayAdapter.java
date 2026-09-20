@@ -36,6 +36,7 @@ public class VNPayGatewayAdapter implements VNPayGateway {
     private static final String TRANSACTION_REFERENCE_PARAMETER = "vnp_TxnRef";
     private static final String TRANSACTION_NUMBER_PARAMETER = "vnp_TransactionNo";
     private static final String TRANSACTION_STATUS_PARAMETER = "vnp_TransactionStatus";
+    private static final String AMOUNT_PARAMETER = "vnp_Amount";
     private static final String PAYMENT_DATE_PARAMETER = "vnp_PayDate";
     private static final String DATE_PATTERN = "yyyyMMddHHmmss";
 
@@ -111,10 +112,22 @@ public class VNPayGatewayAdapter implements VNPayGateway {
             throw new DomainException(ErrorCode.BAD_REQUEST, IntegrationMessages.VNPAY_CALLBACK_INVALID, exception);
         }
 
+        BigDecimal amount;
+        try {
+            String rawAmount = parameters.get(AMOUNT_PARAMETER);
+            if (rawAmount == null) {
+                throw new NumberFormatException("missing amount");
+            }
+            amount = new BigDecimal(rawAmount).movePointLeft(2);
+        } catch (NumberFormatException exception) {
+            throw new DomainException(ErrorCode.BAD_REQUEST, IntegrationMessages.VNPAY_CALLBACK_INVALID, exception);
+        }
+
         return new VNPayCallback(
                 transactionReference,
                 parameters.get(TRANSACTION_NUMBER_PARAMETER),
                 parameters.get(TRANSACTION_STATUS_PARAMETER),
+                amount,
                 resultCode,
                 parsePaymentTime(parameters.get(PAYMENT_DATE_PARAMETER)));
     }

@@ -14,10 +14,10 @@ import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.Consul
 import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDetailResponse;
 import com.S_Health.GenderHealthCare.modules.user.dto.response.CreateUserResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
-import com.S_Health.GenderHealthCare.repository.CertificationRepository;
-import com.S_Health.GenderHealthCare.repository.ConsultantFeedbackRepository;
-import com.S_Health.GenderHealthCare.repository.SpecializationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.CertificationRepository;
+import com.S_Health.GenderHealthCare.modules.feedback.infrastructure.persistence.ConsultantFeedbackRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.SpecializationRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;

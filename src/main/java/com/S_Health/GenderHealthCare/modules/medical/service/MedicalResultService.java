@@ -18,7 +18,12 @@ import com.S_Health.GenderHealthCare.modules.medical.dto.request.ResultRequest;
 
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
-import com.S_Health.GenderHealthCare.repository.*;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalProfileRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalResultRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.TreatmentProtocolRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.modules.appointment.service.AppointmentStatusCalculator;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.modelmapper.ModelMapper;

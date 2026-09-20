@@ -10,9 +10,9 @@ import com.S_Health.GenderHealthCare.modules.catalog.dto.response.Specialization
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.ComboResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.repository.ComboItemRepository;
-import com.S_Health.GenderHealthCare.repository.ServiceRepository;
-import com.S_Health.GenderHealthCare.repository.SpecializationRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ComboItemRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ServiceRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.SpecializationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 

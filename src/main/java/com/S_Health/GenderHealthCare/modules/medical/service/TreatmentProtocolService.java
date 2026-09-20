@@ -7,7 +7,7 @@ import com.S_Health.GenderHealthCare.modules.medical.dto.request.TreatmentProtoc
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.TreatmentProtocolResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
-import com.S_Health.GenderHealthCare.repository.TreatmentProtocolRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.TreatmentProtocolRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

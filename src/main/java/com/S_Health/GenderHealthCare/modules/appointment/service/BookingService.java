@@ -22,7 +22,15 @@ import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingRes
 
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.appointment.AppointmentMessages;
-import com.S_Health.GenderHealthCare.repository.*;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomConsultantRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ServiceRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ServiceSlotPoolRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalProfileRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;

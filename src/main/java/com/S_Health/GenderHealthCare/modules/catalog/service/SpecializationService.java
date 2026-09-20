@@ -7,7 +7,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.SpecializationDetailResponse;
 import com.S_Health.GenderHealthCare.modules.catalog.dto.request.SpecializationRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
-import com.S_Health.GenderHealthCare.repository.SpecializationRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.SpecializationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;

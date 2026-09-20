@@ -4,7 +4,7 @@ import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.request.FinancialReportQuery;
 
 
-import com.S_Health.GenderHealthCare.repository.PaymentRepository;
+import com.S_Health.GenderHealthCare.modules.payment.infrastructure.persistence.PaymentRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

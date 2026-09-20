@@ -14,10 +14,10 @@ import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomConsultant
 import com.S_Health.GenderHealthCare.modules.catalog.dto.response.RoomDetailResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.repository.RoomConsultantRepository;
-import com.S_Health.GenderHealthCare.repository.RoomRepository;
-import com.S_Health.GenderHealthCare.repository.SpecializationRepository;
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomConsultantRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.SpecializationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

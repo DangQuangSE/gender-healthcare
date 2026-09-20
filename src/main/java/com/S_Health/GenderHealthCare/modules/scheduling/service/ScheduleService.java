@@ -20,10 +20,10 @@ import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.WorkDateSlo
 import com.S_Health.GenderHealthCare.modules.scheduling.dto.response.ScheduleRegisterResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.scheduling.SchedulingMessages;
-import com.S_Health.GenderHealthCare.repository.AppointmentDetailRepository;
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
-import com.S_Health.GenderHealthCare.repository.ConsultantSlotRepository;
-import com.S_Health.GenderHealthCare.repository.ScheduleRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ScheduleRepository;
 import com.S_Health.GenderHealthCare.modules.catalog.service.ConfigValueService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import com.S_Health.GenderHealthCare.utils.TimeSlotUtils;

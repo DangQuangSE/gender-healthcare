@@ -13,7 +13,7 @@ import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogResponse;
 import com.S_Health.GenderHealthCare.modules.content.dto.response.BlogSummaryResponse;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.content.ContentMessages;
-import com.S_Health.GenderHealthCare.repository.BlogRepository;
+import com.S_Health.GenderHealthCare.modules.content.infrastructure.persistence.BlogRepository;
 import com.S_Health.GenderHealthCare.integrations.storage.ImageStorage;
 import com.S_Health.GenderHealthCare.modules.catalog.service.TagService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;

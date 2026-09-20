@@ -3,7 +3,7 @@ package com.S_Health.GenderHealthCare.modules.identity.service;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 
 
-import com.S_Health.GenderHealthCare.repository.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

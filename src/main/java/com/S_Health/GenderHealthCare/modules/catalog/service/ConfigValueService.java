@@ -5,7 +5,7 @@ import com.S_Health.GenderHealthCare.modules.catalog.domain.ConfigValue;
 
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.catalog.CatalogConstants;
-import com.S_Health.GenderHealthCare.repository.ConfigValueRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ConfigValueRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
