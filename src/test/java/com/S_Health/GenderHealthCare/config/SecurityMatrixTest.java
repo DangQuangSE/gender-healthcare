@@ -10,6 +10,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -31,5 +32,21 @@ class SecurityMatrixTest {
     void customerCannotReadProtectedMedicalResults() throws Exception {
         mockMvc.perform(get("/api/v1/medical-results/1").with(csrf()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void PayOSWebhookIsPublicToTheJwtFilterButStillValidatesItsSignature() throws Exception {
+        mockMvc.perform(post("/api/v1/payments/payos/webhook")
+                        .contentType("application/json")
+                        .content("{\"code\":\"00\",\"success\":true,\"data\":{},\"signature\":\"invalid\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void PayOSPaymentCreationStillRequiresAuthentication() throws Exception {
+        mockMvc.perform(post("/api/v1/payments/payos")
+                        .contentType("application/json")
+                        .content("{\"appointmentId\":1}"))
+                .andExpect(status().isUnauthorized());
     }
 }

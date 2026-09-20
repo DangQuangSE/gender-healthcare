@@ -32,12 +32,14 @@ google:
   client:
     id: test-google-client-id
 
-vnpay:
-  tmn-code: TEST_TMN
-  hash-secret: test-vnpay-secret
-  pay-url: https://example.test/vnpay
-  return-url: http://localhost:8085/api/payment/vnpay/vnpay-return
-  ipn-url: http://localhost:8085/api/payment/vnpay/vnpay-ipn
+payos:
+  client-id: test-payos-client-id
+  api-key: test-payos-api-key
+  checksum-key: test-payos-checksum-key
+  api-base-url: https://api-merchant.payos.vn
+  return-url: http://localhost:5173/user/booking
+  cancel-url: http://localhost:5173/user/booking
+  webhook-url: http://localhost:8085/api/v1/payments/payos/webhook
 
 cloudinary:
   cloud_name: test-cloud

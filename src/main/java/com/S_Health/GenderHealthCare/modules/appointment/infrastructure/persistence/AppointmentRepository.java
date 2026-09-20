@@ -6,7 +6,9 @@ import com.S_Health.GenderHealthCare.modules.medical.domain.MedicalProfile;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.BookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.reporting.dto.response.ServiceBookingReportResponse;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,10 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM Appointment a WHERE a.id = :appointmentId")
+    java.util.Optional<Appointment> findByIdForPayment(@Param("appointmentId") Long appointmentId);
+
     List<Appointment> findByMedicalProfileId(Long medicalProfileId);
     List<Appointment> findByMedicalProfileIdAndStatus(Long medicalProfileId, AppointmentStatus status);
     List<Appointment> findByPreferredDateAndConsultantAndStatusAndIsActiveTrue(LocalDate date, User consultant, AppointmentStatus status);

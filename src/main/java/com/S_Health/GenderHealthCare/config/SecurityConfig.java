@@ -142,11 +142,11 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 "/api/v1/chat/sessions",
                                 "/api/v1/chat/messages",
+                                "/api/v1/payments/payos/webhook",
                                 "/api/chat/start",
                                 "/api/chat/send",
                                 "/api/chat/sessions/*/verify",
                                 "/api/chat/sessions/*/mark-read",
-                                "/api/payment/vnpay/**",
                                 "/api/blog/*/like")
                         .permitAll()
                         .requestMatchers(
@@ -161,7 +161,6 @@ public class SecurityConfig {
                                 "/api/v1/chat/sessions/*/read")
                         .permitAll()
                         .requestMatchers("/api/admin/**", "/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/payment/vnpay/vnpay-return").permitAll()
                         .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

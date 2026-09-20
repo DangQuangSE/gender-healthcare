@@ -4,6 +4,7 @@ import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
 import com.S_Health.GenderHealthCare.modules.user.domain.User;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentMethod;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentIntent;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,9 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     PaymentMethod method;
+
+    @Enumerated(EnumType.STRING)
+    PaymentIntent paymentIntent;
 
     @Enumerated(EnumType.STRING)
     PaymentStatus status;

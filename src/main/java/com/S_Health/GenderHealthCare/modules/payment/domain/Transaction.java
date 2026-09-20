@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -22,6 +23,14 @@ public class Transaction {
     String transactionCode;
     String requestId;
     String orderId;
+    @Column(unique = true)
+    Long providerOrderCode;
+    @Column(length = 128)
+    String providerPaymentLinkId;
+    @Column(length = 512)
+    String providerCheckoutUrl;
+    @Column(precision = 19, scale = 0)
+    BigDecimal chargedAmount;
     String responseMessage;
     int resultCode;
 //    @Column(name = "pay_url", columnDefinition = "TEXT")

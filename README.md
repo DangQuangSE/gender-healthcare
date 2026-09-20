@@ -22,7 +22,7 @@ src/main/java/com/S_Health/GenderHealthCare/
 │   ├── content/      # blogs, comments and tags
 │   ├── communication/# chat and notifications
 │   ├── feedback/
-│   ├── payment/      # VNPay and cash payment workflows
+│   ├── payment/      # PayOS payment and settlement workflows
 │   └── reporting/
 └── integrations/    # mail, storage, Zoom and payment provider adapters
 ```
@@ -56,10 +56,13 @@ POST /api/v1/auth/login
 GET  /api/v1/services
 POST /api/v1/appointments
 GET  /api/v1/medical-results/{id}
-POST /api/v1/payments/vnpay
+POST /api/v1/payments/payos
+POST /api/v1/payments/payos/deposit
+GET  /api/v1/payments/payos/{orderCode}
+POST /api/v1/payments/payos/webhook
 ```
 
-Old `/api/**` routes remain as explicitly named `Legacy*Controller` adapters while the frontend and provider callbacks are being verified. The current migration and compatibility map is maintained in [`plans/gender-healthcare-full-refactor/endpoint-security-compatibility.md`](../plans/gender-healthcare-full-refactor/endpoint-security-compatibility.md).
+Old `/api/**` routes remain as explicitly named `Legacy*Controller` adapters while the frontend and provider callbacks are being verified. The current migration and compatibility map is maintained in [`plans/gender-healthcare-full-refactor/endpoint-security-compatibility.md`](../plans/gender-healthcare-full-refactor/endpoint-security-compatibility.md). PayOS webhook delivery uses the exact public route `/api/v1/payments/payos/webhook`; payment creation and status routes require authentication.
 
 ## Verification
 
@@ -86,4 +89,4 @@ The script builds the jar, uploads a timestamped release, switches the `current`
 
 ## External services
 
-Runtime credentials are injected through `.env` or the server environment. The source contains no production secrets. Supported adapters are VNPay, Cloudinary, Zoom and SMTP mail. Rotate credentials separately if any historical secret was exposed before this refactor.
+Runtime credentials are injected through `.env` or the server environment. The source contains no production secrets. Supported adapters are PayOS, Cloudinary, Zoom and SMTP mail. Configure the PayOS webhook using [`docs/payos-webhook-runbook.md`](docs/payos-webhook-runbook.md).

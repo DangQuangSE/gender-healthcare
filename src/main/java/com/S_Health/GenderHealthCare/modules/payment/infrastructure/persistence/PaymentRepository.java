@@ -2,6 +2,9 @@ package com.S_Health.GenderHealthCare.modules.payment.infrastructure.persistence
 
 import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
 import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentIntent;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +17,18 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByAppointmentIdAndStatus(Long appointmentId, PaymentStatus status);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT p FROM Payment p
+        WHERE p.appointment.id = :appointmentId
+          AND p.paymentIntent = :paymentIntent
+          AND p.status = :status
+        """)
+    Optional<Payment> findByAppointmentIdAndPaymentIntentAndStatus(
+            Long appointmentId,
+            PaymentIntent paymentIntent,
+            PaymentStatus status
+    );
     Optional<Payment> findByAppointmentId(Long appointmentId);
 
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.status <> :status")
