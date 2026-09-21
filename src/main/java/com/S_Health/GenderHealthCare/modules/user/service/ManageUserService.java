@@ -1,0 +1,251 @@
+package com.S_Health.GenderHealthCare.modules.user.service;
+
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.domain.Specialization;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
+import com.S_Health.GenderHealthCare.modules.user.UserMessages;
+import com.S_Health.GenderHealthCare.modules.feedback.domain.ConsultantFeedback;
+
+
+import com.S_Health.GenderHealthCare.integrations.mail.EmailService;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.UserDetailResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.request.CreateUserRequest;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantCertification;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.consultant.ConsultantDetailResponse;
+import com.S_Health.GenderHealthCare.modules.user.dto.response.CreateUserResponse;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.CertificationRepository;
+import com.S_Health.GenderHealthCare.modules.feedback.infrastructure.persistence.ConsultantFeedbackRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.SpecializationRepository;
+import org.springframework.transaction.annotation.Transactional;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
+
+@Service
+@Transactional
+public class ManageUserService {
+    private final AuthenticationRepository authenticationRepository;
+    private final SpecializationRepository specializationRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final ModelMapper modelMapper;
+    private final ConsultantFeedbackRepository consultantFeedbackRepository;
+    private final CertificationRepository certificationRepository;
+
+    public ManageUserService(
+            AuthenticationRepository authenticationRepository,
+            SpecializationRepository specializationRepository,
+            PasswordEncoder passwordEncoder,
+            EmailService emailService,
+            ModelMapper modelMapper,
+            ConsultantFeedbackRepository consultantFeedbackRepository,
+            CertificationRepository certificationRepository) {
+        this.authenticationRepository = authenticationRepository;
+        this.specializationRepository = specializationRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.modelMapper = modelMapper;
+        this.consultantFeedbackRepository = consultantFeedbackRepository;
+        this.certificationRepository = certificationRepository;
+    }
+
+
+    public CreateUserResponse createStaffAccount(CreateUserRequest request) {
+        if (authenticationRepository.existsByEmail(request.getEmail())) {
+            throw new DomainException(ErrorCode.CONFLICT, UserMessages.EMAIL_EXISTS);
+        }
+        validateRole(request.getRole());
+        List<Specialization> specializations = null;
+        if (request.getRole() == UserRole.CONSULTANT) {
+            if (request.getSpecializationIds() == null || request.getSpecializationIds().isEmpty()) {
+                throw new DomainException(UserMessages.CONSULTANT_SPECIALIZATION_REQUIRED);
+            }
+            specializations = validateAndGetSpecializations(request.getSpecializationIds());
+        }
+        String randomPassword = generateRandomPassword();
+        User user = User.builder()
+                .fullname(request.getFullname())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .dateOfBirth(request.getDateOfBirth())
+                .password(passwordEncoder.encode(randomPassword))
+                .address(request.getAddress())
+                .gender(request.getGender())
+                .imageUrl(request.getImageUrl())
+                .role(request.getRole())
+                .isActive(true)
+                .isVerify(true)
+                .build();
+        if (request.getRole() == UserRole.CONSULTANT && specializations != null) {
+            user.setSpecializations(specializations);
+        }
+
+        user = authenticationRepository.save(user);
+        emailService.sendWelcomeWithCredentials(user.getEmail(), randomPassword, user.getRole());
+        CreateUserResponse response = modelMapper.map(user, CreateUserResponse.class);
+        return response;
+    }
+
+    private void validateRole(UserRole role) {
+        if (role == UserRole.CUSTOMER) {
+            throw new DomainException(ErrorCode.FORBIDDEN, UserMessages.CUSTOMER_CREATION_FORBIDDEN);
+        }
+    }
+
+    private List<Specialization> validateAndGetSpecializations(Set<Long> specializationIds) {
+        List<Specialization> specializations = specializationRepository.findAllById(specializationIds);
+        if (specializations.size() != specializationIds.size()) {
+            throw new DomainException(ErrorCode.NOT_FOUND, UserMessages.SPECIALIZATION_NOT_FOUND);
+        }
+        return specializations;
+    }
+
+    private String generateRandomPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        return new Random().ints(10, 0, chars.length())
+                .mapToObj(i -> String.valueOf(chars.charAt(i)))
+                .collect(Collectors.joining());
+    }
+
+    public User addSpecializationsToConsultant(Long userId, Set<Long> specializationIds) {
+        User consultant = authenticationRepository.findById(userId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
+
+        if (consultant.getRole() != UserRole.CONSULTANT) {
+            throw new DomainException(UserMessages.USER_NOT_CONSULTANT);
+        }
+        List<Specialization> specializationsToAdd = validateAndGetSpecializations(specializationIds);
+        if (consultant.getSpecializations() == null) {
+            consultant.setSpecializations(new ArrayList<>());
+        }
+        for (Specialization spec : specializationsToAdd) {
+            if (!consultant.getSpecializations().contains(spec)) {
+                consultant.getSpecializations().add(spec);
+            }
+        }
+        return authenticationRepository.save(consultant);
+    }
+
+    public void removeSpecializationFromConsultant(Long userId, Long specializationId) {
+        User consultant = authenticationRepository.findById(userId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
+        // Kiểm tra xem người dùng có phải là tư vấn viên không
+        if (consultant.getRole() != UserRole.CONSULTANT) {
+            throw new DomainException(UserMessages.USER_NOT_CONSULTANT);
+        }
+        // Kiểm tra xem chuyên môn có tồn tại không
+        Specialization specialization = specializationRepository.findById(specializationId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.SPECIALIZATION_NOT_FOUND));
+        // Kiểm tra xem tư vấn viên có chuyên môn này không
+        if (consultant.getSpecializations() == null || !consultant.getSpecializations().contains(specialization)) {
+            throw new DomainException(UserMessages.SPECIALIZATION_NOT_ASSIGNED);
+        }
+        // Đảm bảo tư vấn viên có ít nhất một chuyên môn sau khi xóa
+        if (consultant.getSpecializations().size() <= 1) {
+            throw new DomainException(UserMessages.CONSULTANT_SPECIALIZATION_REQUIRED);
+        }
+        // Xóa chuyên môn
+        consultant.getSpecializations().remove(specialization);
+        authenticationRepository.save(consultant);
+    }
+
+    public List<Specialization> getConsultantSpecializations(Long userId) {
+        User consultant = authenticationRepository.findById(userId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
+        // Kiểm tra xem người dùng có phải là tư vấn viên không
+        if (consultant.getRole() != UserRole.CONSULTANT) {
+            throw new DomainException(UserMessages.USER_NOT_CONSULTANT);
+        }
+        return consultant.getSpecializations() != null ? consultant.getSpecializations() : new ArrayList<>();
+    }
+    public List<ConsultantDetailResponse> getUsersByRole(String role) {
+        UserRole userRole;
+        userRole = UserRole.valueOf(role.toUpperCase());
+
+        List<User> users = authenticationRepository.findByRole(userRole).stream()
+                .filter(User::isActive) // Chỉ lấy user đang active
+                .collect(Collectors.toList());
+
+        return users.stream()
+                .map(this::convertToConsultantDetailResponse)
+                .collect(Collectors.toList());
+    }
+    private UserDetailResponse convertToUserDetailResponse(User user) {
+        UserDetailResponse userDTO = modelMapper.map(user, UserDetailResponse.class);
+
+        if (user.getSpecializations() != null && !user.getSpecializations().isEmpty()) {
+            List<Long> specializationIds = user.getSpecializations().stream()
+                    .map(Specialization::getId)
+                    .collect(Collectors.toList());
+            userDTO.setSpecializationIds(specializationIds);
+        }
+        return userDTO;
+    }
+
+    private ConsultantDetailResponse convertToConsultantDetailResponse(User user) {
+        ConsultantDetailResponse consultantDTO = modelMapper.map(user, ConsultantDetailResponse.class);
+
+        if (user.getSpecializations() != null && !user.getSpecializations().isEmpty()) {
+            List<String> specialization = user.getSpecializations().stream()
+                    .map(Specialization::getName)
+                    .collect(Collectors.toList());
+            consultantDTO.setSpecializationNames(specialization);
+        }
+
+        double avgRating = consultantFeedbackRepository
+                .findByConsultantId(user.getId())
+                .stream()
+                .mapToDouble(ConsultantFeedback::getRating)
+                .average()
+                .orElse(0.0);
+        consultantDTO.setRating(avgRating);
+
+        List<ConsultantCertification> certNames = certificationRepository
+                .findByConsultantAndIsActiveTrue(user)
+                .stream()
+                .map(cert -> ConsultantCertification.builder()
+                        .name(cert.getName())
+                        .imageUrl(cert.getImage())
+                        .build())
+                .collect(Collectors.toList());
+        consultantDTO.setCertification(certNames);
+
+        return consultantDTO;
+    }
+
+    public List<ConsultantDetailResponse> getConsultantsByService(Long serviceId) {
+        List<Specialization> specializations = specializationRepository.findByServicesIdAndIsActiveTrue(serviceId);
+        List<Long> specializationIds = specializations.stream().map(Specialization::getId).toList();
+        List<User> consultants = authenticationRepository.findBySpecializations_IdInAndIsActive(specializationIds, true);
+
+        return consultants.stream()
+                .filter(user -> UserRole.CONSULTANT.equals(user.getRole()))
+                .map(this::convertToConsultantDetailResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void softDeleteUser(Long userId) {
+        User user = authenticationRepository.findById(userId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
+
+        user.setActive(false);
+        authenticationRepository.save(user);
+    }
+    public void restoreUser(Long userId) {
+        User user = authenticationRepository.findById(userId)
+                .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, UserMessages.USER_NOT_FOUND.formatted(userId)));
+
+        if (user.isActive()) {
+            throw new DomainException(UserMessages.USER_ACTIVE);
+        }
+
+        user.setActive(true);
+        authenticationRepository.save(user);
+    }
+}

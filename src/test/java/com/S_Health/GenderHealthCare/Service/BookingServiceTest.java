@@ -1,15 +1,28 @@
 package com.S_Health.GenderHealthCare.Service;
 
-import com.S_Health.GenderHealthCare.dto.request.service.BookingRequest;
-import com.S_Health.GenderHealthCare.dto.response.BookingResponse;
-import com.S_Health.GenderHealthCare.entity.*;
-import com.S_Health.GenderHealthCare.enums.AppointmentStatus;
-import com.S_Health.GenderHealthCare.enums.ServiceType;
-import com.S_Health.GenderHealthCare.enums.SlotStatus;
-import com.S_Health.GenderHealthCare.repository.*;
-import com.S_Health.GenderHealthCare.service.MedicalService.BookingService;
-import com.S_Health.GenderHealthCare.service.medicalProfile.MedicalProfileService;
-import com.S_Health.GenderHealthCare.service.schedule.ServiceSlotPoolService;
+import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ServiceSlotPool;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.catalog.enums.ServiceType;
+import com.S_Health.GenderHealthCare.modules.scheduling.domain.ConsultantSlot;
+import com.S_Health.GenderHealthCare.modules.scheduling.enums.SlotStatus;
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
+
+import com.S_Health.GenderHealthCare.modules.appointment.dto.request.BookingRequest;
+import com.S_Health.GenderHealthCare.modules.appointment.dto.response.BookingResponse;
+
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentDetailRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persistence.AppointmentRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomConsultantRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomRepository;
+import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ServiceRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ServiceSlotPoolRepository;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalProfileRepository;
+import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
+import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
+import com.S_Health.GenderHealthCare.modules.appointment.service.BookingService;
+import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
+import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +59,7 @@ class BookingServiceTest {
     @Mock private RoomConsultantRepository roomConsultantRepository;
 
     private BookingRequest bookingRequest;
-    private com.S_Health.GenderHealthCare.entity.Service service;
+    private com.S_Health.GenderHealthCare.modules.catalog.domain.Service service;
     private ServiceSlotPool slotPool;
     private User customer;
     private ConsultantSlot consultantSlot;
@@ -60,7 +73,7 @@ class BookingServiceTest {
         bookingRequest.setSlot_id(10L);
         bookingRequest.setNote("Test booking");
 
-        service = new com.S_Health.GenderHealthCare.entity.Service();
+        service = new com.S_Health.GenderHealthCare.modules.catalog.domain.Service();
         service.setId(1L);
         service.setName("Test Service");
         service.setIsCombo(false);
@@ -94,8 +107,8 @@ class BookingServiceTest {
         when(consultantSlotRepository.findByConsultantAndDateAndStartTimeAndStatus(any(), any(), any(), any()))
                 .thenReturn(Optional.of(consultantSlot));
 
-        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO.class)))
-                .thenReturn(new com.S_Health.GenderHealthCare.dto.AppointmentDetailDTO());
+        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse.class)))
+                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse());
 
         BookingResponse response = bookingService.bookingService(bookingRequest);
 
@@ -115,7 +128,7 @@ class BookingServiceTest {
         when(serviceSlotPoolRepository.findById(10L)).thenReturn(Optional.of(slotPool));
         bookingRequest.setSlot(LocalTime.of(15, 0)); // lệch so với slotPool
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        DomainException ex = assertThrows(DomainException.class,
                 () -> bookingService.bookingService(bookingRequest));
 
         assertEquals("Khung giờ không khớp với ngày/giờ yêu cầu!", ex.getMessage());

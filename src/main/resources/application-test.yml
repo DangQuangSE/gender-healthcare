@@ -1,0 +1,55 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:gender_healthcare_test;MODE=MySQL;NON_KEYWORDS=USER,VALUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  main:
+    allow-circular-references: true
+
+  mail:
+    host: localhost
+    port: 2525
+    username: test@example.com
+    password: test-password
+
+jwt:
+  secret: test-only-jwt-secret-key-with-at-least-32-characters
+
+google:
+  client:
+    id: test-google-client-id
+
+payos:
+  client-id: test-payos-client-id
+  api-key: test-payos-api-key
+  checksum-key: test-payos-checksum-key
+  api-base-url: https://api-merchant.payos.vn
+  return-url: http://localhost:5173/user/booking
+  cancel-url: http://localhost:5173/user/booking
+  webhook-url: http://localhost:8085/api/v1/payments/payos/webhook
+
+cloudinary:
+  cloud_name: test-cloud
+  api_key: test-key
+  api_secret: test-secret
+
+zoom:
+  client-id: test-zoom-client
+  client-secret: test-zoom-secret
+  account-id: test-zoom-account
+
+cors:
+  allowed-origins: http://localhost:5173
