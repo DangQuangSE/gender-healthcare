@@ -3,7 +3,6 @@ package com.S_Health.GenderHealthCare.modules.identity.controller;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.EmailRegisterRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
-import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.VerifyOTPRequest;
 import com.S_Health.GenderHealthCare.modules.identity.service.AuthenticationService;
@@ -78,11 +77,6 @@ public class AuthenticationController {
     public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordRequest request) {
         authenticationService.setPasswordForgot(request);
         return ResponseEntity.ok(IdentityMessages.PASSWORD_RESET_SUCCESS);
-    }
-
-    @PostMapping("/auth/google")
-    public ResponseEntity<?> loginWithGoogle(@RequestBody OAuthLoginRequest request) {
-        return ResponseEntity.ok(authenticationService.loginWithGoogleToken(request.getAccessToken()));
     }
 
     @PostMapping("/auth/login")

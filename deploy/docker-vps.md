@@ -32,7 +32,6 @@ JPA_DDL_AUTO=validate
 CORS_ALLOWED_ORIGINS=https://your-domain.example
 VITE_API_BASE_URL=/api
 VITE_WEBSOCKET_URL=/ws/chat
-VITE_GOOGLE_CLIENT_ID=your-google-client-id
 PAYOS_RETURN_URL=https://your-domain.example/user/booking
 PAYOS_CANCEL_URL=https://your-domain.example/user/booking
 PAYOS_WEBHOOK_URL=https://your-domain.example/api/v1/payments/payos/webhook

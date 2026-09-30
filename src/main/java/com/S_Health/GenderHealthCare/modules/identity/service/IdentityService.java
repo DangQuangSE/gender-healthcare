@@ -4,7 +4,6 @@ package com.S_Health.GenderHealthCare.modules.identity.service;
 
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
-import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
 import com.S_Health.GenderHealthCare.common.exception.DomainException;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
@@ -67,11 +66,6 @@ public class IdentityService {
 
     public LoginResponse login(LoginEmailRequest request) {
         return identityMapper.toLoginResponse(authenticationService.loginWithEmail(request));
-    }
-
-    public LoginResponse loginWithGoogle(OAuthLoginRequest request) {
-        return identityMapper.toLoginResponse(
-                authenticationService.loginWithGoogleToken(request.getAccessToken()));
     }
 
 }

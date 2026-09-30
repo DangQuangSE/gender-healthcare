@@ -5,8 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.checkerframework.checker.units.qual.N;
-
 import java.time.LocalDateTime;
 @Entity
 @Data

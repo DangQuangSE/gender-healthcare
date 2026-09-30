@@ -11,7 +11,7 @@ src/main/java/com/S_Health/GenderHealthCare/
 ├── common/          # shared response, validation, security, filters and exceptions
 ├── config/           # application-wide Spring configuration
 ├── modules/
-│   ├── identity/     # login, registration, JWT and OAuth clients
+│   ├── identity/     # login, registration and JWT
 │   ├── user/         # profile, certification and user administration
 │   ├── catalog/      # services, rooms, tags and specializations
 │   ├── scheduling/   # consultant schedules and slots
