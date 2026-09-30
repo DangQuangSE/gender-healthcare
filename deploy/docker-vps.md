@@ -1,82 +1,63 @@
-# Docker deployment on a VPS
+# Backend deployment on the shared VPS
 
-The Compose file lives in the backend repository and expects both repositories
-to be siblings:
+The backend runs beside sport-pro on the same VPS. The stacks are isolated by
+their Compose project names, networks, containers, and database volumes.
 
 ```text
-/opt/gender-healthcare/
-|-- gender-healthcare/
-`-- gender-healthcare-fe/
+/opt/s-health/backend/
+|-- .env                         # runtime secrets, never committed
+`-- deploy/docker-compose.vps.yml
 ```
 
-Only the frontend container is published. MySQL and Spring Boot stay on the
-private Docker network.
+## Runtime layout
 
-## 1. Prepare the server
+- Spring Boot listens on `8085` inside its container.
+- Only `127.0.0.1:8086` is published on the VPS.
+- Cloudflare Tunnel forwards `api.s-health.xyz` to `http://127.0.0.1:8086`.
+- MySQL has no host port and is reachable only on `s_health_network`.
+- The database persists in the `s_health_mysql_data` Docker volume.
 
-Install Docker Engine and the Docker Compose plugin. Then clone or update both
-repositories and create the runtime environment file:
+Port `8086` is deliberate: sport-pro uses its own internal API port and is not
+changed by this stack.
+
+## First-time VPS setup
+
+Install Docker Engine and the Compose plugin, then create the runtime file:
 
 ```bash
-cd /opt/gender-healthcare/gender-healthcare
-cp deploy/backend.env.example .env
+sudo mkdir -p /opt/s-health/backend
+cd /opt/s-health/backend
+git clone https://github.com/DangQuangSE/gender-healthcare.git .
+touch .env
 chmod 600 .env
 ```
 
-Fill in every `change-me` or `replace-with-*` value in `.env`. Important VPS
-values include:
+Create `.env` from the approved local configuration and fill every key listed in
+`deploy/required-env.list`. Keep this file on the VPS only. The deployment
+workflow checks that every listed key exists and is non-empty before Compose is
+started.
 
-```dotenv
-HTTP_BIND=127.0.0.1:8080
-JPA_DDL_AUTO=validate
-CORS_ALLOWED_ORIGINS=https://your-domain.example
-VITE_API_BASE_URL=/api
-VITE_WEBSOCKET_URL=/ws/chat
-PAYOS_RETURN_URL=https://your-domain.example/user/booking
-PAYOS_CANCEL_URL=https://your-domain.example/user/booking
-PAYOS_WEBHOOK_URL=https://your-domain.example/api/v1/payments/payos/webhook
-```
-
-`HTTP_BIND=80` is suitable when this stack owns the public HTTP port directly.
-Use `127.0.0.1:8080` when a host-level Nginx, Caddy or another TLS proxy will
-terminate HTTPS. PayOS webhook delivery must use a publicly reachable HTTPS
-URL.
-
-## 2. Check and start the stack
-
-Run these commands from the backend repository:
+Validate and start the backend stack:
 
 ```bash
-docker compose --env-file .env config --quiet
-docker compose --env-file .env up -d --build
-docker compose ps
-docker compose logs --tail=100 backend
+docker compose --project-name s-health --env-file .env \
+  -f deploy/docker-compose.vps.yml config --quiet
+docker compose --project-name s-health --env-file .env \
+  -f deploy/docker-compose.vps.yml up -d --build
+docker compose --project-name s-health --env-file .env \
+  -f deploy/docker-compose.vps.yml ps
+curl --fail http://127.0.0.1:8086/health
 ```
 
-The frontend serves the SPA and proxies `/api/` and `/ws/` to the backend. The
-backend health endpoint is `/health`; the frontend health endpoint is `/health`.
+Do not run `docker compose down -v` on this stack unless the database volume is
+intentionally being destroyed.
 
-## 3. Database and migrations
+## Updates and rollback
 
-The named `mysql_data` volume persists database data across container updates.
-The default `JPA_DDL_AUTO=validate` intentionally prevents Hibernate from
-silently changing the production schema. Restore or provision the application
-schema before the backend is started, and execute reviewed SQL migrations
-through the database change process. The PayOS migration is documented in
-`docs/migrations/README.md`.
+The backend workflow uploads a source archive, copies the existing `.env` into
+the release, rebuilds the ARM VPS image there, and checks `/health` before
+switching the release directory. If the health check fails, it attempts to
+restart the previous Compose definition.
 
-Back up before migrations and before removing the stack. Do not use
-`docker compose down -v` on production unless the database volume is
-deliberately being destroyed.
-
-## 4. Update and rollback
-
-```bash
-git pull
-docker compose --env-file .env up -d --build
-docker compose ps
-```
-
-If a new image is unhealthy, inspect `docker compose logs backend` and return to
-the previously verified Git revision before rebuilding. Keep `.env` outside
-Git; only `.env.example` is intended to be versioned.
+The workflow does not copy `.env` from GitHub and does not publish MySQL or the
+Spring Boot port directly to the Internet.
