@@ -1,0 +1,65 @@
+name: s-health
+
+services:
+  database:
+    image: mysql:8.4
+    container_name: s_health_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:?DB_NAME must be set}
+      MYSQL_USER: ${DB_USERNAME:?DB_USERNAME must be set}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD must be set}
+    volumes:
+      - s_health_mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -h 127.0.0.1 -u root -p"$${MYSQL_ROOT_PASSWORD}"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - s_health_network
+
+  backend:
+    container_name: s_health_backend
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    env_file:
+      - ../.env
+    environment:
+      APP_ADDRESS: ${APP_ADDRESS:?APP_ADDRESS must be set}
+      APP_PORT: ${APP_PORT:?APP_PORT must be set}
+      DB_URL: jdbc:mysql://database:3306/${DB_NAME:?DB_NAME must be set}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:?JPA_DDL_AUTO must be set}
+    ports:
+      - "127.0.0.1:8086:8085"
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent --show-error --max-time 5 http://127.0.0.1:8085/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - s_health_network
+
+volumes:
+  s_health_mysql_data:
+    name: s_health_mysql_data
+
+networks:
+  s_health_network:
+    name: s_health_network
+    driver: bridge

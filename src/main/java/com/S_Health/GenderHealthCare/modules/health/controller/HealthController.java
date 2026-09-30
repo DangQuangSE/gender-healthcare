@@ -21,7 +21,7 @@ public class HealthController {
     private final String applicationName;
 
     public HealthController(
-            @Value("${spring.application.name:GenderHealthCare}") String applicationName) {
+            @Value("${spring.application.name}") String applicationName) {
         this.applicationName = applicationName;
     }
 
