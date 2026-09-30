@@ -4,7 +4,6 @@ import com.S_Health.GenderHealthCare.common.response.ApiResponse;
 import com.S_Health.GenderHealthCare.modules.identity.IdentityMessages;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.EmailRegisterRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.LoginEmailRequest;
-import com.S_Health.GenderHealthCare.modules.identity.dto.request.OAuthLoginRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.PasswordRequest;
 import com.S_Health.GenderHealthCare.modules.identity.dto.request.VerifyOTPRequest;
 import com.S_Health.GenderHealthCare.modules.identity.service.IdentityService;
@@ -76,13 +75,6 @@ public class IdentityController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody LoginEmailRequest request) {
         return ResponseEntity.ok(ApiResponse.success(identityService.login(request), null));
-    }
-
-    @PostMapping("/oauth/google")
-    @Operation(summary = IdentityMessages.LOGIN_GOOGLE)
-    public ResponseEntity<ApiResponse<LoginResponse>> loginWithGoogle(
-            @Valid @RequestBody OAuthLoginRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(identityService.loginWithGoogle(request), null));
     }
 
     private ResponseEntity<ApiResponse<String>> success(String message) {
