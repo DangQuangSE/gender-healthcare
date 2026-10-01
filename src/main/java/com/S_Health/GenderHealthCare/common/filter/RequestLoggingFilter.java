@@ -36,7 +36,6 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             long durationInMillis = (System.nanoTime() - startTime) / 1_000_000;
             log.info(
                     CommonMessages.LOG_REQUEST,
-                    "request method={} path={} status={} durationMs={} requestId={}",
                     request.getMethod(),
                     request.getRequestURI(),
                     response.getStatus(),

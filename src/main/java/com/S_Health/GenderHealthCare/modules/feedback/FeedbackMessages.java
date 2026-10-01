@@ -15,9 +15,9 @@ public final class FeedbackMessages {
     public static final String CONSULTANT_NOT_IN_APPOINTMENT = "Bác sĩ không thuộc cuộc hẹn này";
     public static final String NO_CONSULTANT_FEEDBACK = "Không có đánh giá bác sĩ nào";
 
-    public static final String FEEDBACK_ACCESS_FORBIDDEN = "You do not have permission to view this feedback";
-    public static final String CONSULTANT_ROLE_REQUIRED = "Only consultants can view their consultant feedback";
-    public static final String STAFF_ROLE_REQUIRED = "Only staff or admin users can view all feedback";
+    public static final String FEEDBACK_ACCESS_FORBIDDEN = "Bạn không có quyền xem đánh giá này.";
+    public static final String CONSULTANT_ROLE_REQUIRED = "Chỉ tư vấn viên mới có thể xem đánh giá của mình.";
+    public static final String STAFF_ROLE_REQUIRED = "Chỉ staff hoặc admin mới có thể xem toàn bộ đánh giá.";
     public static final String CREATE_SERVICE_FEEDBACK = "Create service feedback";
     public static final String GET_SERVICE_FEEDBACK = "Get service feedback";
     public static final String UPDATE_SERVICE_FEEDBACK = "Update service feedback";
@@ -29,11 +29,11 @@ public final class FeedbackMessages {
     public static final String GET_AVERAGE_RATING = "Get the average service rating";
     public static final String GET_ALL_FEEDBACK = "Get all service feedback";
     public static final String GET_FEEDBACK_BY_SERVICE_FEEDBACK = "Get consultant feedback for a service feedback";
-    public static final String RATING_INVALID = "Rating must be between 1 and 5";
-    public static final String COMMENT_TOO_LONG = "Comment must not exceed 1000 characters";
-    public static final String CONSULTANT_COMMENT_TOO_LONG = "Consultant comment must not exceed 1000 characters";
-    public static final String APPOINTMENT_ID_REQUIRED = "Appointment id is required";
-    public static final String APPOINTMENT_ID_POSITIVE = "Appointment id must be positive";
+    public static final String RATING_INVALID = "Điểm đánh giá phải từ 1 đến 5.";
+    public static final String COMMENT_TOO_LONG = "Bình luận không được vượt quá 1000 ký tự.";
+    public static final String CONSULTANT_COMMENT_TOO_LONG = "Bình luận của tư vấn viên không được vượt quá 1000 ký tự.";
+    public static final String APPOINTMENT_ID_REQUIRED = "Mã lịch hẹn là bắt buộc.";
+    public static final String APPOINTMENT_ID_POSITIVE = "Mã lịch hẹn phải là số dương.";
     public static final String CONSULTANT_FEEDBACK_TAG = "Consultant Feedback API";
     public static final String CONSULTANT_FEEDBACK_TAG_DESCRIPTION = "API for managing consultant feedback";
 

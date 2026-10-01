@@ -101,6 +101,7 @@ class PaymentFinalizationServiceTest {
         var response = service.finalizeWebhook(webhook(20000L, "00", "link-123"));
 
         assertThat(response.paymentStatus()).isEqualTo(PaymentStatus.SUCCESS);
+        assertThat(response.appointmentId()).isEqualTo(7L);
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.SUCCESS);
         assertThat(appointment.getStatus()).isEqualTo(AppointmentStatus.CONFIRMED);
         assertThat(detail.getStatus()).isEqualTo(AppointmentStatus.CONFIRMED);

@@ -135,6 +135,7 @@ public class PaymentFinalizationService {
     private PaymentStatusResponse toResponse(Transaction transaction, Payment payment) {
         return new PaymentStatusResponse(
                 transaction.getProviderOrderCode(),
+                payment.getAppointment().getId(),
                 payment.getAmount().longValue(),
                 transaction.getChargedAmount().longValue(),
                 transaction.getProviderCheckoutUrl(),

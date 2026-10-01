@@ -1,7 +1,7 @@
 package com.S_Health.GenderHealthCare.common.response;
 
 import com.S_Health.GenderHealthCare.common.filter.RequestIdFilter;
-import com.S_Health.GenderHealthCare.common.message.CommonMessages;
+import com.S_Health.GenderHealthCare.common.message.ApiResponseMessages;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -10,6 +10,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.slf4j.MDC;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public record ApiResponse<T>(
         String requestId) {
 
     public static <T> ApiResponse<T> success(T data, String path) {
-        return success(HttpStatus.OK, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, data, path);
+        return success(HttpStatus.OK, ApiResponseMessages.SUCCESS_CODE, ApiResponseMessages.SUCCESS_MESSAGE, data, path);
     }
 
     public static <T> ApiResponse<T> success(
@@ -53,7 +54,7 @@ public record ApiResponse<T>(
     }
 
     public static ApiResponse<List<?>> paged(Page<?> page, String path) {
-        return paged(HttpStatus.OK, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, page, path);
+        return paged(HttpStatus.OK, ApiResponseMessages.SUCCESS_CODE, ApiResponseMessages.SUCCESS_MESSAGE, page, path);
     }
 
     public static ApiResponse<List<?>> paged(
@@ -89,9 +90,23 @@ public record ApiResponse<T>(
                 message,
                 null,
                 null,
-                errors,
+                normalizeErrors(errors),
                 resolvePath(path),
                 currentRequestId());
+    }
+
+    private static Map<String, String> normalizeErrors(Map<String, String> errors) {
+        if (errors == null || errors.isEmpty()) {
+            return null;
+        }
+
+        Map<String, String> normalized = new LinkedHashMap<>();
+        errors.forEach((field, error) -> {
+            if (field != null && error != null && !error.isBlank()) {
+                normalized.put(field, error);
+            }
+        });
+        return normalized.isEmpty() ? null : Map.copyOf(normalized);
     }
 
     private static String currentRequestId() {

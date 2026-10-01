@@ -5,6 +5,7 @@ import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
 
 public record PaymentStatusResponse(
         Long orderCode,
+        Long appointmentId,
         Long serviceAmount,
         Long chargedAmount,
         String checkoutUrl,

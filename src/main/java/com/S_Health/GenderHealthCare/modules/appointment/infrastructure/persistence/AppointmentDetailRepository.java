@@ -3,6 +3,8 @@ package com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persist
 import com.S_Health.GenderHealthCare.modules.appointment.domain.Appointment;
 import com.S_Health.GenderHealthCare.modules.appointment.domain.AppointmentDetail;
 import com.S_Health.GenderHealthCare.modules.appointment.enums.AppointmentStatus;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +25,10 @@ public interface AppointmentDetailRepository extends JpaRepository<AppointmentDe
     List<AppointmentDetail> findByAppointmentAndIsActiveTrue(Appointment appointment);
     List<AppointmentDetail> findByAppointmentInAndIsActiveTrue(List<Appointment> appointments);
     Optional<AppointmentDetail> findByAppointmentId(Long appointmentId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM AppointmentDetail a WHERE a.appointment.id = :appointmentId")
+    Optional<AppointmentDetail> findByAppointmentIdForUpdate(@Param("appointmentId") Long appointmentId);
 
     @Query("SELECT a FROM AppointmentDetail a WHERE a.appointment.id = :appointmentId")
     List<AppointmentDetail> findAllAppointmentDetails(@Param("appointmentId") Long appointmentId);

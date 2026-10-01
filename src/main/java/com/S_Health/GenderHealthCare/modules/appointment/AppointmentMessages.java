@@ -43,17 +43,17 @@ public final class AppointmentMessages {
     public static final String CHECK_IN_APPOINTMENT = "Check in an appointment";
     public static final String GET_PATIENT_HISTORY = "Get patient history from an appointment";
     public static final String UPDATE_DETAIL_STATUS = "Update an appointment detail status";
-    public static final String DETAIL_STATUS_UPDATED = "Appointment detail status updated";
+    public static final String DETAIL_STATUS_UPDATED = "Cập nhật trạng thái chi tiết lịch hẹn thành công.";
     public static final String RATE_APPOINTMENT = "Mark an appointment as rated";
-    public static final String APPOINTMENT_DELETED = "Appointment deleted successfully";
-    public static final String APPOINTMENT_CANCELED = "Appointment canceled successfully";
-    public static final String APPOINTMENT_CHECKED_IN = "Appointment checked in successfully";
-    public static final String APPOINTMENT_RATED = "Appointment rated successfully";
+    public static final String APPOINTMENT_DELETED = "Xóa lịch hẹn thành công.";
+    public static final String APPOINTMENT_CANCELED = "Hủy lịch hẹn thành công.";
+    public static final String APPOINTMENT_CHECKED_IN = "Check-in lịch hẹn thành công.";
+    public static final String APPOINTMENT_RATED = "Đánh dấu lịch hẹn đã đánh giá thành công.";
     public static final String CREATE_BOOKING = "Create an appointment booking";
     public static final String CREATE_MEETING = "Create an online consultation meeting";
-    public static final String APPOINTMENT_DATE_REQUIRED = "Appointment date is required";
-    public static final String APPOINTMENT_STATUS_REQUIRED = "Appointment status is required";
-    public static final String DETAIL_STATUS_REQUIRED = "Appointment detail status is required";
+    public static final String APPOINTMENT_DATE_REQUIRED = "Ngày lịch hẹn là bắt buộc.";
+    public static final String APPOINTMENT_STATUS_REQUIRED = "Trạng thái lịch hẹn là bắt buộc.";
+    public static final String DETAIL_STATUS_REQUIRED = "Trạng thái chi tiết lịch hẹn là bắt buộc.";
 
     private AppointmentMessages() {
     }

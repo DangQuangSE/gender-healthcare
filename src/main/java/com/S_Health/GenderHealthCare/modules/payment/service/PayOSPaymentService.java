@@ -89,6 +89,7 @@ public class PayOSPaymentService {
             String message) {
         return new PaymentStatusResponse(
                 transaction.getProviderOrderCode(),
+                transaction.getPayment().getAppointment().getId(),
                 transaction.getPayment().getAmount().longValue(),
                 transaction.getChargedAmount().longValue(),
                 transaction.getProviderCheckoutUrl(),

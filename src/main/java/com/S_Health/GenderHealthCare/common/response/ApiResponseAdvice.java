@@ -1,6 +1,6 @@
 package com.S_Health.GenderHealthCare.common.response;
 
-import com.S_Health.GenderHealthCare.common.message.CommonMessages;
+import com.S_Health.GenderHealthCare.common.message.ApiResponseMessages;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -15,10 +15,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /**
- * Wraps normal JSON response bodies in the common response envelope.
+ * Wraps normal JSON response bodies from the HTTP API in the common envelope.
+ * This keeps versioned and deprecated compatibility endpoints on one response contract.
  */
 @RestControllerAdvice
 public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
+    private static final String API_PREFIX = "/api/";
 
     @Override
     public boolean supports(
@@ -36,21 +38,21 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             ServerHttpRequest request,
             ServerHttpResponse response) {
         String path = request.getURI().getPath();
-        if (shouldSkip(body, selectedContentType) || !isVersionedApi(path)) {
+        if (shouldSkip(body, selectedContentType) || !isApiPath(path)) {
             return body;
         }
 
         HttpStatus status = resolveStatus(response);
 
         if (body instanceof Page<?> page) {
-            return ApiResponse.paged(status, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, page, path);
+            return ApiResponse.paged(status, ApiResponseMessages.SUCCESS_CODE, ApiResponseMessages.SUCCESS_MESSAGE, page, path);
         }
 
-        return ApiResponse.success(status, CommonMessages.REQUEST_SUCCESS_CODE, CommonMessages.REQUEST_COMPLETED, body, path);
+        return ApiResponse.success(status, ApiResponseMessages.SUCCESS_CODE, ApiResponseMessages.SUCCESS_MESSAGE, body, path);
     }
 
-    private boolean isVersionedApi(String path) {
-        return path != null && path.startsWith("/api/v1/");
+    private boolean isApiPath(String path) {
+        return path != null && path.startsWith(API_PREFIX);
     }
 
     private boolean shouldSkip(Object body, MediaType contentType) {
@@ -66,7 +68,10 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     private HttpStatus resolveStatus(ServerHttpResponse response) {
         if (response instanceof ServletServerHttpResponse servletResponse) {
-            return HttpStatus.valueOf(servletResponse.getServletResponse().getStatus());
+            int status = servletResponse.getServletResponse().getStatus();
+            if (status >= 100 && status <= 599) {
+                return HttpStatus.valueOf(status);
+            }
         }
         return HttpStatus.OK;
     }

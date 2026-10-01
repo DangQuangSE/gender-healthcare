@@ -72,22 +72,22 @@ public final class CatalogConstants {
     public static final String CONFIG_EXISTS = "Cấu hình đã tồn tại";
     public static final String CONFIG_NOT_FOUND = "Không tìm thấy cấu hình";
 
-    public static final String SPECIALIZATION_DELETED = "Specialization deleted successfully";
-    public static final String ROOM_DELETED = "Room deleted successfully";
-    public static final String CONSULTANT_REMOVED_FROM_ROOM = "Consultant removed from room";
-    public static final String TAG_DELETED = "Tag deleted successfully";
-    public static final String CONFIGURATION_DELETED = "Configuration deleted successfully";
-    public static final String CONFIG_NAME_REQUIRED = "Configuration name is required";
-    public static final String CONFIG_VALUE_REQUIRED = "Configuration value is required";
-    public static final String SERVICE_NAME_REQUIRED = "Service name is required";
-    public static final String SPECIALIZATION_NAME_REQUIRED = "Specialization name is required";
-    public static final String TAG_NAME_REQUIRED = "Tag name is required";
-    public static final String ROOM_NAME_REQUIRED = "Room name is required";
-    public static final String SPECIALIZATION_ID_REQUIRED = "Specialization ID is required";
-    public static final String CONSULTANT_ID_REQUIRED = "Consultant ID is required";
-    public static final String WORKING_DAY_REQUIRED = "Working day is required";
-    public static final String START_TIME_REQUIRED = "Start time is required";
-    public static final String END_TIME_REQUIRED = "End time is required";
+    public static final String SPECIALIZATION_DELETED = "Xóa chuyên môn thành công.";
+    public static final String ROOM_DELETED = "Xóa phòng thành công.";
+    public static final String CONSULTANT_REMOVED_FROM_ROOM = "Xóa tư vấn viên khỏi phòng thành công.";
+    public static final String TAG_DELETED = "Xóa tag thành công.";
+    public static final String CONFIGURATION_DELETED = "Xóa cấu hình thành công.";
+    public static final String CONFIG_NAME_REQUIRED = "Tên cấu hình là bắt buộc.";
+    public static final String CONFIG_VALUE_REQUIRED = "Giá trị cấu hình là bắt buộc.";
+    public static final String SERVICE_NAME_REQUIRED = "Tên dịch vụ là bắt buộc.";
+    public static final String SPECIALIZATION_NAME_REQUIRED = "Tên chuyên môn là bắt buộc.";
+    public static final String TAG_NAME_REQUIRED = "Tên tag là bắt buộc.";
+    public static final String ROOM_NAME_REQUIRED = "Tên phòng là bắt buộc.";
+    public static final String SPECIALIZATION_ID_REQUIRED = "Mã chuyên môn là bắt buộc.";
+    public static final String CONSULTANT_ID_REQUIRED = "Mã tư vấn viên là bắt buộc.";
+    public static final String WORKING_DAY_REQUIRED = "Ngày làm việc là bắt buộc.";
+    public static final String START_TIME_REQUIRED = "Thời gian bắt đầu là bắt buộc.";
+    public static final String END_TIME_REQUIRED = "Thời gian kết thúc là bắt buộc.";
 
     private CatalogConstants() {
     }
