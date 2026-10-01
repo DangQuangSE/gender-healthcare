@@ -6,10 +6,15 @@ import java.util.Objects;
 
 /**
  * Base exception for errors that can be safely returned to the client.
+ *
+ * <p>The message supplied to this exception is the explicit client-facing
+ * message. Internal causes are kept separately and are logged by the global
+ * exception handler when present.</p>
  */
 public class DomainException extends RuntimeException {
     private final ErrorCode errorCode;
     private final Map<String, String> errors;
+    private final String clientMessage;
 
     public DomainException(String message) {
         this(ErrorCode.BAD_REQUEST, message);
@@ -27,12 +32,14 @@ public class DomainException extends RuntimeException {
         super(message);
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode must not be null");
         this.errors = errors == null ? Collections.emptyMap() : Map.copyOf(errors);
+        this.clientMessage = message;
     }
 
     public DomainException(ErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode must not be null");
         this.errors = Collections.emptyMap();
+        this.clientMessage = message;
     }
 
     public DomainException(
@@ -43,6 +50,7 @@ public class DomainException extends RuntimeException {
         super(message, cause);
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode must not be null");
         this.errors = errors == null ? Collections.emptyMap() : Map.copyOf(errors);
+        this.clientMessage = message;
     }
 
     public ErrorCode getErrorCode() {
@@ -51,5 +59,9 @@ public class DomainException extends RuntimeException {
 
     public Map<String, String> getErrors() {
         return errors;
+    }
+
+    public String getClientMessage() {
+        return clientMessage;
     }
 }

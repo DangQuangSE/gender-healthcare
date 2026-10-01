@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleDomainException(
             DomainException exception,
             HttpServletRequest request) {
-        String message = exception.getMessage();
+        String message = exception.getClientMessage();
         if (message == null || message.isBlank()) {
             message = exception.getErrorCode().getDefaultMessage();
         }
@@ -158,7 +158,7 @@ public class GlobalExceptionHandler {
                 errorCode.getStatus(),
                 errorCode.name(),
                 message,
-                errors.isEmpty() ? null : errors,
+                errors == null || errors.isEmpty() ? null : errors,
                 request.getRequestURI());
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }

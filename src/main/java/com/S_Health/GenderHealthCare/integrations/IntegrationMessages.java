@@ -4,17 +4,17 @@ package com.S_Health.GenderHealthCare.integrations;
  * Messages used by external service integrations.
  */
 public final class IntegrationMessages {
-    public static final String ZOOM_TOKEN_NOT_FOUND = "Unable to get an access token from Zoom";
-    public static final String ZOOM_TOKEN_REQUEST_FAILED = "Unable to request an access token from Zoom";
-    public static final String ZOOM_MEETING_ALREADY_EXISTS = "The meeting has already been created";
+    public static final String ZOOM_TOKEN_NOT_FOUND = "Không nhận được access token từ Zoom.";
+    public static final String ZOOM_TOKEN_REQUEST_FAILED = "Không thể yêu cầu access token từ Zoom.";
+    public static final String ZOOM_MEETING_ALREADY_EXISTS = "Cuộc họp đã được tạo trước đó.";
     public static final String ZOOM_APPOINTMENT_INVALID =
-            "The appointment is not confirmed or is not an online consultation";
-    public static final String ZOOM_USER_NOT_IN_MEETING = "You are not a participant in this meeting";
-    public static final String ZOOM_MEETING_CREATE_FAILED = "Unable to create the Zoom meeting, please try again later";
-    public static final String ZOOM_MEETING_REQUEST_FAILED = "Unable to request a Zoom meeting";
-    public static final String ZOOM_APPOINTMENT_NOT_FOUND = "Appointment not found";
-    public static final String ZOOM_APPOINTMENT_DETAIL_NOT_FOUND = "Appointment detail not found";
-    public static final String STORAGE_FILE_EMPTY = "File cannot be empty";
+            "Lịch hẹn chưa được xác nhận hoặc không phải tư vấn trực tuyến.";
+    public static final String ZOOM_USER_NOT_IN_MEETING = "Bạn không phải người tham gia cuộc họp này.";
+    public static final String ZOOM_MEETING_CREATE_FAILED = "Không thể tạo cuộc họp Zoom. Vui lòng thử lại sau.";
+    public static final String ZOOM_MEETING_REQUEST_FAILED = "Không thể yêu cầu tạo cuộc họp Zoom.";
+    public static final String ZOOM_APPOINTMENT_NOT_FOUND = "Không tìm thấy lịch hẹn.";
+    public static final String ZOOM_APPOINTMENT_DETAIL_NOT_FOUND = "Không tìm thấy chi tiết lịch hẹn.";
+    public static final String STORAGE_FILE_EMPTY = "Tệp không được để trống.";
     public static final String EMAIL_SEND_FAILED = "Email sending failed: %s";
     public static final String EMAIL_PASSWORD_RESET_FAILED = "Password reset email sending failed: %s";
     public static final String EMAIL_WELCOME_FAILED = "Welcome email sending failed: %s";
