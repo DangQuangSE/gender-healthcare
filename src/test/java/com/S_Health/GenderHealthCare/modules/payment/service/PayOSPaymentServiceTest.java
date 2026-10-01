@@ -55,6 +55,7 @@ class PayOSPaymentServiceTest {
 
         User customer = User.builder().id(7L).build();
         Appointment appointment = new Appointment();
+        appointment.setId(11L);
         appointment.setCustomer(customer);
         Payment payment = Payment.builder()
                 .amount(new BigDecimal("100000"))
@@ -94,6 +95,7 @@ class PayOSPaymentServiceTest {
         var response = service.getStatus(123L);
 
         assertThat(response.paymentStatus()).isEqualTo(PaymentStatus.SUCCESS);
+        assertThat(response.appointmentId()).isEqualTo(11L);
         verify(payOSGateway, never()).getPaymentStatus(123L);
     }
 }

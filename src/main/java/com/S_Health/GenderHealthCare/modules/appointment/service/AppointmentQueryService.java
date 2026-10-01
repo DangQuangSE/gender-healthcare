@@ -186,6 +186,9 @@ public class AppointmentQueryService {
         AppointmentDetailResponse detailDto = modelMapper.map(detail, AppointmentDetailResponse.class);
         detailDto.setConsultantName(detail.getConsultant().getFullname());
         detailDto.setServiceName(detail.getService().getName());
+        if (currentUserProvider.requireUser().getRole() == UserRole.CUSTOMER) {
+            detailDto.setStartUrl(null);
+        }
         detailDto.setRoom(mapRoomToSimpleDto(detail.getRoom()));
 
         MedicalResult medicalResult = resultsByDetailId.get(detail.getId());

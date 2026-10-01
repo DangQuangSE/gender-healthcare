@@ -7,6 +7,12 @@ public final class IntegrationMessages {
     public static final String ZOOM_TOKEN_NOT_FOUND = "Không nhận được access token từ Zoom.";
     public static final String ZOOM_TOKEN_REQUEST_FAILED = "Không thể yêu cầu access token từ Zoom.";
     public static final String ZOOM_MEETING_ALREADY_EXISTS = "Cuộc họp đã được tạo trước đó.";
+    public static final String ZOOM_MEETING_LINKS_INCOMPLETE =
+            "Dữ liệu cuộc họp Zoom không đầy đủ. Vui lòng liên hệ bộ phận hỗ trợ.";
+    public static final String ZOOM_PAYMENT_REQUIRED =
+            "Lịch hẹn cần được thanh toán thành công trước khi tạo phòng tư vấn trực tuyến.";
+    public static final String ZOOM_SLOT_TIME_MISSING =
+            "Lịch hẹn chưa có thời gian bắt đầu hợp lệ.";
     public static final String ZOOM_APPOINTMENT_INVALID =
             "Lịch hẹn chưa được xác nhận hoặc không phải tư vấn trực tuyến.";
     public static final String ZOOM_USER_NOT_IN_MEETING = "Bạn không phải người tham gia cuộc họp này.";

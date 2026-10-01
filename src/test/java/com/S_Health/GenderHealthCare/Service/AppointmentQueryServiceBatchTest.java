@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class AppointmentQueryServiceBatchTest {
@@ -84,11 +85,16 @@ class AppointmentQueryServiceBatchTest {
         when(medicalProfileRepository.findByCustomerIdInAndIsActiveTrue(anyList())).thenReturn(List.of());
         when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse.class)))
                 .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse());
+        var mappedDetail = new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse();
+        mappedDetail.setStartUrl("https://zoom.us/s/internal-host-link");
         when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse.class)))
-                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse());
+                .thenReturn(mappedDetail);
 
-        service.getAppointmentsByStatus(AppointmentStatus.CONFIRMED);
+        var response = service.getAppointmentsByStatus(AppointmentStatus.CONFIRMED);
 
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getAppointmentDetails()).hasSize(1);
+        assertThat(response.get(0).getAppointmentDetails().get(0).getStartUrl()).isNull();
         verify(appointmentDetailRepository).findByAppointmentInAndIsActiveTrue(anyList());
         verify(medicalResultRepository).findByAppointmentDetailIn(anyList());
         verify(appointmentDetailRepository, never()).findByAppointmentAndIsActiveTrue(any());
