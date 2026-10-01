@@ -195,6 +195,27 @@ jobs:
 
           compose=(docker compose --project-name s-health --env-file "$release/.env" -f "$new_compose")
           "${compose[@]}" config --quiet
+          migration_script="${release}/deploy/run-migrations.sh"
+          test -f "$migration_script"
+
+          "${compose[@]}" up -d database
+          database_healthy=false
+          for attempt in $(seq 1 30); do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' s_health_mysql)" = healthy ]; then
+              database_healthy=true
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$database_healthy" != true ]; then
+            "${compose[@]}" ps >&2 || true
+            "${compose[@]}" logs --tail=100 database >&2 || true
+            echo 'Database health check failed before migrations.' >&2
+            exit 1
+          fi
+
+          bash "$migration_script" "$release/.env"
           "${compose[@]}" up -d --build --remove-orphans
 
           healthy=false
