@@ -32,6 +32,11 @@ import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.
 import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
 import com.S_Health.GenderHealthCare.modules.user.infrastructure.persistence.AuthenticationRepository;
 import com.S_Health.GenderHealthCare.modules.medical.service.MedicalProfileService;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentIntent;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentMethod;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.infrastructure.persistence.PaymentRepository;
 import com.S_Health.GenderHealthCare.modules.scheduling.service.ServiceSlotPoolService;
 import com.S_Health.GenderHealthCare.utils.AuthUtil;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +44,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
@@ -58,6 +64,7 @@ public class BookingService {
     private final ModelMapper modelMapper;
     private final RoomRepository roomRepository;
     private final RoomConsultantRepository roomConsultantRepository;
+    private final PaymentRepository paymentRepository;
 
     public BookingService(
             ServiceSlotPoolService serviceSlotPoolService,
@@ -72,7 +79,8 @@ public class BookingService {
             AuthUtil authUtil,
             ModelMapper modelMapper,
             RoomRepository roomRepository,
-            RoomConsultantRepository roomConsultantRepository) {
+            RoomConsultantRepository roomConsultantRepository,
+            PaymentRepository paymentRepository) {
         this.serviceSlotPoolService = serviceSlotPoolService;
         this.serviceRepository = serviceRepository;
         this.authenticationRepository = authenticationRepository;
@@ -86,6 +94,7 @@ public class BookingService {
         this.modelMapper = modelMapper;
         this.roomRepository = roomRepository;
         this.roomConsultantRepository = roomConsultantRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Transactional
@@ -105,18 +114,36 @@ public class BookingService {
         appointmentRepository.save(appointment);
         // 3. Lặp các service con (nếu combo)
         List<AppointmentDetailResponse> appointmentDetails = new ArrayList<>();
+        List<AppointmentDetail> createdDetails = new ArrayList<>();
         List<ConsultantSlot> updatedSlots = new ArrayList<>();
         for (com.S_Health.GenderHealthCare.modules.catalog.domain.Service sub : context.services()) {
             AppointmentDetailData result = createAppointmentDetail(request, appointment, sub);
             appointmentDetails.add(result.dto());
+            createdDetails.add(result.detail());
             updatedSlots.add(result.slot());
         }
 
         // 4. Cập nhật lại slot pool tổng
         updateServiceSlotPool(context.slotPool(), updatedSlots);
         appointment.setPrice(context.service.getPrice());
+        if (isFreeService(context.service())) {
+            appointment.setStatus(AppointmentStatus.CONFIRMED);
+            createdDetails.forEach(detail -> detail.setStatus(AppointmentStatus.CONFIRMED));
+            appointmentDetailRepository.saveAll(createdDetails);
+        }
         appointmentRepository.save(appointment);
         consultantSlotRepository.saveAll(updatedSlots);
+        if (isFreeService(context.service())) {
+            paymentRepository.save(Payment.builder()
+                    .amount(BigDecimal.ZERO)
+                    .paymentIntent(PaymentIntent.FULL)
+                    .status(PaymentStatus.SUCCESS)
+                    .method(PaymentMethod.FREE)
+                    .paidAt(LocalDateTime.now())
+                    .appointment(appointment)
+                    .paidBy(context.customer())
+                    .build());
+        }
         //6. Tạo medical profile theo service và add appointment vào.
         medicalProfileService.createMedicalProfile(appointment);
         return BookingResponse.builder()
@@ -125,7 +152,7 @@ public class BookingService {
                 .date(request.getPreferredDate())
                 .time(request.getSlot())
                 .note(request.getNote())
-                .status(AppointmentStatus.PENDING)
+                .status(appointment.getStatus())
                 .details(appointmentDetails)
                 .build();
     }
@@ -219,10 +246,17 @@ public class BookingService {
         // Map Room information if available
         dto.setRoom(mapRoomToSimpleDTO(assignedRoom));
 
-        return new AppointmentDetailData(dto, slot);
+        return new AppointmentDetailData(dto, slot, detail);
     }
 
-    public static record AppointmentDetailData(AppointmentDetailResponse dto, ConsultantSlot slot) {
+    public static record AppointmentDetailData(
+            AppointmentDetailResponse dto,
+            ConsultantSlot slot,
+            AppointmentDetail detail) {
+    }
+
+    private boolean isFreeService(com.S_Health.GenderHealthCare.modules.catalog.domain.Service service) {
+        return service.getPrice() != null && Double.compare(service.getPrice(), 0.0) == 0;
     }
 
     public void updateServiceSlotPool(ServiceSlotPool slotPool, List<ConsultantSlot> slots) {

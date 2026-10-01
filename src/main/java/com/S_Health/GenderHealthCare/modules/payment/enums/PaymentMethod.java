@@ -2,6 +2,7 @@ package com.S_Health.GenderHealthCare.modules.payment.enums;
 
 public enum PaymentMethod {
     PAYOS,
+    FREE,
     VN_PAY,
     /**
      * Kept only for reading historical database records.

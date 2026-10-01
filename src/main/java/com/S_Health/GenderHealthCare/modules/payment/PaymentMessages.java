@@ -12,6 +12,7 @@ public final class PaymentMessages {
     public static final String PAYMENT_CREATE_FAILED = "Tạo thanh toán thất bại.";
     public static final String INVALID_SIGNATURE = "Chữ ký thanh toán không hợp lệ.";
     public static final String INVALID_PAYMENT_AMOUNT = "Số tiền thanh toán phải lớn hơn 0.";
+    public static final String FREE_SERVICE_DOES_NOT_USE_PAYOS = "Dịch vụ miễn phí không sử dụng cổng PayOS.";
     public static final String PAYOS_SIGNATURE_GENERATION_FAILED = "Không thể tạo chữ ký PayOS.";
     public static final String INVALID_PAYOS_WEBHOOK = "Webhook PayOS không hợp lệ.";
     public static final String INVALID_PAYOS_PAYMENT_REQUEST = "Yêu cầu thanh toán PayOS không hợp lệ.";

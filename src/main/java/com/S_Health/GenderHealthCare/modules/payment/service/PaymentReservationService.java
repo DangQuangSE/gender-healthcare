@@ -73,6 +73,9 @@ public class PaymentReservationService {
         }
 
         BigDecimal serviceAmount = BigDecimal.valueOf(appointment.getService().getPrice());
+        if (serviceAmount.signum() == 0) {
+            throw new DomainException(ErrorCode.BAD_REQUEST, PaymentMessages.FREE_SERVICE_DOES_NOT_USE_PAYOS);
+        }
         BigDecimal chargedAmount = amountCalculator.calculate(serviceAmount, paymentIntent);
         Payment payment = paymentRepository.save(Payment.builder()
                 .amount(serviceAmount)

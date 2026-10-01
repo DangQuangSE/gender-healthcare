@@ -16,6 +16,11 @@ import com.S_Health.GenderHealthCare.modules.appointment.infrastructure.persiste
 import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomConsultantRepository;
 import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.RoomRepository;
 import com.S_Health.GenderHealthCare.modules.catalog.infrastructure.persistence.ServiceRepository;
+import com.S_Health.GenderHealthCare.modules.payment.domain.Payment;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentIntent;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentMethod;
+import com.S_Health.GenderHealthCare.modules.payment.enums.PaymentStatus;
+import com.S_Health.GenderHealthCare.modules.payment.infrastructure.persistence.PaymentRepository;
 import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ServiceSlotPoolRepository;
 import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalProfileRepository;
 import com.S_Health.GenderHealthCare.modules.scheduling.infrastructure.persistence.ConsultantSlotRepository;
@@ -33,6 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +63,7 @@ class BookingServiceTest {
     @Mock private ModelMapper modelMapper;
     @Mock private RoomRepository roomRepository;
     @Mock private RoomConsultantRepository roomConsultantRepository;
+    @Mock private PaymentRepository paymentRepository;
 
     private BookingRequest bookingRequest;
     private com.S_Health.GenderHealthCare.modules.catalog.domain.Service service;
@@ -120,6 +127,33 @@ class BookingServiceTest {
         verify(appointmentRepository, times(2)).save(any());
         verify(consultantSlotRepository).saveAll(any());
         verify(medicalProfileService).createMedicalProfile(any());
+    }
+
+    @Test
+    void freeOnlineBookingConfirmsAppointmentAndRecordsSuccessfulZeroPayment() {
+        service.setPrice(0.0);
+        when(authUtil.getCurrentUserId()).thenReturn(customer.getId());
+        when(serviceRepository.findById(1L)).thenReturn(Optional.of(service));
+        when(serviceSlotPoolRepository.findById(10L)).thenReturn(Optional.of(slotPool));
+        when(authenticationRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        when(appointmentDetailRepository.existsByAppointment_Customer_IdAndSlotTime(anyLong(), any())).thenReturn(false);
+        when(serviceSlotPoolService.getConsultantInSpecialization(anyLong())).thenReturn(List.of(customer));
+        when(consultantSlotRepository.findByConsultantAndDateAndStartTimeAndStatus(any(), any(), any(), any()))
+                .thenReturn(Optional.of(consultantSlot));
+        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse.class)))
+                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse());
+
+        BookingResponse response = bookingService.bookingService(bookingRequest);
+
+        assertEquals(AppointmentStatus.CONFIRMED, response.getStatus());
+        ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
+        verify(paymentRepository).save(paymentCaptor.capture());
+        Payment freePayment = paymentCaptor.getValue();
+        assertEquals(PaymentStatus.SUCCESS, freePayment.getStatus());
+        assertEquals(PaymentMethod.FREE, freePayment.getMethod());
+        assertEquals(PaymentIntent.FULL, freePayment.getPaymentIntent());
+        assertEquals(BigDecimal.ZERO, freePayment.getAmount());
+        assertNotNull(freePayment.getPaidAt());
     }
 
     @Test
