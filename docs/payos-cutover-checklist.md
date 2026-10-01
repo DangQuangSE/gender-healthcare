@@ -22,8 +22,12 @@ merchant-account access or external webhook delivery.
 ## Required before deployment
 
 - [ ] Create a database backup and record `payment`/`transaction` row counts.
-- [ ] Apply `docs/migrations/payos-payment-data-v1.sql` through the approved
-      database change process and verify both postflight counts are zero.
+- [ ] For a fresh PayOS database, apply
+      `docs/migrations/payos-payment-data-v1.sql`; for a database where v1 was
+      already applied, apply
+      `docs/migrations/payos-payment-data-v2-free-payment-method.sql` through
+      the approved database change process. Verify the postflight counts and
+      confirm `payment.method` contains `FREE` before releasing free booking.
 - [ ] Configure `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY`,
       `PAYOS_RETURN_URL`, `PAYOS_CANCEL_URL` and an HTTPS `PAYOS_WEBHOOK_URL`
       outside Git.
