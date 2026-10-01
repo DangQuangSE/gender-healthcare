@@ -7,10 +7,10 @@ SELECT COUNT(*) AS payment_rows FROM payment;
 SELECT COUNT(*) AS transaction_rows FROM `transaction`;
 SELECT method, COUNT(*) AS row_count FROM payment GROUP BY method;
 
--- The existing MySQL enum must accept the active provider before new rows are written.
--- Preserve all historical values while adding PAYOS.
+-- The existing MySQL enum must accept every active payment method before new
+-- rows are written. Preserve all historical values while adding PAYOS and FREE.
 ALTER TABLE payment
-    MODIFY COLUMN method ENUM('MOMO', 'PAY_OFF', 'PAYOS', 'VN_PAY') NULL;
+    MODIFY COLUMN method ENUM('MOMO', 'PAY_OFF', 'PAYOS', 'VN_PAY', 'FREE') NULL;
 
 ALTER TABLE payment
     ADD COLUMN payment_intent VARCHAR(32) NULL;
