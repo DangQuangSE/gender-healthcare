@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -99,5 +100,45 @@ class AppointmentQueryServiceBatchTest {
         verify(medicalResultRepository).findByAppointmentDetailIn(anyList());
         verify(appointmentDetailRepository, never()).findByAppointmentAndIsActiveTrue(any());
         verify(medicalResultRepository, never()).findByAppointmentDetail(any());
+    }
+
+    @Test
+    void appointmentDetailsRemainReadableBeforeAConsultationResultExists() {
+        User customer = User.builder()
+                .id(1L)
+                .fullname("Customer")
+                .role(UserRole.CUSTOMER)
+                .build();
+        Service catalogService = Service.builder().id(2L).name("Consultation").build();
+        Appointment appointment = new Appointment();
+        appointment.setId(3L);
+        appointment.setCustomer(customer);
+        appointment.setService(catalogService);
+        appointment.setIsActive(true);
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+
+        AppointmentDetail detail = AppointmentDetail.builder()
+                .id(4L)
+                .appointment(appointment)
+                .consultant(User.builder().id(5L).fullname("Consultant").build())
+                .service(catalogService)
+                .isActive(true)
+                .build();
+
+        when(currentUserProvider.requireUser()).thenReturn(customer);
+        when(appointmentRepository.findById(3L)).thenReturn(Optional.of(appointment));
+        when(appointmentDetailRepository.findByAppointmentAndIsActiveTrue(appointment))
+                .thenReturn(List.of(detail));
+        when(medicalResultRepository.findByAppointmentDetailIn(anyList())).thenReturn(List.of());
+        when(medicalProfileRepository.findByCustomerIdInAndIsActiveTrue(anyList())).thenReturn(List.of());
+        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse.class)))
+                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentResponse());
+        when(modelMapper.map(any(), eq(com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse.class)))
+                .thenReturn(new com.S_Health.GenderHealthCare.modules.appointment.dto.response.AppointmentDetailResponse());
+
+        var response = service.getAppointmentById(3L);
+
+        assertThat(response.getAppointmentDetails()).hasSize(1);
+        assertThat(response.getAppointmentDetails().get(0).getMedicalResult()).isNull();
     }
 }

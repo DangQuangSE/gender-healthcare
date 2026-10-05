@@ -1,31 +1,39 @@
 package com.S_Health.GenderHealthCare.modules.medical.service;
 
+import com.S_Health.GenderHealthCare.common.exception.DomainException;
+import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
+import com.S_Health.GenderHealthCare.common.security.CurrentUserProvider;
+import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
 import com.S_Health.GenderHealthCare.modules.medical.domain.TreatmentProtocol;
-
-
 import com.S_Health.GenderHealthCare.modules.medical.dto.request.TreatmentProtocolRequest;
 import com.S_Health.GenderHealthCare.modules.medical.dto.response.TreatmentProtocolResponse;
-import com.S_Health.GenderHealthCare.common.exception.DomainException;
-import com.S_Health.GenderHealthCare.modules.medical.MedicalMessages;
+import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.MedicalResultRepository;
 import com.S_Health.GenderHealthCare.modules.medical.infrastructure.persistence.TreatmentProtocolRepository;
+import com.S_Health.GenderHealthCare.modules.user.domain.User;
+import com.S_Health.GenderHealthCare.modules.user.enums.UserRole;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import com.S_Health.GenderHealthCare.common.exception.ErrorCode;
 
 @Service
 public class TreatmentProtocolService {
     private final ModelMapper modelMapper;
     private final TreatmentProtocolRepository treatmentProtocolRepository;
+    private final MedicalResultRepository medicalResultRepository;
+    private final CurrentUserProvider currentUserProvider;
 
     public TreatmentProtocolService(
             ModelMapper modelMapper,
-            TreatmentProtocolRepository treatmentProtocolRepository) {
+            TreatmentProtocolRepository treatmentProtocolRepository,
+            MedicalResultRepository medicalResultRepository,
+            CurrentUserProvider currentUserProvider) {
         this.modelMapper = modelMapper;
         this.treatmentProtocolRepository = treatmentProtocolRepository;
+        this.medicalResultRepository = medicalResultRepository;
+        this.currentUserProvider = currentUserProvider;
     }
 
 
@@ -50,8 +58,33 @@ public class TreatmentProtocolService {
     public TreatmentProtocolResponse getById (Long id){
         TreatmentProtocol treatmentProtocol = treatmentProtocolRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, MedicalMessages.PROTOCOL_ID_NOT_FOUND));
+        ensureCanView(treatmentProtocol.getId());
         return modelMapper.map(treatmentProtocol, TreatmentProtocolResponse.class);
 
+    }
+
+    private void ensureCanView(Long protocolId) {
+        User currentUser = currentUserProvider.requireUser();
+        if (currentUser.getRole() == UserRole.CUSTOMER) {
+            boolean ownsResult = medicalResultRepository
+                    .existsActiveByTreatmentProtocolIdAndCustomerId(protocolId, currentUser.getId());
+            if (!ownsResult) {
+                throw new DomainException(
+                        ErrorCode.FORBIDDEN,
+                        MedicalMessages.TREATMENT_PROTOCOL_ACCESS_FORBIDDEN);
+            }
+            return;
+        }
+
+        boolean staffOrClinicalRole = currentUser.getRole() == UserRole.CONSULTANT
+                || currentUser.getRole() == UserRole.STAFF
+                || currentUser.getRole() == UserRole.ADMIN
+                || currentUser.getRole() == UserRole.SUPER_ADMIN;
+        if (!staffOrClinicalRole) {
+            throw new DomainException(
+                    ErrorCode.FORBIDDEN,
+                    MedicalMessages.TREATMENT_PROTOCOL_ACCESS_FORBIDDEN);
+        }
     }
     @Transactional
     public TreatmentProtocolResponse update(Long id, TreatmentProtocolRequest request){

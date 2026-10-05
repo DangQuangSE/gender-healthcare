@@ -54,6 +54,7 @@ public final class MedicalMessages {
     public static final String MEDICAL_RESULT_TAG = "Medical Result API";
     public static final String MEDICAL_RESULT_TAG_DESCRIPTION = "API for managing consultation and lab results";
 
+    public static final String TREATMENT_PROTOCOL_ACCESS_FORBIDDEN = "Bạn không có quyền xem phác đồ điều trị này.";
     public static final String RESULT_ACCESS_FORBIDDEN = "Bạn không có quyền xem kết quả y tế này.";
     public static final String RESULT_WRITE_FORBIDDEN = "Bạn không có quyền ghi kết quả y tế này.";
     public static final String RESULT_DELETED = "Xóa kết quả y tế thành công.";

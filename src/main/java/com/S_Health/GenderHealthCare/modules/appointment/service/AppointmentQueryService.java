@@ -64,7 +64,7 @@ public class AppointmentQueryService {
                 .orElseThrow(() -> new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.APPOINTMENT_NOT_FOUND));
         List<AppointmentDetail> details = appointmentDetailRepository
                 .findByAppointmentAndIsActiveTrue(appointment);
-        return mapAppointments(List.of(appointment), Map.of(appointment, details), true).get(0);
+        return mapAppointments(List.of(appointment), Map.of(appointment, details)).get(0);
     }
 
     public PatientHistoryResponse getPatientHistoryFromAppointment(Long appointmentId) {
@@ -109,11 +109,7 @@ public class AppointmentQueryService {
                 .filter(detail -> detail.getAppointment().getIsActive())
                 .collect(Collectors.groupingBy(AppointmentDetail::getAppointment));
 
-        return mapAppointments(
-                List.copyOf(detailsByAppointment.keySet()),
-                detailsByAppointment,
-                false
-        );
+        return mapAppointments(List.copyOf(detailsByAppointment.keySet()), detailsByAppointment);
     }
 
     private List<AppointmentResponse> convertToDto(List<Appointment> appointments) {
@@ -125,13 +121,12 @@ public class AppointmentQueryService {
                 .findByAppointmentInAndIsActiveTrue(appointments);
         Map<Appointment, List<AppointmentDetail>> detailsByAppointment = details.stream()
                 .collect(Collectors.groupingBy(AppointmentDetail::getAppointment));
-        return mapAppointments(appointments, detailsByAppointment, false);
+        return mapAppointments(appointments, detailsByAppointment);
     }
 
     private List<AppointmentResponse> mapAppointments(
             List<Appointment> appointments,
-            Map<Appointment, List<AppointmentDetail>> detailsByAppointment,
-            boolean requireMedicalResult) {
+            Map<Appointment, List<AppointmentDetail>> detailsByAppointment) {
         if (appointments.isEmpty()) {
             return Collections.emptyList();
         }
@@ -154,8 +149,7 @@ public class AppointmentQueryService {
                         appointment,
                         detailsByAppointment.getOrDefault(appointment, Collections.emptyList()),
                         resultsByDetailId,
-                        profilesByCustomerId,
-                        requireMedicalResult
+                        profilesByCustomerId
                 ))
                 .toList();
     }
@@ -164,14 +158,13 @@ public class AppointmentQueryService {
             Appointment appointment,
             List<AppointmentDetail> details,
             Map<Long, MedicalResult> resultsByDetailId,
-            Map<Long, BasicMedicalProfileResponse> profilesByCustomerId,
-            boolean requireMedicalResult) {
+            Map<Long, BasicMedicalProfileResponse> profilesByCustomerId) {
         AppointmentResponse appointmentDto = modelMapper.map(appointment, AppointmentResponse.class);
         appointmentDto.setCustomerId(appointment.getCustomer().getId());
         appointmentDto.setCustomerName(appointment.getCustomer().getFullname());
         appointmentDto.setServiceName(appointment.getService().getName());
         appointmentDto.setAppointmentDetails(details.stream()
-                .map(detail -> mapDetail(detail, resultsByDetailId, requireMedicalResult))
+                .map(detail -> mapDetail(detail, resultsByDetailId))
                 .toList());
         appointmentDto.setCustomerMedicalProfile(
                 profilesByCustomerId.get(appointment.getCustomer().getId())
@@ -181,8 +174,7 @@ public class AppointmentQueryService {
 
     private AppointmentDetailResponse mapDetail(
             AppointmentDetail detail,
-            Map<Long, MedicalResult> resultsByDetailId,
-            boolean requireMedicalResult) {
+            Map<Long, MedicalResult> resultsByDetailId) {
         AppointmentDetailResponse detailDto = modelMapper.map(detail, AppointmentDetailResponse.class);
         detailDto.setConsultantName(detail.getConsultant().getFullname());
         detailDto.setServiceName(detail.getService().getName());
@@ -192,9 +184,6 @@ public class AppointmentQueryService {
         detailDto.setRoom(mapRoomToSimpleDto(detail.getRoom()));
 
         MedicalResult medicalResult = resultsByDetailId.get(detail.getId());
-        if (requireMedicalResult && medicalResult == null) {
-            throw new DomainException(ErrorCode.NOT_FOUND, AppointmentMessages.RESULT_NOT_FOUND);
-        }
         if (medicalResult != null) {
             detailDto.setMedicalResult(modelMapper.map(medicalResult, MedicalResultResponse.class));
         }

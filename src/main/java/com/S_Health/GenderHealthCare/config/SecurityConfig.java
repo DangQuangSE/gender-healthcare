@@ -72,8 +72,11 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/v1/medical-profiles/patients/**",
                                 "/api/v1/medical-profiles/medical-info",
-                                "/api/v1/medical-results/**",
-                                "/api/v1/treatment-protocols/**")
+                                "/api/v1/medical-results/**")
+                        .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/treatment-protocols/*")
+                        .authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/treatment-protocols")
                         .hasAnyRole("CONSULTANT", "STAFF", "ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/medical-profiles/me/**")
                         .authenticated()
