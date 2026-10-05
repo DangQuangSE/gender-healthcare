@@ -13,7 +13,8 @@ their Compose project names, networks, containers, and database volumes.
 
 - Spring Boot listens on `8085` inside its container.
 - Only `127.0.0.1:8086` is published on the VPS.
-- Cloudflare Tunnel forwards `api.s-health.xyz` to `http://127.0.0.1:8086`.
+- Host Nginx forwards `shealth.duckdns.org/api/*` and `shealth.duckdns.org/ws/*`
+  to `http://127.0.0.1:8086`.
 - MySQL has no host port and is reachable only on `s_health_network`.
 - The database persists in the `s_health_mysql_data` Docker volume.
 
